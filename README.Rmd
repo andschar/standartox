@@ -140,7 +140,7 @@ casnr20 = l2$aggregated[ order(-n), casnr ][1:20]
 dat = dat[ casnr %in% casnr20 ]
 ```
 
-```{r warning=FALSE, message=FALSE, fig.width=9, fig.height=6}
+```{r warning=FALSE, message=FALSE, fig.width=9, fig.height=6, dpi=300}
 require(ggplot2)
 ggplot(dat, aes(y = reorder(cname, -gmn))) +
   geom_point(aes(x = concentration, col = 'All values'),

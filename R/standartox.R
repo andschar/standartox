@@ -23,11 +23,6 @@ stx_meta = function(vers = NULL) {
                    encode = 'json')
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
   out = jsonlite::fromJSON(cont)
-  # standartox verison
-  standartox_vers = data.frame(variable = 'standartox_version',
-                               value = grep('Version', readLines('DESCRIPTION'), value = TRUE))
-  # resturn
-  out = do.call(rbind, list(out, standartox_vers))
   
   return(out)
 }
