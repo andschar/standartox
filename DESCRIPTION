@@ -1,0 +1,23 @@
+Package: standartox
+Title: Ecotoxicological information from the standartox data base
+Description: The <standartox.uni-landau.de> data base offers cleaned,
+    harmonized and aggregated ecotoxicological test data, which can
+    be used for assessing effects and risks of chemical concentrations
+    found in the environment.
+Type: Package
+Version: 0.0.0.9000
+Depends: R (>= 3.5.0)
+Date: 2019-08-15
+License: MIT + file LICENSE
+Encoding: UTF-8
+URL: https://github.com/andschar/standartox
+BugReports: https://github.com/andschar/standartox/issues
+Authors@R: c(person("Andreas", "Scharmüller", role = c("aut", "cre"),
+    email = "andschar@protonmail.com"))
+Maintainer: Andreas Scharmüller <andschar@protonmail.com>
+Imports:
+    httr,
+    jsonlite,
+    fst,
+    data.table
+RoxygenNote: 6.1.1.9000
