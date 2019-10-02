@@ -3,7 +3,7 @@
 #' @keywords internal
 #' 
 domain = function() {
-  baseurl = '139.14.20.252'
+  baseurl = 'http://139.14.20.252'
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -156,17 +156,6 @@ stx_query = function(vers = NULL,
   
   return(out)
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
