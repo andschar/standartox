@@ -31,6 +31,8 @@ stx_meta = function(vers = NULL) {
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
 #' 
+#' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version
+#' 
 #' @return Returns a list of data.frames containing information on data base variables
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @examples

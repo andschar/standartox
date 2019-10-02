@@ -6,6 +6,9 @@
 \usage{
 stx_catalog(vers = NULL)
 }
+\arguments{
+\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
+}
 \value{
 Returns a list of data.frames containing information on data base variables
 }
