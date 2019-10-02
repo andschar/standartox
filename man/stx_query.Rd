@@ -31,9 +31,9 @@ stx_query(vers = NULL, cas = NULL, concentration_type = NULL,
 
 \item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
 
-\item{...}{currently not used}
+\item{agg}{character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'}
 
-\item{aggregate}{character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'}
+\item{...}{currently not used}
 }
 \value{
 Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)

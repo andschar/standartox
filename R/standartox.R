@@ -73,7 +73,7 @@ stx_catalog = function(vers = NULL) {
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
 #' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'MOR', 'ITX', 'GRO'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
-#' @param aggregate character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'
+#' @param agg character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
