@@ -4,6 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
+  baseurl = '127.0.0.1'
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -136,6 +137,9 @@ stx_query = function(vers = NULL,
                    body = body,
                    encode = 'json',
                    httr::verbose())
+  if (res$status_code == 400) {
+    stop(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
+  }
   if (res$status_code != 200)
     stop(res$status_code)
   # data

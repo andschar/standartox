@@ -28,11 +28,6 @@ The function returns a list of all possible arguments that can bes use in `stx_q
 
 ``` r
 require(standartox)
-```
-
-    ## Loading required package: standartox
-
-``` r
 catal = stx_catalog()
 ```
 
@@ -59,7 +54,7 @@ catal$endpoint # access the parameter endpoint
 
 The function allows you to filter and aggregate toxicity data according to the following parameters:
 
-| argument            | example                                               |
+| parameter           | example                                               |
 |:--------------------|:------------------------------------------------------|
 | cas                 | 7758987, 2921882, 1912249                             |
 | concentration\_type | active ingredient, formulation, total                 |
@@ -72,11 +67,15 @@ The function allows you to filter and aggregate toxicity data according to the f
 | endpoint            | NOEX, XX50, LOEX                                      |
 | vers                | 20190912                                              |
 
-The function also allows you to pick the aggregation method:
+...and to pick one or multiple of the three aggregation methods:
 
-| argument | example            |
-|:---------|:-------------------|
-| agg      | min, med, gmn, max |
+-   minimum (min)
+-   gemoetric mean (gmn)
+-   maximum (max)
+
+| parameter | example       |
+|:----------|:--------------|
+| agg       | min, gmn, max |
 
 You can type in parameters manually or subset the object returned by `stx_catalog()`:
 
@@ -92,7 +91,7 @@ l = stx_query(cas = cas,
               duration = c(24, 120))
 ```
 
-#### NB
+#### Important parameter settings
 
 -   **CAS** (`cas =`) Can be input in the form of 7758-98-7 or 7758987
 -   **Endpoints** (`endpoint =`) Only one endpoint per query is allowed:
@@ -136,7 +135,7 @@ l$meta
 
 | variable            | value               |
 |:--------------------|:--------------------|
-| accessed            | 2019-10-02 15:19:00 |
+| accessed            | 2019-10-07 19:14:59 |
 | standartox\_version | 20190912            |
 
 Example: *Oncorhynchus*
@@ -217,10 +216,10 @@ Information
 
 ### Want to contribute?
 
-Checkout our [contribution guide here](https://github.com/andschar/standartox/blob/master/CONTRIBUTING.md).
+Check out our [contribution guide here](https://github.com/andschar/standartox/blob/master/CONTRIBUTING.md).
 
 ### Meta
 
 -   Please report any [issues, bugs or feature requests](https://github.com/andschar/standartox/issues)
 -   License: MIT
--   Get citation information for webchem in R doing `citation(package = 'standartox')`
+-   Get citation information for the standartox package in R doing `citation(package = 'standartox')`
