@@ -73,7 +73,7 @@ stx_catalog = function(vers = NULL) {
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
 #' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'MOR', 'ITX', 'GRO'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
-#' @param agg character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'
+#' @param agg character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
@@ -98,7 +98,7 @@ stx_query = function(vers = NULL,
                      duration = NULL,
                      effect = NULL,
                      endpoint = c('XX50', 'NOEX', 'LOEX'),
-                     agg = c('min', 'med', 'gmn', 'max'),
+                     agg = c('min', 'gmn', 'max'),
                      ...) {
   
   # read binary vector function
@@ -123,7 +123,7 @@ stx_query = function(vers = NULL,
   qurl = file.path(domain(), 'filter', 'rds')
   body = list(vers = vers,
               cas = cas,
-              conc1_type = concentration_type,
+              concentration_type = concentration_type,
               chemical_class = chemical_class,
               taxa = taxa,
               habitat = habitat,
@@ -137,20 +137,23 @@ stx_query = function(vers = NULL,
                    encode = 'json',
                    httr::verbose())
   if (res$status_code == 400) {
-    stop(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
+    warning(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
+    out_fil = data.table(NA)
+    out_agg = data.table(NA)
+  } else if (res$status_code == 200) {
+    # data
+    out_fil = read_bin_vec(res$content, type = 'fst')
+    # aggregate
+    qurl = file.path(domain(), 'aggregate')
+    res = httr::GET(qurl) # GET function from API
+    if (res$status_code != 200)
+      stop(res$status_code)
+    stx_aggregate = read_bin_vec(res$content, type = 'rds')
+    out_agg = stx_aggregate(out_fil, agg = agg)
+  } else {
+    stop(res$status_code)
   }
-  if (res$status_code != 200)
-    stop(res$status_code)
-  # data
-  out_fil = read_bin_vec(res$content, type = 'fst')
-  # aggregate
-  qurl = file.path(domain(), 'aggregate')
-  res = httr::GET(qurl) # GET function from API
-  if (res$status_code != 200)
-    stop(res$status_code)
-  stx_aggregate = read_bin_vec(res$content, type = 'rds')
-  out_agg = stx_aggregate(out_fil, agg = agg)
-  # meta
+    # meta
   out_meta = stx_meta()
   # return
   out = list(filtered = out_fil,

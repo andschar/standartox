@@ -15,7 +15,7 @@ The project lives in these three repositories:
 
 ## Installation
 
-```{r message=FALSE}
+```{r eval=FALSE}
 # install.packages('remotes')
 remotes::install_github('andschar/standartox') # package not yet on CRAN
 ```

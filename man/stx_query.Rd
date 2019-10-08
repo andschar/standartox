@@ -7,8 +7,8 @@
 stx_query(vers = NULL, cas = NULL, concentration_type = NULL,
   chemical_class = NULL, taxa = NULL, habitat = NULL,
   region = NULL, duration = NULL, effect = NULL,
-  endpoint = c("XX50", "NOEX", "LOEX"), agg = c("min", "med", "gmn",
-  "max"), ...)
+  endpoint = c("XX50", "NOEX", "LOEX"), agg = c("min", "gmn", "max"),
+  ...)
 }
 \arguments{
 \item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
@@ -31,7 +31,7 @@ stx_query(vers = NULL, cas = NULL, concentration_type = NULL,
 
 \item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
 
-\item{agg}{character; Choose aggregation method, can be one of 'min', 'med', 'gmn' (default), 'max'}
+\item{agg}{character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'}
 
 \item{...}{currently not used}
 }
