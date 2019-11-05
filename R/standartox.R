@@ -120,7 +120,7 @@ stx_query = function(vers = NULL,
   endpoint = match.arg(endpoint)
   agg = match.arg(agg, several.ok = TRUE)
   # request
-  qurl = file.path(domain(), 'filter', 'rds')
+  qurl = file.path(domain(), 'filter')
   body = list(vers = vers,
               cas = cas,
               concentration_type = concentration_type,
