@@ -65,6 +65,7 @@ stx_catalog = function(vers = NULL) {
 #'
 #' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version
 #' @param cas character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)
+#' @param concentration_unit character; Limit data base query to specific concentration units (e.g. ug/l - default) 
 #' @param concentration_type character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4
 #' @param chemical_class character; Limit data base query to specific chemical classes, multiple entries possible, NULL (default)
 #' @param taxa character; Limit data base query to specific taxa, multiple entries possible, NULL (default)
@@ -90,6 +91,7 @@ stx_catalog = function(vers = NULL) {
 #' @export
 stx_query = function(vers = NULL,
                      cas = NULL,
+                     concentration_unit = NULL,
                      concentration_type = NULL,
                      chemical_class = NULL,
                      taxa = NULL,
@@ -123,6 +125,7 @@ stx_query = function(vers = NULL,
   qurl = file.path(domain(), 'filter')
   body = list(vers = vers,
               cas = cas,
+              concentration_unit = concentration_unit,
               concentration_type = concentration_type,
               chemical_class = chemical_class,
               taxa = taxa,
