@@ -17,6 +17,7 @@ stx_query(
   duration = NULL,
   effect = NULL,
   endpoint = c("XX50", "NOEX", "LOEX"),
+  exposure = NULL,
   agg = c("min", "gmn", "max"),
   ...
 )
@@ -45,6 +46,8 @@ stx_query(
 \item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
 
 \item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
+
+\item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet)}
 
 \item{agg}{character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'}
 

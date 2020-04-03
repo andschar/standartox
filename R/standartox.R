@@ -76,6 +76,7 @@ stx_catalog = function(vers = NULL) {
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
 #' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
+#' @param exposure character; Choose exposure type, (e.g. aquatic, environmental, diet)
 #' @param agg character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'
 #' @param ... currently not used
 #'
@@ -91,6 +92,7 @@ stx_catalog = function(vers = NULL) {
 #' }
 #' 
 #' @export
+#'
 stx_query = function(vers = NULL,
                      cas = NULL,
                      concentration_unit = NULL,
@@ -103,6 +105,7 @@ stx_query = function(vers = NULL,
                      duration = NULL,
                      effect = NULL,
                      endpoint = c('XX50', 'NOEX', 'LOEX'),
+                     exposure = NULL,
                      agg = c('min', 'gmn', 'max'),
                      ...) {
   
@@ -136,7 +139,8 @@ stx_query = function(vers = NULL,
               region = region,
               duration = duration,
               effect = effect,
-              endpoint = endpoint)
+              endpoint = endpoint,
+              exposure = exposure)
   # POST
   res = httr::POST(qurl,
                    body = body,
@@ -154,20 +158,25 @@ stx_query = function(vers = NULL,
     res = httr::GET(qurl) # GET function from API
     if (res$status_code != 200)
       stop(res$status_code)
-    l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
-    stx_aggregate = l[[1]]
-    flag_outliers = l[[2]]
+    fun_l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
+    stx_aggregate = fun_l[[1]]
+    flag_outliers = fun_l[[2]]
     para = c('cas',
              'concentration_unit',
              'concentration_type',
              'duration',
              'tax_taxon',
              'effect',
-             'endpoint')
+             'endpoint',
+             'exposure')
     out_fil[ ,
              outlier := flag_outliers(concentration),
              by = para ]
-    out_agg = stx_aggregate(out_fil, agg = agg)
+    out_agg = suppressWarnings(
+      stx_aggregate(out_fil,
+                    vl = 'concentration',
+                    agg = agg)
+    )
   } else {
     stop(res$status_code)
   }
