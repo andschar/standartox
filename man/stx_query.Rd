@@ -4,20 +4,35 @@
 \alias{stx_query}
 \title{Retrieve Standartox toxicity values}
 \usage{
-stx_query(vers = NULL, cas = NULL, concentration_type = NULL,
-  chemical_class = NULL, taxa = NULL, habitat = NULL,
-  region = NULL, duration = NULL, effect = NULL,
-  endpoint = c("XX50", "NOEX", "LOEX"), agg = c("min", "gmn", "max"),
-  ...)
+stx_query(
+  vers = NULL,
+  cas = NULL,
+  concentration_unit = NULL,
+  concentration_type = NULL,
+  chemical_role = NULL,
+  chemical_class = NULL,
+  taxa = NULL,
+  habitat = NULL,
+  region = NULL,
+  duration = NULL,
+  effect = NULL,
+  endpoint = c("XX50", "NOEX", "LOEX"),
+  agg = c("min", "gmn", "max"),
+  ...
+)
 }
 \arguments{
 \item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
 
 \item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)}
 
+\item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default)}
+
 \item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4}
 
-\item{chemical_class}{character; Limit data base query to specific chemical classes, multiple entries possible, NULL (default)}
+\item{chemical_role}{character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)}
+
+\item{chemical_class}{character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible, NULL (default)}
 
 \item{taxa}{character; Limit data base query to specific taxa, multiple entries possible, NULL (default)}
 
@@ -27,7 +42,7 @@ stx_query(vers = NULL, cas = NULL, concentration_type = NULL,
 
 \item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))}
 
-\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'MOR', 'ITX', 'GRO'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
+\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
 
 \item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
 
@@ -51,5 +66,5 @@ stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50', aggregate = 'md
 
 }
 \author{
-Andreas Scharmueller \email{andschar@proton.com}
+Andreas Scharmueller \email{andschar@protonmail.com}
 }

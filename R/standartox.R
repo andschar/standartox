@@ -4,6 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
+  baseurl = '127.0.0.1' # TODO remove (only for debuging)
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -67,18 +68,19 @@ stx_catalog = function(vers = NULL) {
 #' @param cas character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)
 #' @param concentration_unit character; Limit data base query to specific concentration units (e.g. ug/l - default) 
 #' @param concentration_type character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4
-#' @param chemical_class character; Limit data base query to specific chemical classes, multiple entries possible, NULL (default)
+#' @param chemical_role character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)
+#' @param chemical_class character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible, NULL (default)
 #' @param taxa character; Limit data base query to specific taxa, multiple entries possible, NULL (default)
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
-#' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'MOR', 'ITX', 'GRO'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
+#' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
 #' @param agg character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
-#' @author Andreas Scharmueller \email{andschar@@proton.com}
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' 
 #' @examples
 #' \donttest{
@@ -93,6 +95,7 @@ stx_query = function(vers = NULL,
                      cas = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
+                     chemical_role = NULL,
                      chemical_class = NULL,
                      taxa = NULL,
                      habitat = NULL,
@@ -116,8 +119,7 @@ stx_query = function(vers = NULL,
       writeBin(vec, tmp)
       res = fst::read_fst(tmp, as.data.table = TRUE)
     }
-
-    return(res)
+    res
   }
   endpoint = match.arg(endpoint)
   agg = match.arg(agg, several.ok = TRUE)
@@ -127,6 +129,7 @@ stx_query = function(vers = NULL,
               cas = cas,
               concentration_unit = concentration_unit,
               concentration_type = concentration_type,
+              chemical_role = chemical_role,
               chemical_class = chemical_class,
               taxa = taxa,
               habitat = habitat,
@@ -151,12 +154,24 @@ stx_query = function(vers = NULL,
     res = httr::GET(qurl) # GET function from API
     if (res$status_code != 200)
       stop(res$status_code)
-    stx_aggregate = read_bin_vec(res$content, type = 'rds')
+    l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
+    stx_aggregate = l[[1]]
+    flag_outliers = l[[2]]
+    para = c('cas',
+             'concentration_unit',
+             'concentration_type',
+             'duration',
+             'tax_taxon',
+             'effect',
+             'endpoint')
+    out_fil[ ,
+             outlier := flag_outliers(concentration),
+             by = para ]
     out_agg = stx_aggregate(out_fil, agg = agg)
   } else {
     stop(res$status_code)
   }
-    # meta
+  # meta
   out_meta = stx_meta()
   # return
   out = list(filtered = out_fil,
