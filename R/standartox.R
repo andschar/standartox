@@ -74,6 +74,7 @@ stx_catalog = function(vers = NULL) {
 #' @param tropic_lvl character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'
+#' @param ecotox_grp character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
 #' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
@@ -104,6 +105,7 @@ stx_query = function(vers = NULL,
                      trophic_lvl = NULL,
                      habitat = NULL,
                      region = NULL,
+                     ecotox_grp = NULL,
                      duration = NULL,
                      effect = NULL,
                      endpoint = c('XX50', 'NOEX', 'LOEX'),
@@ -140,6 +142,7 @@ stx_query = function(vers = NULL,
               trophic_lvl = trophic_lvl,
               habitat = habitat,
               region = region,
+              ecotox_grp = ecotox_grp,
               duration = duration,
               effect = effect,
               endpoint = endpoint,

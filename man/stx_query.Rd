@@ -15,6 +15,7 @@ stx_query(
   trophic_lvl = NULL,
   habitat = NULL,
   region = NULL,
+  ecotox_grp = NULL,
   duration = NULL,
   effect = NULL,
   endpoint = c("XX50", "NOEX", "LOEX"),
@@ -41,6 +42,8 @@ stx_query(
 \item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'}
 
 \item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'}
+
+\item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)}
 
 \item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))}
 
