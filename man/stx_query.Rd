@@ -12,6 +12,7 @@ stx_query(
   chemical_role = NULL,
   chemical_class = NULL,
   taxa = NULL,
+  trophic_lvl = NULL,
   habitat = NULL,
   region = NULL,
   duration = NULL,
@@ -52,6 +53,8 @@ stx_query(
 \item{agg}{character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'}
 
 \item{...}{currently not used}
+
+\item{tropic_lvl}{character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)}
 }
 \value{
 Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)

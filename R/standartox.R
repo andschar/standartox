@@ -4,6 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
+  baseurl = 'http://127.0.0.1'
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -70,6 +71,7 @@ stx_catalog = function(vers = NULL) {
 #' @param chemical_role character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)
 #' @param chemical_class character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible, NULL (default)
 #' @param taxa character; Limit data base query to specific taxa, multiple entries possible, NULL (default)
+#' @param tropic_lvl character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'
 #' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
@@ -99,6 +101,7 @@ stx_query = function(vers = NULL,
                      chemical_role = NULL,
                      chemical_class = NULL,
                      taxa = NULL,
+                     trophic_lvl = NULL,
                      habitat = NULL,
                      region = NULL,
                      duration = NULL,
@@ -134,6 +137,7 @@ stx_query = function(vers = NULL,
               chemical_role = chemical_role,
               chemical_class = chemical_class,
               taxa = taxa,
+              trophic_lvl = trophic_lvl,
               habitat = habitat,
               region = region,
               duration = duration,
