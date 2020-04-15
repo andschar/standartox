@@ -15,3 +15,24 @@ cas_conv = function(cas) {
           sep = '-')  
   }
 }
+
+#' Compose query message 
+#'
+#' @keywords internal
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' 
+stx_message = function(body) {
+  body2 = body[ sapply(body, function(x) !is.null(x)) ]
+  body2 = lapply(body2, paste0, collapse = ', ')
+  body2 = lapply(body2, function(x) {
+    if (nchar(x) >= 80) {
+      paste0(substr(paste0(x, collapse = ''), 1, 70), '...[truncated]')
+    } else {
+      x
+    }
+  })
+  msg = paste0(paste0(names(body2), ': ', unlist(body2)),
+               collapse = '\n')
+  message('Standartox query running...\nParameters:\n', msg)
+}
+

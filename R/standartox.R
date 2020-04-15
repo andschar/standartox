@@ -4,7 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
-  baseurl = 'http://127.0.0.1'
+  # baseurl = 'http://127.0.0.1'
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -16,12 +16,13 @@ domain = function() {
 #' @keywords internal
 stx_meta = function(vers = NULL) {
   # request
-  qurl = file.path(domain(), 'meta')
   body = list(vers = vers)
   # POST
-  res = httr::POST(qurl,
-                   body = body,
-                   encode = 'json')
+  res = httr::POST(
+    url = file.path(domain(), 'meta'),
+    body = body,
+    encode = 'json'
+  )
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
   out = jsonlite::fromJSON(cont)
   
@@ -45,13 +46,15 @@ stx_meta = function(vers = NULL) {
 #' @export
 stx_catalog = function(vers = NULL) {
   # request
-  qurl = file.path(domain(), 'catalog')
   body = list(vers = vers)
   # POST
-  res = httr::POST(qurl,
-                   body = body,
-                   encode = 'json',
-                   httr::verbose())
+  message('Retrieving Standartox catalog.')
+  res = httr::POST(
+    url = file.path(domain(), 'catalog'),
+    body = body,
+    encode = 'json',
+    # httr::verbose()
+  )
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
   out = jsonlite::fromJSON(cont)
   
@@ -112,7 +115,6 @@ stx_query = function(vers = NULL,
                      exposure = NULL,
                      agg = c('min', 'gmn', 'max'),
                      ...) {
-  
   # read binary vector function
   read_bin_vec = function(vec, type = c('rds', 'fst')) {
     if (type == 'rds') {
@@ -128,10 +130,10 @@ stx_query = function(vers = NULL,
     }
     res
   }
+  # checks
   endpoint = match.arg(endpoint)
   agg = match.arg(agg, several.ok = TRUE)
   # request
-  qurl = file.path(domain(), 'filter')
   body = list(vers = vers,
               cas = cas,
               concentration_unit = concentration_unit,
@@ -147,44 +149,57 @@ stx_query = function(vers = NULL,
               effect = effect,
               endpoint = endpoint,
               exposure = exposure)
+  # browser() # debuging
   # POST
-  res = httr::POST(qurl,
-                   body = body,
-                   encode = 'json',
-                   httr::verbose())
+  stx_message(body)
+  res = httr::POST(
+    file.path(domain(), 'filter'),
+    body = body,
+    encode = 'json',
+    # httr::verbose()
+  )
   if (res$status_code == 400) {
     warning(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
     out_fil = data.table(NA)
     out_agg = data.table(NA)
-  } else if (res$status_code == 200) {
-    # data
+  }
+  if (res$status_code != 200) {
+    warning(res$status_code)
+    out_fil = data.table(NA)
+    out_agg = data.table(NA)
+  }
+  if (res$status_code == 200) {
     out_fil = read_bin_vec(res$content, type = 'fst')
-    # aggregate
-    qurl = file.path(domain(), 'aggregate')
-    res = httr::GET(qurl) # GET function from API
-    if (res$status_code != 200)
-      stop(res$status_code)
-    fun_l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
-    stx_aggregate = fun_l[[1]]
-    flag_outliers = fun_l[[2]]
-    para = c('cas',
-             'concentration_unit',
-             'concentration_type',
-             'duration',
-             'tax_taxon',
-             'effect',
-             'endpoint',
-             'exposure')
-    out_fil[ ,
-             outlier := flag_outliers(concentration),
-             by = para ]
-    out_agg = suppressWarnings(
-      stx_aggregate(out_fil,
-                    vl = 'concentration',
-                    agg = agg)
-    )
-  } else {
-    stop(res$status_code)
+    if (nrow(out_fil) == 0) {
+      warning('No results found.')
+      out_fil = data.table(NA)
+      out_agg = data.table(NA)
+    } else {
+      out_fil[ , cas := cas_conv(casnr) ]
+      # aggregate
+      res = httr::GET(file.path(domain(), 'aggregate')) # GET function from API
+      if (res$status_code != 200)
+        stop(res$status_code)
+      fun_l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
+      stx_aggregate = fun_l[[1]]
+      flag_outliers = fun_l[[2]]
+      para = c('cas',
+               'concentration_unit',
+               'concentration_type',
+               'duration',
+               'tax_taxon',
+               'effect',
+               'endpoint',
+               'exposure')
+      out_fil[ ,
+               outlier := flag_outliers(concentration),
+               by = para ]
+      out_agg = suppressWarnings(
+        stx_aggregate(out_fil,
+                      vl = 'concentration',
+                      agg = agg)
+      )
+    }
   }
   # meta
   out_meta = stx_meta()
