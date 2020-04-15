@@ -20,7 +20,6 @@ stx_query(
   effect = NULL,
   endpoint = c("XX50", "NOEX", "LOEX"),
   exposure = NULL,
-  agg = c("min", "gmn", "max"),
   ...
 )
 }
@@ -53,8 +52,6 @@ stx_query(
 
 \item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet)}
 
-\item{agg}{character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'}
-
 \item{...}{currently not used}
 
 \item{tropic_lvl}{character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)}
@@ -70,7 +67,7 @@ Retrieve toxicity values from the Standartox data base \url{http://standartox.un
 # might fail if API is not available
 stx_query('1071-83-6')
 stx_query('1071-83-6', duration = c(48, 120))
-stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50', aggregate = 'md')
+stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50')
 }
 
 }

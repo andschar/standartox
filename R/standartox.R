@@ -82,7 +82,6 @@ stx_catalog = function(vers = NULL) {
 #' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
 #' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
 #' @param exposure character; Choose exposure type, (e.g. aquatic, environmental, diet)
-#' @param agg character; Choose aggregation method, can be one of 'min', 'gmn' (default), 'max'
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
@@ -93,7 +92,7 @@ stx_catalog = function(vers = NULL) {
 #' # might fail if API is not available
 #' stx_query('1071-83-6')
 #' stx_query('1071-83-6', duration = c(48, 120))
-#' stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50', aggregate = 'md')
+#' stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50')
 #' }
 #' 
 #' @export
@@ -113,7 +112,6 @@ stx_query = function(vers = NULL,
                      effect = NULL,
                      endpoint = c('XX50', 'NOEX', 'LOEX'),
                      exposure = NULL,
-                     agg = c('min', 'gmn', 'max'),
                      ...) {
   # read binary vector function
   read_bin_vec = function(vec, type = c('rds', 'fst')) {
@@ -132,7 +130,6 @@ stx_query = function(vers = NULL,
   }
   # checks
   endpoint = match.arg(endpoint)
-  agg = match.arg(agg, several.ok = TRUE)
   # request
   body = list(vers = vers,
               cas = cas,
@@ -197,7 +194,7 @@ stx_query = function(vers = NULL,
       out_agg = suppressWarnings(
         stx_aggregate(out_fil,
                       vl = 'concentration',
-                      agg = agg)
+                      agg = c('min', 'gmn', 'max'))
       )
     }
   }
