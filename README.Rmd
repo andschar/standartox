@@ -5,12 +5,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-Standartox is a data base tool facilitating the retrieval of ecotoxicological test data. It is based on the [EPA ECOTOX data base](https://cfpub.epa.gov/ecotox/) as well as on data from several other chemical data bases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via a [web-app](http://standartox.uni-landau.de/) or via the R-package [standartox](https://github.com/andschar/standartox). Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as [TU - Toxic Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species Sensitivity Distributions](https://edild.github.io/ssd/) in order to asses environmental toxicity of chemicals.
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
+[![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox)
 
-The project lives in these three repositories:
+Standartox is a database and tool facilitating the retrieval of ecotoxicological test data. It is based on the [EPA ECOTOX database](https://cfpub.epa.gov/ecotox/) as well as on data from several other chemical databases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via <http://standartox.uni-landau.de> or this R-package [standartox](https://github.com/andschar/standartox). Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as [TU - Toxic Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species Sensitivity Distributions](https://edild.github.io/ssd/) to asses environmental toxicity of chemicals.
 
-  - [standartox-build](https://github.com/andschar/standartox-build) - Compiles the tool
-  - [standartox-app](https://github.com/andschar/standartox-app) - Serves the website and API
+The project lives in two repositories:
+
+  - [standartox-build](https://github.com/andschar/standartox-build) - Compiles and serves database
   - [standartox](https://github.com/andschar/standartox) - R-package
 
 ## Installation
@@ -22,7 +24,7 @@ remotes::install_github('andschar/standartox') # package not yet on CRAN
 
 ## Functions
 
-Standartox consists of the two functions `stx_catalog()` and `stx_query()`. The former allows you to retrieve a catalog of possible parameters that can be used as an input for `stx_query()`. The latter fetches toxicity values from the data base.
+Standartox consists of the two functions `stx_catalog()` and `stx_query()`. The former allows you to retrieve a catalog of possible parameters that can be used as an input for `stx_query()`. The latter fetches toxicity values from the database.
 
 ### `stx_catalog()`
 
@@ -45,28 +47,17 @@ knitr::kable(endpoint)
 
 ### `stx_query()`
 
-The function allows you to filter and aggregate toxicity data according to the following parameters:
+The function allows you to retrieve filtered and aggregated toxicity data according to the parameters below.
 
 ```{r echo=FALSE}
 df = data.frame(parameter = names(catal),
-                example = sapply(lapply(lapply(catal, `[[`, 1), head, 3), paste0, collapse = ', '),
+                example = sapply(lapply(lapply(lapply(catal, `[[`, 1), head, 3), na.omit),
+                                 paste0, collapse = ', '),
                 row.names = NULL,
                 stringsAsFactors = FALSE)
 df[ df$parameter == 'duration', ]$example = paste(24, 96, sep = ', ')
-df$example = sub('Mus musculus', 'Daphnia magna', df$example)
+df = df[ df$parameter != 'meta', ]
 knitr::kable(df)
-```
-
-...and to pick one or multiple of the three aggregation methods:
-
-- minimum (min)
-- gemoetric mean (gmn)
-- maximum (max)
-
-```{r echo=FALSE}
-df_agg = data.frame(parameter = 'agg',
-                    example = paste0(c('min', 'gmn', 'max'), collapse = ', '))
-knitr::kable(df_agg)
 ```
 
 You can type in parameters manually or subset the object returned by `stx_catalog()`:
@@ -80,6 +71,7 @@ cas = c(Copper2Sulfate = '7758-98-7',
 l = stx_query(cas = cas,
               endpoint = 'XX50',
               taxa = grep('Oncorhynchus', catal$taxa$variable, value = TRUE), # fish genus
+              exposure = 'aquatic',
               duration = c(24, 120))
 ```
 
@@ -134,8 +126,7 @@ require(standartox)
 l2 = stx_query(concentration_type = 'active ingredient',
                endpoint = 'XX50',
                taxa = grep('Oncorhynchus', catal$taxa$variable, value = TRUE), # fish genus
-               duration = c(48, 120),
-               agg = 'gmn')
+               duration = c(48, 120))
 ```
 
 We subset the retrieved data to the 20 most tested chemicals and plot the result.

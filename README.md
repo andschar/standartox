@@ -1,83 +1,97 @@
 Standartox
 ================
 
-Standartox is a data base tool facilitating the retrieval of ecotoxicological test data. It is based on the [EPA ECOTOX data base](https://cfpub.epa.gov/ecotox/) as well as on data from several other chemical data bases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via a [web-app](http://standartox.uni-landau.de/) or via the R-package [standartox](https://github.com/andschar/standartox). Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as [TU - Toxic Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species Sensitivity Distributions](https://edild.github.io/ssd/) in order to asses environmental toxicity of chemicals.
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
+[![CRAN\_Downloads\_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox)
 
-The project lives in these three repositories:
+Standartox is a database and tool facilitating the retrieval of
+ecotoxicological test data. It is based on the [EPA ECOTOX
+database](https://cfpub.epa.gov/ecotox/) as well as on data from several
+other chemical databases and allows users to filter and aggregate
+ecotoxicological test data in an easy way. It can either be accessed via
+<http://standartox.uni-landau.de> or this R-package
+[standartox](https://github.com/andschar/standartox). Ecotoxicological
+test data is used in environmental risk assessment to calculate effect
+measures such as [TU - Toxic
+Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species
+Sensitivity Distributions](https://edild.github.io/ssd/) to asses
+environmental toxicity of chemicals.
 
--   [standartox-build](https://github.com/andschar/standartox-build) - Compiles the tool
--   [standartox-app](https://github.com/andschar/standartox-app) - Serves the website and API
--   [standartox](https://github.com/andschar/standartox) - R-package
+The project lives in two repositories:
 
-Installation
-------------
+  - [standartox-build](https://github.com/andschar/standartox-build) -
+    Compiles and serves database
+  - [standartox](https://github.com/andschar/standartox) - R-package
+
+## Installation
 
 ``` r
 # install.packages('remotes')
 remotes::install_github('andschar/standartox') # package not yet on CRAN
 ```
 
-Functions
----------
+## Functions
 
-Standartox consists of the two functions `stx_catalog()` and `stx_query()`. The former allows you to retrieve a catalog of possible parameters that can be used as an input for `stx_query()`. The latter fetches toxicity values from the data base.
+Standartox consists of the two functions `stx_catalog()` and
+`stx_query()`. The former allows you to retrieve a catalog of possible
+parameters that can be used as an input for `stx_query()`. The latter
+fetches toxicity values from the database.
 
 ### `stx_catalog()`
 
-The function returns a list of all possible arguments that can bes use in `stx_query()`.
+The function returns a list of all possible arguments that can bes use
+in `stx_query()`.
 
 ``` r
 require(standartox)
 catal = stx_catalog()
-```
-
-``` r
 names(catal)
 ```
 
-    ##  [1] "cas"                "concentration_type" "chemical_class"    
-    ##  [4] "taxa"               "habitat"            "region"            
-    ##  [7] "duration"           "effect"             "endpoint"          
-    ## [10] "vers"
+    ##  [1] "vers"               "casnr"              "cname"             
+    ##  [4] "concentration_unit" "concentration_type" "chemical_role"     
+    ##  [7] "chemical_class"     "taxa"               "trophic_lvl"       
+    ## [10] "habitat"            "region"             "ecotox_grp"        
+    ## [13] "duration"           "effect"             "endpoint"          
+    ## [16] "exposure"           "meta"
 
 ``` r
 catal$endpoint # access the parameter endpoint
 ```
 
-| variable |       n|  n\_total|  perc|
-|:---------|-------:|---------:|-----:|
-| NOEX     |  188882|    525306|    36|
-| XX50     |  184167|    525306|    35|
-| LOEX     |  152257|    525306|    29|
+| variable |      n | n\_total | perc |
+| :------- | -----: | -------: | ---: |
+| NOEX     | 221554 |   590470 |   38 |
+| XX50     | 192249 |   590470 |   33 |
+| LOEX     | 176667 |   590470 |   30 |
 
 ### `stx_query()`
 
-The function allows you to filter and aggregate toxicity data according to the following parameters:
+The function allows you to retrieve filtered and aggregated toxicity
+data according to the parameters
+below.
 
-| parameter           | example                                               |
-|:--------------------|:------------------------------------------------------|
-| cas                 | 7758987, 2921882, 1912249                             |
-| concentration\_type | active ingredient, formulation, total                 |
-| chemical\_class     | fungicide, herbicide, insecticide                     |
-| taxa                | Oncorhynchus mykiss, Rattus norvegicus, Daphnia magna |
-| habitat             | marine, brackish, freshwater                          |
-| region              | africa, america\_north, america\_south                |
-| duration            | 24, 96                                                |
-| effect              | Mortality, Population, Growth                         |
-| endpoint            | NOEX, XX50, LOEX                                      |
-| vers                | 20190912                                              |
+| parameter           | example                                                  |
+| :------------------ | :------------------------------------------------------- |
+| vers                | 20190912                                                 |
+| casnr               | 50000, 95716, 95727                                      |
+| cname               | 2291, 4, 3                                               |
+| concentration\_unit | ug/l, mg/kg, ppb                                         |
+| concentration\_type | active ingredient, formulation, total                    |
+| chemical\_role      | pesticide, herbicide, insecticide                        |
+| chemical\_class     | amide, aromatic, organochlorine                          |
+| taxa                | Fusarium oxysporum, Oncorhynchus clarkii, Apis mellifera |
+| trophic\_lvl        | heterotroph, autotroph                                   |
+| habitat             | freshwater, terrestrial, marine                          |
+| region              | europe, america\_north, america\_south                   |
+| ecotox\_grp         | Invertebrate, Plant, Fungi                               |
+| duration            | 24, 96                                                   |
+| effect              | Mortality, Population, Growth                            |
+| endpoint            | NOEX, XX50, LOEX                                         |
+| exposure            | aquatic, environmental, diet                             |
 
-...and to pick one or multiple of the three aggregation methods:
-
--   minimum (min)
--   gemoetric mean (gmn)
--   maximum (max)
-
-| parameter | example       |
-|:----------|:--------------|
-| agg       | min, gmn, max |
-
-You can type in parameters manually or subset the object returned by `stx_catalog()`:
+You can type in parameters manually or subset the object returned by
+`stx_catalog()`:
 
 ``` r
 require(standartox)
@@ -88,32 +102,47 @@ cas = c(Copper2Sulfate = '7758-98-7',
 l = stx_query(cas = cas,
               endpoint = 'XX50',
               taxa = grep('Oncorhynchus', catal$taxa$variable, value = TRUE), # fish genus
+              exposure = 'aquatic',
               duration = c(24, 120))
 ```
 
+    ## Standartox query running...
+    ## Parameters:
+    ## cas: 7758-98-7, 52645-53-1, 138261-41-3
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]
+    ## duration: 24, 120
+    ## endpoint: XX50
+    ## exposure: aquatic
+
 #### Important parameter settings
 
--   **CAS** (`cas =`) Can be input in the form of 7758-98-7 or 7758987
--   **Endpoints** (`endpoint =`) Only one endpoint per query is allowed:
-    -   `NOEX` summarises [No observed effect concentration/level](https://en.wikipedia.org/wiki/No-observed-adverse-effect_level) (i.e. NOEC, NOEL, NOAEL, etc.)
-    -   `LOEX` summarises Lowest observed effects concentration (i.e. LOEC, LOEL, etc.)
-    -   `XX50` summarises [Half maximal effective concentration](https://en.wikipedia.org/wiki/EC50) (i.e. EC50, LC50, LD50 etc.)
--   If you leave a parameter empty Standartox will not filter for it
+  - **CAS** (`cas =`) Can be input in the form of 7758-98-7 or 7758987
+  - **Endpoints** (`endpoint =`) Only one endpoint per query is allowed:
+      - `NOEX` summarises [No observed effect
+        concentration/level](https://en.wikipedia.org/wiki/No-observed-adverse-effect_level)
+        (i.e. NOEC, NOEL, NOAEL, etc.)
+      - `LOEX` summarises Lowest observed effects concentration
+        (i.e. LOEC, LOEL, etc.)
+      - `XX50` summarises [Half maximal effective
+        concentration](https://en.wikipedia.org/wiki/EC50) (i.e. EC50,
+        LC50, LD50 etc.)
+  - If you leave a parameter empty Standartox will not filter for it
 
-Query result
-------------
+## Query result
 
-Standartox returns a list object with three entries, containing the filtered data:
+Standartox returns a list object with three entries, containing the
+filtered
+data:
 
 ``` r
 l$filtered
 ```
 
-| cas      | cname          |  concentration| concentration\_unit | effect    | endpoint |
-|:---------|:---------------|--------------:|:--------------------|:----------|:---------|
-| 52645531 | permethrin     |           3.87| ppb                 | Mortality | XX50     |
-| 7758987  | cupric sulfate |        1150.00| ppb                 | Mortality | XX50     |
-| 52645531 | permethrin     |           4.30| ppb                 | Mortality | XX50     |
+| cas       | cname         | concentration | concentration\_unit | effect    | endpoint |
+| :-------- | :------------ | ------------: | :------------------ | :-------- | :------- |
+| 7758-98-7 | cupricsulfate |        1100.0 | ug/l                | Mortality | XX50     |
+| 7758-98-7 | cupricsulfate |          18.9 | ug/l                | Mortality | XX50     |
+| 7758-98-7 | cupricsulfate |          46.4 | ug/l                | Mortality | XX50     |
 
 the aggregated data:
 
@@ -121,11 +150,11 @@ the aggregated data:
 l$aggregated[ , -'taxa']
 ```
 
-| cname          | cas       |       min|           gmn|       max|    n|
-|:---------------|:----------|---------:|-------------:|---------:|----:|
-| permethrin     | 52645531  |  1.80e-06|  3.967545e+00|    9000.0|  116|
-| cupric sulfate | 7758987   |  1.13e+01|  1.354075e+02|  173974.9|  268|
-| imidacloprid   | 138261413 |  8.30e+04|  1.378960e+05|  229100.0|    2|
+| cname         | cas         |      min |          gmn |    max |   n |
+| :------------ | :---------- | -------: | -----------: | -----: | --: |
+| cupricsulfate | 7758-98-7   |    11.30 | 1.310502e+02 |  51000 | 268 |
+| imidacloprid  | 138261-41-3 | 83000.00 | 1.378960e+05 | 229100 |   2 |
+| permethrin    | 52645-53-1  |     0.62 | 4.760072e+00 |   1120 | 111 |
 
 and meta the information on the request:
 
@@ -134,25 +163,36 @@ l$meta
 ```
 
 | variable            | value               |
-|:--------------------|:--------------------|
-| accessed            | 2019-10-08 10:46:39 |
-| standartox\_version | 20190912            |
+| :------------------ | :------------------ |
+| accessed            | 2020-04-15 19:14:08 |
+| standartox\_version | 20191212            |
 
-Example: *Oncorhynchus*
------------------------
+## Example: *Oncorhynchus*
 
-Let's say, we want to retrieve the 20 most tested chemicals on the genus *[Oncorhynchus](https://en.wikipedia.org/wiki/Oncorhynchus)*. We allow for test durations between 48 and 120 hours and want the tests restricted to active ingredients only. Since we are only interested in the half maximal effective concentration, we choose XX50 as our endpoint. As an aggregation method we choose the geometric mean.
+Let’s say, we want to retrieve the 20 most tested chemicals on the genus
+*[Oncorhynchus](https://en.wikipedia.org/wiki/Oncorhynchus)*. We allow
+for test durations between 48 and 120 hours and want the tests
+restricted to active ingredients only. Since we are only interested in
+the half maximal effective concentration, we choose XX50 as our
+endpoint. As an aggregation method we choose the geometric mean.
 
 ``` r
 require(standartox)
 l2 = stx_query(concentration_type = 'active ingredient',
                endpoint = 'XX50',
                taxa = grep('Oncorhynchus', catal$taxa$variable, value = TRUE), # fish genus
-               duration = c(48, 120),
-               agg = 'gmn')
+               duration = c(48, 120))
 ```
 
-We subset the retrieved data to the 20 most tested chemicals and plot the result.
+    ## Standartox query running...
+    ## Parameters:
+    ## concentration_type: active ingredient
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]
+    ## duration: 48, 120
+    ## endpoint: XX50
+
+We subset the retrieved data to the 20 most tested chemicals and plot
+the result.
 
 ``` r
 require(data.table)
@@ -178,12 +218,14 @@ ggplot(dat, aes(y = reorder(cname, -gmn))) +
   theme(axis.title.y = element_blank())
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
-Usage
------
+## Usage
 
-We ask you to use the API service thoughtfully, which means to run the `stx_query()` only once and to re-run it only when parameters change or you want to query new versions. Here is an example of how to easily store the queried data locally from within R.
+We ask you to use the API service thoughtfully, which means to run the
+`stx_query()` only once and to re-run it only when parameters change or
+you want to query new versions. Here is an example of how to easily
+store the queried data locally from within R.
 
 ``` r
 run = FALSE # set to TRUE for the first run
@@ -202,24 +244,26 @@ if (run) {
 # ...
 ```
 
-Article
--------
+## Article
 
-The article on Standartox is currently work in progress and will be, once published linked here.
+The article on Standartox is currently work in progress and will be,
+once published linked here.
 
-Information
------------
+## Information
 
 ### Contributors
 
--   [Andreas Scharmüller](https://andschar.github.io)
+  - [Andreas Scharmüller](https://andschar.github.io)
 
 ### Want to contribute?
 
-Check out our [contribution guide here](https://github.com/andschar/standartox/blob/master/CONTRIBUTING.md).
+Check out our [contribution guide
+here](https://github.com/andschar/standartox/blob/master/CONTRIBUTING.md).
 
 ### Meta
 
--   Please report any [issues, bugs or feature requests](https://github.com/andschar/standartox/issues)
--   License: MIT
--   Get citation information for the standartox package in R doing `citation(package = 'standartox')`
+  - Please report any [issues, bugs or feature
+    requests](https://github.com/andschar/standartox/issues)
+  - License: MIT
+  - Get citation information for the standartox package in R doing
+    `citation(package = 'standartox')`
