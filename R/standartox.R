@@ -48,7 +48,7 @@ stx_catalog = function(vers = NULL) {
   # request
   body = list(vers = vers)
   # POST
-  message('Retrieving Standartox catalog.')
+  message('Retrieving Standartox catalog..')
   res = httr::POST(
     url = file.path(domain(), 'catalog'),
     body = body,
@@ -98,7 +98,7 @@ stx_catalog = function(vers = NULL) {
 #' @export
 #'
 stx_query = function(vers = NULL,
-                     cas = NULL,
+                     casnr = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
                      chemical_role = NULL,
@@ -132,7 +132,7 @@ stx_query = function(vers = NULL,
   endpoint = match.arg(endpoint)
   # request
   body = list(vers = vers,
-              cas = cas,
+              casnr = casnr,
               concentration_unit = concentration_unit,
               concentration_type = concentration_type,
               chemical_role = chemical_role,

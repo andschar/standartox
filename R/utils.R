@@ -33,6 +33,6 @@ stx_message = function(body) {
   })
   msg = paste0(paste0(names(body2), ': ', unlist(body2)),
                collapse = '\n')
-  message('Standartox query running...\nParameters:\n', msg)
+  message('Standartox query running..\nParameters:\n', msg)
 }
 
