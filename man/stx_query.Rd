@@ -6,31 +6,37 @@
 \usage{
 stx_query(
   vers = NULL,
-  cas = NULL,
+  casnr = NULL,
   concentration_unit = NULL,
   concentration_type = NULL,
+  duration = NULL,
+  endpoint = c("XX50", "NOEX", "LOEX"),
+  effect = NULL,
+  exposure = NULL,
   chemical_role = NULL,
   chemical_class = NULL,
   taxa = NULL,
+  ecotox_grp = NULL,
   trophic_lvl = NULL,
   habitat = NULL,
   region = NULL,
-  ecotox_grp = NULL,
-  duration = NULL,
-  effect = NULL,
-  endpoint = c("XX50", "NOEX", "LOEX"),
-  exposure = NULL,
   ...
 )
 }
 \arguments{
 \item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
 
-\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)}
-
 \item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default)}
 
 \item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4}
+
+\item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))}
+
+\item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
+
+\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
+
+\item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet)}
 
 \item{chemical_role}{character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)}
 
@@ -38,21 +44,15 @@ stx_query(
 
 \item{taxa}{character; Limit data base query to specific taxa, multiple entries possible, NULL (default)}
 
+\item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)}
+
 \item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'}
 
 \item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'}
 
-\item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)}
-
-\item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))}
-
-\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
-
-\item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
-
-\item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet)}
-
 \item{...}{currently not used}
+
+\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)}
 
 \item{tropic_lvl}{character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)}
 }

@@ -4,7 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
-  # baseurl = 'http://127.0.0.1'
+  baseurl = 'http://127.0.0.1' # debuging
   port = 8000
   domain = paste0(baseurl, ':', port)
   
@@ -58,7 +58,7 @@ stx_catalog = function(vers = NULL) {
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
   out = jsonlite::fromJSON(cont)
   
-  return(out)
+  out
 }
 
 #' Retrieve Standartox toxicity values
@@ -71,17 +71,17 @@ stx_catalog = function(vers = NULL) {
 #' @param cas character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)
 #' @param concentration_unit character; Limit data base query to specific concentration units (e.g. ug/l - default) 
 #' @param concentration_type character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4
+#' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
+#' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
+#' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
+#' @param exposure character; Choose exposure type, (e.g. aquatic, environmental, diet)
 #' @param chemical_role character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)
 #' @param chemical_class character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible, NULL (default)
 #' @param taxa character; Limit data base query to specific taxa, multiple entries possible, NULL (default)
+#' @param ecotox_grp character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)
 #' @param tropic_lvl character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'
-#' @param ecotox_grp character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)
-#' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))
-#' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95
-#' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'
-#' @param exposure character; Choose exposure type, (e.g. aquatic, environmental, diet)
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
@@ -101,18 +101,19 @@ stx_query = function(vers = NULL,
                      casnr = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
+                     duration = NULL,
+                     endpoint = c('XX50', 'NOEX', 'LOEX'),
+                     effect = NULL,
+                     exposure = NULL,
                      chemical_role = NULL,
                      chemical_class = NULL,
                      taxa = NULL,
+                     ecotox_grp = NULL,
                      trophic_lvl = NULL,
                      habitat = NULL,
                      region = NULL,
-                     ecotox_grp = NULL,
-                     duration = NULL,
-                     effect = NULL,
-                     endpoint = c('XX50', 'NOEX', 'LOEX'),
-                     exposure = NULL,
                      ...) {
+  # browser() # debuging
   # read binary vector function
   read_bin_vec = function(vec, type = c('rds', 'fst')) {
     if (type == 'rds') {
@@ -135,18 +136,17 @@ stx_query = function(vers = NULL,
               casnr = casnr,
               concentration_unit = concentration_unit,
               concentration_type = concentration_type,
+              duration = duration,
+              endpoint = endpoint,
+              effect = effect,
+              exposure = exposure,
               chemical_role = chemical_role,
               chemical_class = chemical_class,
               taxa = taxa,
+              ecotox_grp = ecotox_grp,
               trophic_lvl = trophic_lvl,
               habitat = habitat,
-              region = region,
-              ecotox_grp = ecotox_grp,
-              duration = duration,
-              effect = effect,
-              endpoint = endpoint,
-              exposure = exposure)
-  # browser() # debuging
+              region = region)
   # POST
   stx_message(body)
   res = httr::POST(
@@ -172,14 +172,9 @@ stx_query = function(vers = NULL,
       out_fil = data.table(NA)
       out_agg = data.table(NA)
     } else {
-      out_fil[ , cas := cas_conv(casnr) ]
-      # aggregate
-      res = httr::GET(file.path(domain(), 'aggregate')) # GET function from API
-      if (res$status_code != 200)
-        stop(res$status_code)
-      fun_l = read_bin_vec(res$content, type = 'rds') # binary list object with two funcitons
-      stx_aggregate = fun_l[[1]]
-      flag_outliers = fun_l[[2]]
+      # CAS column (not sent through API to reduce size)
+      out_fil[ , cas := cas_conv(casnr) ][ , casnr := NULL ]
+      # outliers
       para = c('cas',
                'concentration_unit',
                'concentration_type',
@@ -191,22 +186,97 @@ stx_query = function(vers = NULL,
       out_fil[ ,
                outlier := flag_outliers(concentration),
                by = para ]
+      # colorder
+      nam = names(out_fil)
+      col_order = c('cname', 'cas', 'iupac_name', 'inchikey', 'inchi', 'molecularweight',
+                    'result_id', 'endpoint', 'effect', 'exposure', 'trophic_lvl', 'ecotox_grp', 'concentration_type',
+                    'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
+                    'duration', 'duration_unit', 'outlier',
+                    c('species_number', grep('tax_|hab_|reg_', nam, value = TRUE)),
+                    grep('cro_|ccl_', nam, value = TRUE),
+                    grep('ref', nam, value = TRUE))
+      setcolorder(out_fil, col_order)
+      # order
+      setorder(out_fil, cname)
+      # ids
+      col_ids = c('cname', 'cas', 'inchikey', 'result_id', 'species_number', 'ref_number')
+      ids = out_fil[ , .SD, .SDcols = col_ids ]
+      # short
+      col_short = c('cname', 'cas', 'inchikey',
+                    'endpoint', 'effect', 'exposure', 'trophic_lvl', 'ecotox_grp', 'concentration_type',
+                    'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
+                    'duration', 'duration_unit', 'outlier',
+                    grep('tax_', nam, value = TRUE))
+      filtered = out_fil[ , .SD, .SDcols = col_short ]
+      # aggregate
       out_agg = suppressWarnings(
-        stx_aggregate(out_fil,
-                      vl = 'concentration',
-                      agg = c('min', 'gmn', 'max'))
+        stx_aggregate(out_fil)
       )
     }
   }
   # meta
   out_meta = stx_meta()
   # return
-  out = list(filtered = out_fil,
-             aggregated = out_agg,
-             meta = out_meta)
-  
-  return(out)
+  list(filtered = filtered,
+       filtered_all = rm_col_na(out_fil),
+       ids = ids,
+       aggregated = out_agg,
+       meta = out_meta)
 }
 
+# IDEA
+# microbenchmark::microbenchmark({
+# col_test = c('result_id', 'casnr', 'species_number', 'ref_number',
+#              'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
+#              'concentration_type', 'duration', 'duration_unit',
+#              'endpoint', 'effect', 'exposure', 'outlier')
+# col_chem = c('cname', 'iupac_name', 'cas', 'casnr', 'inchikey', 'inchi',
+#              'molecularweight',
+#              grep('cro|ccl', names(out_fil), value = TRUE))
+# col_taxa = c(
+#   grep('tax|hab|reg', names(out_fil), value = TRUE))
+# col_refs = grep('ref', names(out_fil), value = TRUE)
+# l = list(
+#   test = unique(rm_col_na(out_fil[ , .SD, .SDcols = col_test ])),
+#   chem = unique(rm_col_na(out_fil[ , .SD, .SDcols = col_chem ])),
+#   taxa = unique(rm_col_na(out_fil[ , .SD, .SDcols = col_taxa ])),
+#   refs = unique(rm_col_na(out_fil[ , .SD, .SDcols = col_refs ])),
+#   aggregated = out_agg,
+#   meta = stx_meta()
+# )
+# })
+# 
+
+
+#' Function to aggregate filtered test results
+#' 
+#' @keywords internal
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' 
+stx_aggregate = function(dat = NULL) {
+  # checking
+  if (is.null(dat)) stop('Provide table.')
+  # aggregation
+  out = dat[
+    ,
+    .(gmn = gm_mean(concentration),
+      n = .N),
+    .(cname, cas, tax_taxon) 
+    ][
+      ,
+      .(min = min(gmn),
+        tax_min = .SD[ which.min(gmn), tax_taxon ],
+        gmn = gm_mean(gmn),
+        max = max(gmn),
+        amn = mean(gmn),
+        sd = sd(gmn),
+        tax_max = .SD[ which.max(gmn), tax_taxon ],
+        n = sum(n),
+        tax_all = paste0(sort(unique(tax_taxon)), collapse = ', ')),
+      .(cname, cas)
+  ]
+  
+  out
+}
 
 

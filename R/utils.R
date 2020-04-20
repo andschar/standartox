@@ -36,3 +36,47 @@ stx_message = function(body) {
   message('Standartox query running..\nParameters:\n', msg)
 }
 
+#' Filter all-NA columns
+#' 
+#' @keywords internal
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' 
+rm_col_na = function(dt) {
+  Filter(function(x) !all(is.na(x)), dt)
+}
+
+#' Calculate geometric mean
+#' 
+#' @keywords internal
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' 
+# function to calculate the geometric mean
+# https://stackoverflow.com/questions/2602583/geometric-mean-is-there-a-built-in
+gm_mean = function(x, na.rm = TRUE, zero.propagate = FALSE){
+  if(any(x < 0, na.rm = TRUE)){
+    return(NaN)
+  }
+  if(zero.propagate){
+    if(any(x == 0, na.rm = TRUE)){
+      return(0)
+    }
+    exp(mean(log(x), na.rm = na.rm))
+  } else {
+    exp(sum(log(x[x > 0]), na.rm = na.rm) / length(x))
+  }
+}
+
+#' Function to flag outliers
+#' 
+#' @keywords internal
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' 
+flag_outliers = function(x, lim = 1.5, na.rm = TRUE, ...) {
+  qnt = quantile(x, probs = c(.25, .75), na.rm = na.rm)
+  H = lim * IQR(x, na.rm = na.rm)
+  fifelse(x < qnt[1] - H | x > qnt[2], TRUE, FALSE)
+}
+
+
+
+

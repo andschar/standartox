@@ -1,5 +1,5 @@
 Package: standartox
-Version: 0.0.0.9008
+Version: 0.0.0.9010
 Date: 2019-10-01
 Title: Ecotoxicological information from the standartox database
 Authors@R: c(person("Andreas", "Scharmüller", role = c("aut", "cre"),
@@ -20,5 +20,5 @@ Imports:
 License: MIT + file LICENSE
 URL: https://github.com/andschar/standartox
 BugReports: https://github.com/andschar/standartox/issues
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8
