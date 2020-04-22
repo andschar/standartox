@@ -198,9 +198,9 @@ stx_query = function(vers = NULL,
       setcolorder(out_fil, col_order)
       # order
       setorder(out_fil, cname)
-      # ids
-      col_ids = c('cname', 'cas', 'inchikey', 'result_id', 'species_number', 'ref_number')
-      ids = out_fil[ , .SD, .SDcols = col_ids ]
+      # id
+      col_id = c('cname', 'cas', 'inchikey', 'inchi', 'result_id', 'species_number', 'ref_number')
+      id = out_fil[ , .SD, .SDcols = col_id ]
       # short
       col_short = c('cname', 'cas', 'inchikey',
                     'endpoint', 'effect', 'exposure', 'trophic_lvl', 'ecotox_grp', 'concentration_type',
@@ -219,7 +219,7 @@ stx_query = function(vers = NULL,
   # return
   list(filtered = filtered,
        filtered_all = rm_col_na(out_fil),
-       ids = ids,
+       id = id,
        aggregated = out_agg,
        meta = out_meta)
 }
@@ -267,9 +267,9 @@ stx_aggregate = function(dat = NULL) {
       .(min = min(gmn),
         tax_min = .SD[ which.min(gmn), tax_taxon ],
         gmn = gm_mean(gmn),
-        max = max(gmn),
         amn = mean(gmn),
         sd = sd(gmn),
+        max = max(gmn),
         tax_max = .SD[ which.max(gmn), tax_taxon ],
         n = sum(n),
         tax_all = paste0(sort(unique(tax_taxon)), collapse = ', ')),

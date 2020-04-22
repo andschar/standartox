@@ -86,32 +86,45 @@ l = stx_query(cas = cas,
 
 ## Query result
 
-Standartox returns a list object with three entries, containing the filtered data:
+Standartox returns a list object with five entries.
 
-```{r, eval=FALSE}
-l$filtered
-```
+- `l$filtred` and `l$filtered_all` contain the filtered Standartox data set (the former only is a shorter and more concise version of the latter):
 
 ```{r echo=FALSE}
 cols = c('cas', 'cname', 'concentration', 'concentration_unit', 'effect', 'endpoint')
 knitr::kable(l$filtered[1:3, .SD, .SDcols = cols ])
 ```
 
-the aggregated data:
+- `l$aggregated` contains the several aggregates of the Standartox data:
 
-```{r, eval=FALSE}
-l$aggregated[ , -'taxa']
-```
+  - `cname`, `cas` - chemical identifiers
+  - `min` - Minimum
+  - `tax_min` - Most sensitive taxon
+  - __`gmn`__ - __Geometric mean__
+  - `amn` - Arithmetic mean
+  - `sd` - Standard Deviation of the arithmetic mean
+  - `max` - Maximum
+  - `tax_max` - Most insensitive taxon
+  - `n` - Number of distinct taxa used for the aggregation
+  - `tax_all` - Concatenated string of all taxa used for the aggregation
+  
 
 ```{r echo=FALSE}
-knitr::kable(head(l$aggregated[ , -'taxa'], 3))
+knitr::kable(head(l$aggregated[ , .SD, .SDcols = c('cname', 'cas', 'min', 'tax_min', 'gmn', 'max')], 3))
 ```
 
-and meta the information on the request:
+- `l$id` contains important data identifiers:
+  - `cname`, `cas`
+  - `inchikey`, `inchi`
+  - `result_id` - result ID from the underlying data source (i.e. EPA)
+  - `species_number` - taxon ID from the underlying data source (i.e. EPA)
+  - `ref_number` - reference ID from the underlying data source (i.e. EPA)
 
-```{r, eval=FALSE}
-l$meta
+```{r echo=FALSE}
+knitr::kable(head(unique(l$id, by = 'cname')[ , !'inchikey'], 3))
 ```
+
+- `l$meta` contains meta information on the request:
 
 ```{r echo=FALSE}
 knitr::kable(l$meta)
