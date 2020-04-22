@@ -4,7 +4,7 @@
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
-  baseurl = 'http://127.0.0.1' # debuging
+  # baseurl = 'http://127.0.0.1' # debuging
   port = 8000
   domain = paste0(baseurl, ':', port)
   
