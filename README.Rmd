@@ -121,7 +121,7 @@ knitr::kable(head(l$aggregated[ , .SD, .SDcols = c('cname', 'cas', 'min', 'tax_m
   - `ref_number` - reference ID from the underlying data source (i.e. EPA)
 
 ```{r echo=FALSE}
-knitr::kable(head(unique(l$id, by = 'cname')[ , !'inchikey'], 3))
+knitr::kable(head(unique(l$id, by = 'cname')[ , !c('inchikey', 'inchi')], 3))
 ```
 
 - `l$meta` contains meta information on the request:

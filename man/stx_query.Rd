@@ -24,37 +24,37 @@ stx_query(
 )
 }
 \arguments{
-\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
+\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.}
 
-\item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default)}
+\item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default).}
 
-\item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4}
+\item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4.}
 
-\item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48))}
+\item{duration}{integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48)). NULL (default).}
 
-\item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'}
+\item{endpoint}{character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'.}
 
-\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95}
+\item{effect}{character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95. NULL (default).}
 
-\item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet)}
+\item{exposure}{character; Choose exposure type, (e.g. aquatic, environmental, diet). NULL (default).}
 
-\item{chemical_role}{character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible, NULL (default)}
+\item{chemical_role}{character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible. NULL (default).}
 
-\item{chemical_class}{character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible, NULL (default)}
+\item{chemical_class}{character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible. NULL (default).}
 
-\item{taxa}{character; Limit data base query to specific taxa, multiple entries possible, NULL (default)}
+\item{taxa}{character; Limit data base query to specific taxa, multiple entries possible. NULL (default).}
 
-\item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae', NULL (default)}
+\item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of NULL (default), 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae'.}
 
-\item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater'}
+\item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.}
 
-\item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'}
+\item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.}
 
 \item{...}{currently not used}
 
-\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default)}
+\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default).}
 
-\item{tropic_lvl}{character; Trophic level of organism, must be one of 'autotroph', 'heterotroph', NULL (default)}
+\item{tropic_lvl}{character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.}
 }
 \value{
 Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
