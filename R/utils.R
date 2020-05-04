@@ -2,9 +2,9 @@
 
 #' Convert CAS betwenn hyphen and hyphenless form
 #'
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#'  
+#' @noRd
+#'   
 cas_conv = function(cas) {
   if (any(grepl('-', cas))) {
     gsub('-', '', cas)
@@ -18,9 +18,9 @@ cas_conv = function(cas) {
 
 #' Compose query message 
 #'
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' 
+#' @noRd
+#'  
 stx_message = function(body) {
   body2 = body[ sapply(body, function(x) !is.null(x)) ]
   body2 = lapply(body2, paste0, collapse = ', ')
@@ -38,8 +38,8 @@ stx_message = function(body) {
 
 #' Filter all-NA columns
 #' 
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @noRd
 #' 
 rm_col_na = function(dt) {
   Filter(function(x) !all(is.na(x)), dt)
@@ -47,8 +47,8 @@ rm_col_na = function(dt) {
 
 #' Calculate geometric mean
 #' 
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @noRd
 #' 
 # function to calculate the geometric mean
 # https://stackoverflow.com/questions/2602583/geometric-mean-is-there-a-built-in
@@ -66,10 +66,38 @@ gm_mean = function(x, na.rm = TRUE, zero.propagate = FALSE){
   }
 }
 
+#' Calculate geometric standard deviation
+#' 
+#' @author Andreas Scharmüller \email{andschar@@protonmail.com}
+#' @noRd
+#'
+gm_sd = function (x, na.rm = TRUE, sqrt.unbiased = TRUE) {
+  # after EnvStats::geoSD()
+  if (!is.vector(x, mode = "numeric") || is.factor(x))
+    stop("'x' must be a numeric vector")
+  wna = which(is.na(x))
+  if (length(wna)) {
+    if (na.rm) 
+      x = x[-wna]
+    else return(NA)
+  }
+  if (any(x <= 0)) {
+    warning("Non-positive values in 'x'")
+    return(NA)
+  } else {
+    sd.log = sd(log(x))
+    if (!sqrt.unbiased) {
+      n = length(x)
+      sd.log = sqrt((n - 1)/n) * sd.log
+    }
+  }
+  exp(sd.log)
+}
+
 #' Function to flag outliers
 #' 
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @noRd
 #' 
 flag_outliers = function(x, lim = 1.5, na.rm = TRUE, ...) {
   qnt = quantile(x, probs = c(.25, .75), na.rm = na.rm)

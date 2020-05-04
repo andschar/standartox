@@ -1,6 +1,7 @@
 #' connection
 #' 
-#' @keywords internal
+#' @author Andreas Scharmüller
+#' @noRd
 #' 
 domain = function() {
   baseurl = 'http://139.14.20.252'
@@ -13,7 +14,9 @@ domain = function() {
 
 #' Retrieve meta data
 #' 
-#' @keywords internal
+#' @author Andreas Scharmüller
+#' @noRd
+#' 
 stx_meta = function(vers = NULL) {
   # request
   body = list(vers = vers)
@@ -250,9 +253,9 @@ stx_query = function(vers = NULL,
 
 #' Function to aggregate filtered test results
 #' 
-#' @keywords internal
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' 
+#' @noRd
+#'  
 stx_aggregate = function(dat = NULL) {
   # checking
   if (is.null(dat)) stop('Provide table.')
@@ -260,6 +263,7 @@ stx_aggregate = function(dat = NULL) {
   out = dat[
     ,
     .(gmn = gm_mean(concentration),
+      gmnsd = gm_sd(concentration),
       n = .N),
     .(cname, cas, tax_taxon) 
     ][
@@ -267,8 +271,7 @@ stx_aggregate = function(dat = NULL) {
       .(min = min(gmn),
         tax_min = .SD[ which.min(gmn), tax_taxon ],
         gmn = gm_mean(gmn),
-        amn = mean(gmn),
-        sd = sd(gmn),
+        gmnsd = gm_sd(gmnsd),
         max = max(gmn),
         tax_max = .SD[ which.max(gmn), tax_taxon ],
         n = sum(n),
