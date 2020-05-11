@@ -76,22 +76,22 @@ gm_sd = function (x, na.rm = TRUE, sqrt.unbiased = TRUE) {
   if (!is.vector(x, mode = "numeric") || is.factor(x))
     stop("'x' must be a numeric vector")
   wna = which(is.na(x))
-  if (length(wna)) {
+  if (length(wna) != 0) {
     if (na.rm) 
       x = x[-wna]
     else return(NA)
   }
   if (any(x <= 0)) {
     warning("Non-positive values in 'x'")
-    return(NA)
+    return(NA_real_)
   } else {
     sd.log = sd(log(x))
     if (!sqrt.unbiased) {
       n = length(x)
       sd.log = sqrt((n - 1)/n) * sd.log
     }
+    exp(sd.log)
   }
-  exp(sd.log)
 }
 
 #' Function to flag outliers
