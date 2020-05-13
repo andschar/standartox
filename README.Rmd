@@ -6,7 +6,10 @@ editor_options:
 ---
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
-[![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox)
+[![Github All Releases](https://img.shields.io/github/downloads-pre/andschar/standartox/latest/total.svg)]()
+
+<!-- TODO enable once it's on CRAN [![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox) -->
+
 
 Standartox is a database and tool facilitating the retrieval of ecotoxicological test data. It is based on the [EPA ECOTOX database](https://cfpub.epa.gov/ecotox/) as well as on data from several other chemical databases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via <http://standartox.uni-landau.de> or this R-package [standartox](https://github.com/andschar/standartox). Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as [TU - Toxic Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species Sensitivity Distributions](https://edild.github.io/ssd/) to asses environmental toxicity of chemicals.
 

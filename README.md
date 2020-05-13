@@ -2,7 +2,10 @@ Standartox
 ================
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
-[![CRAN\_Downloads\_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox)
+[![Github All
+Releases](https://img.shields.io/github/downloads-pre/andschar/standartox/latest/total.svg)]()
+
+<!-- TODO enable once it's on CRAN [![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox) -->
 
 Standartox is a database and tool facilitating the retrieval of
 ecotoxicological test data. It is based on the [EPA ECOTOX
@@ -59,36 +62,35 @@ names(catal)
 catal$endpoint # access the parameter endpoint
 ```
 
-| variable |      n | n\_total | perc | name\_perc |
-| :------- | -----: | -------: | ---: | :--------- |
-| NOEX     | 215089 |   561258 |   39 | NOEX (39%) |
-| LOEX     | 174291 |   561258 |   32 | LOEX (32%) |
-| XX50     | 171878 |   561258 |   31 | XX50 (31%) |
+| variable |      n | n\_total | perc |
+| :------- | -----: | -------: | ---: |
+| NOEX     | 213692 |   558384 |   39 |
+| LOEX     | 173111 |   558384 |   32 |
+| XX50     | 171581 |   558384 |   31 |
 
 ### `stx_query()`
 
 The function allows you to retrieve filtered and aggregated toxicity
-data according to the parameters
-below.
+data according to the parameters below.
 
-| parameter           | example                                                  |
-| :------------------ | :------------------------------------------------------- |
-| vers                | 20190912                                                 |
-| casnr               | 50000, 95716, 95727                                      |
-| cname               | 2291, 4, 3                                               |
-| concentration\_unit | ug/l, mg/kg, g/m2                                        |
-| concentration\_type | active ingredient, formulation, total                    |
-| chemical\_role      | pesticide, herbicide, insecticide                        |
-| chemical\_class     | amide, aromatic, organochlorine                          |
-| taxa                | Fusarium oxysporum, Oncorhynchus clarkii, Apis mellifera |
-| trophic\_lvl        | heterotroph, autotroph                                   |
-| habitat             | freshwater, marine, terrestrial                          |
-| region              | europe, america\_north, america\_south                   |
-| ecotox\_grp         | Invertebrate, Plant, Fungi                               |
-| duration            | 24, 96                                                   |
-| effect              | Mortality, Population, Biochemistry                      |
-| endpoint            | NOEX, LOEX, XX50                                         |
-| exposure            | aquatic, environmental, diet                             |
+| parameter           | example                                |
+| :------------------ | :------------------------------------- |
+| vers                | 20191212                               |
+| casnr               | 50000, 95716, 95727                    |
+| cname               | 2291, 4, 3                             |
+| concentration\_unit | ug/l, mg/kg, g/m2                      |
+| concentration\_type | active ingredient, formulation, total  |
+| chemical\_role      | pesticide, herbicide, insecticide      |
+| chemical\_class     | amide, aromatic, organochlorine        |
+| taxa                | species, genus, Fusarium oxysporum     |
+| trophic\_lvl        | heterotroph, autotroph                 |
+| habitat             | freshwater, terrestrial, marine        |
+| region              | america\_north, europe, america\_south |
+| ecotox\_grp         | invertebrate, plant, fungi             |
+| duration            | 24, 96                                 |
+| effect              | Mortality, Population, Biochemistry    |
+| endpoint            | NOEX, LOEX, XX50                       |
+| exposure            | aquatic, environmental, diet           |
 
 You can type in parameters manually or subset the object returned by
 `stx_catalog()`:
@@ -112,7 +114,7 @@ l = stx_query(cas = cas,
     ## duration: 24, 120
     ## endpoint: XX50
     ## exposure: aquatic
-    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]
 
 #### Important parameter settings
 
@@ -141,7 +143,7 @@ latter):
 | :-------- | :------------- | ------------: | :------------------ | :-------- | :------- |
 | 7758-98-7 | cupric sulfate |        1100.0 | ug/l                | Mortality | XX50     |
 | 7758-98-7 | cupric sulfate |          18.9 | ug/l                | Mortality | XX50     |
-| 7758-98-7 | cupric sulfate |          46.4 | ug/l                | Mortality | XX50     |
+| 7758-98-7 | cupric sulfate |          36.0 | ug/l                | Mortality | XX50     |
 
   - `l$aggregated` contains the several aggregates of the Standartox
     data:
@@ -174,17 +176,17 @@ latter):
       - `ref_number` - reference ID from the underlying data source
         (i.e. EPA)
 
-| cname          | cas         | inchi                                                                                                                                | result\_id | species\_number | ref\_number |
-| :------------- | :---------- | :----------------------------------------------------------------------------------------------------------------------------------- | ---------: | --------------: | ----------: |
-| cupric sulfate | 7758-98-7   | 1S/Cu.H2O4S/c;1-5(2,3)4/h;(H2,1,2,3,4)/q+2;/p-2                                                                                      |     114026 |               4 |         104 |
-| imidacloprid   | 138261-41-3 | 1S/C9H10ClN5O2/c10-8-2-1-7(5-12-8)6-14-4-3-11-9(14)13-15(16)17/h1-2,5H,3-4,6H2,(H,11,13)                                             |    2109867 |               4 |         344 |
-| permethrin     | 52645-53-1  | 1S/C21H20Cl2O3/c1-21(2)17(12-18(22)23)19(21)20(24)25-13-14-7-6-10-16(11-14)26-15-8-4-3-5-9-15/h3-12,17,19H,13H2,1-2H3/t17-,19-/m0/s1 |    2103751 |               4 |         344 |
+| cname          | cas         | result\_id | species\_number | ref\_number |
+| :------------- | :---------- | ---------: | --------------: | ----------: |
+| cupric sulfate | 7758-98-7   |     114026 |               4 |         104 |
+| imidacloprid   | 138261-41-3 |    2109867 |               4 |         344 |
+| permethrin     | 52645-53-1  |    2103751 |               4 |         344 |
 
   - `l$meta` contains meta information on the request:
 
 | variable            | value               |
 | :------------------ | :------------------ |
-| accessed            | 2020-04-22 11:59:43 |
+| accessed            | 2020-05-13 10:53:54 |
 | standartox\_version | 20191212            |
 
 ## Example: *Oncorhynchus*
@@ -209,7 +211,7 @@ l2 = stx_query(concentration_type = 'active ingredient',
     ## concentration_type: active ingredient
     ## duration: 48, 120
     ## endpoint: XX50
-    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]
 
 We subset the retrieved data to the 20 most tested chemicals and plot
 the result.
