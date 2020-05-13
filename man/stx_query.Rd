@@ -5,7 +5,6 @@
 \title{Retrieve Standartox toxicity values}
 \usage{
 stx_query(
-  vers = NULL,
   casnr = NULL,
   concentration_unit = NULL,
   concentration_type = NULL,
@@ -20,12 +19,11 @@ stx_query(
   trophic_lvl = NULL,
   habitat = NULL,
   region = NULL,
+  vers = NULL,
   ...
 )
 }
 \arguments{
-\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.}
-
 \item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default).}
 
 \item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4.}
@@ -49,6 +47,8 @@ stx_query(
 \item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.}
 
 \item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.}
+
+\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.}
 
 \item{...}{currently not used}
 

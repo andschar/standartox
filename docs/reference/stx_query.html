@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">standartox</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9013</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9015</span>
       </span>
     </div>
 
@@ -118,7 +118,6 @@
     </div>
 
     <pre class="usage"><span class='fu'>stx_query</span>(
-  <span class='kw'>vers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>casnr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>concentration_unit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>concentration_type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -133,16 +132,13 @@
   <span class='kw'>trophic_lvl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>habitat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>region</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>vers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='no'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>vers</th>
-      <td><p>integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.</p></td>
-    </tr>
     <tr>
       <th>concentration_unit</th>
       <td><p>character; Limit data base query to specific concentration units (e.g. ug/l - default).</p></td>
@@ -192,6 +188,10 @@
       <td><p>character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.</p></td>
     </tr>
     <tr>
+      <th>vers</th>
+      <td><p>integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>currently not used</p></td>
     </tr>
@@ -214,16 +214,934 @@
 <span class='co'># might fail if API is not available</span>
 <span class='fu'>stx_query</span>(<span class='st'>'1071-83-6'</span>)</div><div class='output co'>#&gt; <span class='message'>Standartox query running..</span>
 #&gt; <span class='message'>Parameters:</span>
-#&gt; <span class='message'>vers: 1071-83-6</span>
-#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Provided version number not in data.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 400</span></div><div class='output co'>#&gt; <span class='error'>Error in stx_query("1071-83-6"): object 'filtered' not found</span></div><div class='input'><span class='fu'>stx_query</span>(<span class='st'>'1071-83-6'</span>, <span class='kw'>duration</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>48</span>, <span class='fl'>120</span>))</div><div class='output co'>#&gt; <span class='message'>Standartox query running..</span>
+#&gt; <span class='message'>casnr: 1071-83-6</span>
+#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; $filtered
+#&gt;           cname       cas                    inchikey endpoint     effect
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Population
+#&gt;  ---                                                                     
+#&gt; 643: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Population
+#&gt; 644: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Population
+#&gt; 645: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt; 646: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50  Mortality
+#&gt; 647: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50    Cell(s)
+#&gt;           exposure trophic_lvl ecotox_grp concentration_type concentration
+#&gt;   1:       aquatic heterotroph       fish       not reported    6.7900e+04
+#&gt;   2:       aquatic heterotroph       fish       not reported    7.7600e+04
+#&gt;   3:       aquatic heterotroph       fish  active ingredient    1.3400e+05
+#&gt;   4:       aquatic heterotroph       fish       not reported    8.2400e+05
+#&gt;   5:       aquatic   autotroph macrophyte  active ingredient    1.2400e+04
+#&gt;  ---                                                                      
+#&gt; 643: environmental   autotroph      plant  active ingredient    4.7086e-02
+#&gt; 644: environmental   autotroph      plant  active ingredient    2.5457e-02
+#&gt; 645:       aquatic heterotroph   amphibia  active ingredient    1.0600e+05
+#&gt; 646:       aquatic heterotroph   amphibia  active ingredient    1.1500e+05
+#&gt; 647:       invitro heterotroph       fish  active ingredient    7.3000e+05
+#&gt;      concentration_unit concentration_orig concentration_unit_orig duration
+#&gt;   1:                ppb               67.9                     ppm       96
+#&gt;   2:                ppb               77.6                     ppm       96
+#&gt;   3:                ppb                134                     ppm       96
+#&gt;   4:                ppb                824                     ppm       96
+#&gt;   5:                ppb               12.4                     ppm      336
+#&gt;  ---                                                                       
+#&gt; 643:               g/m2             470.86                 ae g/ha      336
+#&gt; 644:               g/m2             254.57                 ae g/ha      672
+#&gt; 645:               ug/l                106                 AI mg/L       96
+#&gt; 646:               ug/l                115                 AI mg/L       96
+#&gt; 647:               ug/l                730                    mg/L       24
+#&gt;      duration_unit outlier tax_rank              tax_taxon    tax_genus
+#&gt;   1:             h   FALSE  species    Pimephales promelas   Pimephales
+#&gt;   2:             h   FALSE  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:             h   FALSE  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:             h    TRUE  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:             h   FALSE  species            Lemna gibba        Lemna
+#&gt;  ---                                                                   
+#&gt; 643:             h   FALSE  species Richardia brasiliensis    Richardia
+#&gt; 644:             h   FALSE  species Richardia brasiliensis    Richardia
+#&gt; 645:             h   FALSE  species         Boana pardalis        Boana
+#&gt; 646:             h   FALSE  species    Physalaemus cuvieri  Physalaemus
+#&gt; 647:             h   FALSE  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;           tax_family     tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5:       Lemnaceae        Arales     Liliopsida           &lt;NA&gt;
+#&gt;  ---                                                            
+#&gt; 643:       Rubiaceae      Rubiales  Magnoliopsida           &lt;NA&gt;
+#&gt; 644:       Rubiaceae      Rubiales  Magnoliopsida           &lt;NA&gt;
+#&gt; 645:         Hylidae         Anura       Amphibia           &lt;NA&gt;
+#&gt; 646: Leptodactylidae         Anura       Amphibia           &lt;NA&gt;
+#&gt; 647:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom
+#&gt;   1:        Vertebrata            Chordata    Animalia
+#&gt;   2:        Vertebrata            Chordata    Animalia
+#&gt;   3:        Vertebrata            Chordata    Animalia
+#&gt;   4:        Vertebrata            Chordata    Animalia
+#&gt;   5:              &lt;NA&gt;       Magnoliophyta     Plantae
+#&gt;  ---                                                  
+#&gt; 643:              &lt;NA&gt;       Magnoliophyta     Plantae
+#&gt; 644:              &lt;NA&gt;       Magnoliophyta     Plantae
+#&gt; 645:        Vertebrata            Chordata    Animalia
+#&gt; 646:        Vertebrata            Chordata    Animalia
+#&gt; 647:        Vertebrata            Chordata    Animalia
+#&gt; 
+#&gt; $filtered_all
+#&gt;           cname       cas                 iupac_name
+#&gt;   1: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   2: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   3: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   4: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   5: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;  ---                                                
+#&gt; 643: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 644: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 645: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 646: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 647: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;                         inchikey
+#&gt;   1: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                            
+#&gt; 643: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 644: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 645: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 646: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 647: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;  ---                                                              
+#&gt; 643: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 644: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 645: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 646: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 647: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;      molecularweight result_id endpoint     effect      exposure trophic_lvl
+#&gt;   1:        169.0731   2105550     XX50  Mortality       aquatic heterotroph
+#&gt;   2:        169.0731   2101423     XX50  Mortality       aquatic heterotroph
+#&gt;   3:        169.0731   2114879     XX50  Mortality       aquatic heterotroph
+#&gt;   4:        169.0731   2115068     XX50  Mortality       aquatic heterotroph
+#&gt;   5:        169.0731   2114885     XX50 Population       aquatic   autotroph
+#&gt;  ---                                                                        
+#&gt; 643:        169.0731   2488599     XX50 Population environmental   autotroph
+#&gt; 644:        169.0731   2488601     XX50 Population environmental   autotroph
+#&gt; 645:        169.0731   2489643     XX50  Mortality       aquatic heterotroph
+#&gt; 646:        169.0731   2489605     XX50  Mortality       aquatic heterotroph
+#&gt; 647:        169.0731   2490767     XX50    Cell(s)       invitro heterotroph
+#&gt;      ecotox_grp concentration_type concentration concentration_unit
+#&gt;   1:       fish       not reported    6.7900e+04                ppb
+#&gt;   2:       fish       not reported    7.7600e+04                ppb
+#&gt;   3:       fish  active ingredient    1.3400e+05                ppb
+#&gt;   4:       fish       not reported    8.2400e+05                ppb
+#&gt;   5: macrophyte  active ingredient    1.2400e+04                ppb
+#&gt;  ---                                                               
+#&gt; 643:      plant  active ingredient    4.7086e-02               g/m2
+#&gt; 644:      plant  active ingredient    2.5457e-02               g/m2
+#&gt; 645:   amphibia  active ingredient    1.0600e+05               ug/l
+#&gt; 646:   amphibia  active ingredient    1.1500e+05               ug/l
+#&gt; 647:       fish  active ingredient    7.3000e+05               ug/l
+#&gt;      concentration_orig concentration_unit_orig duration duration_unit outlier
+#&gt;   1:               67.9                     ppm       96             h   FALSE
+#&gt;   2:               77.6                     ppm       96             h   FALSE
+#&gt;   3:                134                     ppm       96             h   FALSE
+#&gt;   4:                824                     ppm       96             h    TRUE
+#&gt;   5:               12.4                     ppm      336             h   FALSE
+#&gt;  ---                                                                          
+#&gt; 643:             470.86                 ae g/ha      336             h   FALSE
+#&gt; 644:             254.57                 ae g/ha      672             h   FALSE
+#&gt; 645:                106                 AI mg/L       96             h   FALSE
+#&gt; 646:                115                 AI mg/L       96             h   FALSE
+#&gt; 647:                730                    mg/L       24             h   FALSE
+#&gt;      species_number tax_rank              tax_taxon    tax_genus
+#&gt;   1:              1  species    Pimephales promelas   Pimephales
+#&gt;   2:              4  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:              4  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:              4  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:           1799  species            Lemna gibba        Lemna
+#&gt;  ---                                                            
+#&gt; 643:           9364  species Richardia brasiliensis    Richardia
+#&gt; 644:           9364  species Richardia brasiliensis    Richardia
+#&gt; 645:          52888  species         Boana pardalis        Boana
+#&gt; 646:          51910  species    Physalaemus cuvieri  Physalaemus
+#&gt; 647:              4  species    Oncorhynchus mykiss Oncorhynchus
+#&gt;           tax_family     tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5:       Lemnaceae        Arales     Liliopsida           &lt;NA&gt;
+#&gt;  ---                                                            
+#&gt; 643:       Rubiaceae      Rubiales  Magnoliopsida           &lt;NA&gt;
+#&gt; 644:       Rubiaceae      Rubiales  Magnoliopsida           &lt;NA&gt;
+#&gt; 645:         Hylidae         Anura       Amphibia           &lt;NA&gt;
+#&gt; 646: Leptodactylidae         Anura       Amphibia           &lt;NA&gt;
+#&gt; 647:      Salmonidae Salmoniformes Actinopterygii   Osteichthyes
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom hab_marine hab_brackish
+#&gt;   1:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt;   2:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   3:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   4:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   5:              &lt;NA&gt;       Magnoliophyta     Plantae         NA           NA
+#&gt;  ---                                                                          
+#&gt; 643:              &lt;NA&gt;       Magnoliophyta     Plantae         NA           NA
+#&gt; 644:              &lt;NA&gt;       Magnoliophyta     Plantae         NA           NA
+#&gt; 645:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 646:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 647:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;      hab_freshwater hab_terrestrial reg_africa reg_america_north
+#&gt;   1:           TRUE              NA         NA              TRUE
+#&gt;   2:           TRUE              NA         NA              TRUE
+#&gt;   3:           TRUE              NA         NA              TRUE
+#&gt;   4:           TRUE              NA         NA              TRUE
+#&gt;   5:           TRUE              NA         NA                NA
+#&gt;  ---                                                            
+#&gt; 643:             NA            TRUE       TRUE              TRUE
+#&gt; 644:             NA            TRUE       TRUE              TRUE
+#&gt; 645:             NA              NA         NA                NA
+#&gt; 646:             NA              NA         NA                NA
+#&gt; 647:           TRUE              NA         NA              TRUE
+#&gt;      reg_america_south reg_asia reg_europe reg_oceania cro_endocrine_disruptor
+#&gt;   1:                NA       NA       TRUE          NA                    TRUE
+#&gt;   2:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   3:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   4:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   5:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;  ---                                                                          
+#&gt; 643:              TRUE       NA         NA          NA                    TRUE
+#&gt; 644:              TRUE       NA         NA          NA                    TRUE
+#&gt; 645:              TRUE       NA         NA          NA                    TRUE
+#&gt; 646:              TRUE       NA         NA          NA                    TRUE
+#&gt; 647:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;      cro_herbicide cro_pesticide ccl_organophosphorus ref_number
+#&gt;   1:          TRUE          TRUE                 TRUE        344
+#&gt;   2:          TRUE          TRUE                 TRUE        344
+#&gt;   3:          TRUE          TRUE                 TRUE        344
+#&gt;   4:          TRUE          TRUE                 TRUE        344
+#&gt;   5:          TRUE          TRUE                 TRUE        344
+#&gt;  ---                                                            
+#&gt; 643:          TRUE          TRUE                 TRUE     180230
+#&gt; 644:          TRUE          TRUE                 TRUE     180230
+#&gt; 645:          TRUE          TRUE                 TRUE     180342
+#&gt; 646:          TRUE          TRUE                 TRUE     180342
+#&gt; 647:          TRUE          TRUE                 TRUE     180556
+#&gt;                                                                                                                                   ref_title
+#&gt;   1:                                                      Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   2:                                                      Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   3:                                                      Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   4:                                                      Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   5:                                                      Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;  ---                                                                                                                                       
+#&gt; 643:                                                                 Tolerance to Glyphosate in Broadleaf Buttonweed and White-Eye Biotypes
+#&gt; 644:                                                                 Tolerance to Glyphosate in Broadleaf Buttonweed and White-Eye Biotypes
+#&gt; 645:                               Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt; 646:                               Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt; 647: A Glyphosate-Based Herbicide Induces Sub-Lethal Effects in Early Life Stages and Liver Cell Line of Rainbow Trout, Oncorhynchus mykiss
+#&gt;                                                                                                               ref_author
+#&gt;   1:                                                                                U.S. Environmental Protection Agency
+#&gt;   2:                                                                                U.S. Environmental Protection Agency
+#&gt;   3:                                                                                U.S. Environmental Protection Agency
+#&gt;   4:                                                                                U.S. Environmental Protection Agency
+#&gt;   5:                                                                                U.S. Environmental Protection Agency
+#&gt;  ---                                                                                                                    
+#&gt; 643:                                          Diesel,F., M.M. Trezzi, M. Gallon, A.A.,Jr. Balbinot, and F.B. Pagnoncelli
+#&gt; 644:                                          Diesel,F., M.M. Trezzi, M. Gallon, A.A.,Jr. Balbinot, and F.B. Pagnoncelli
+#&gt; 645:                                                        Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt; 646:                                                        Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt; 647: Weeks Santos,S., P. Gonzalez, B. Cormier, N. Mazzella, B. Bonnaud, S. Morin, C. Clerandeau, B. Morin, and J. Cachot
+#&gt;      ref_year
+#&gt;   1:     1992
+#&gt;   2:     1992
+#&gt;   3:     1992
+#&gt;   4:     1992
+#&gt;   5:     1992
+#&gt;  ---         
+#&gt; 643:     2018
+#&gt; 644:     2018
+#&gt; 645:     2019
+#&gt; 646:     2019
+#&gt; 647:     2019
+#&gt; 
+#&gt; $id
+#&gt;           cname       cas                    inchikey
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                                                 
+#&gt; 643: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 644: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 645: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 646: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 647: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi result_id
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2105550
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2101423
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114879
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2115068
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114885
+#&gt;  ---                                                                        
+#&gt; 643: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2488599
+#&gt; 644: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2488601
+#&gt; 645: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489643
+#&gt; 646: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489605
+#&gt; 647: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2490767
+#&gt;      species_number ref_number
+#&gt;   1:              1        344
+#&gt;   2:              4        344
+#&gt;   3:              4        344
+#&gt;   4:              4        344
+#&gt;   5:           1799        344
+#&gt;  ---                          
+#&gt; 643:           9364     180230
+#&gt; 644:           9364     180230
+#&gt; 645:          52888     180342
+#&gt; 646:          51910     180342
+#&gt; 647:              4     180556
+#&gt; 
+#&gt; $aggregated
+#&gt;         cname       cas         min         tax_min      gmn    gmnsd     max
+#&gt; 1: glyphosate 1071-83-6 0.001716283 Sorghum bicolor 629.9896 3.692264 6209704
+#&gt;              tax_max   n
+#&gt; 1: Carassius auratus 647
+#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                tax_all
+#&gt; 1: Abutilon theophrasti, Acartia tonsa, Agalychnis callidryas, Agaricus bisporus, Amaranthus palmeri, Americamysis bahia, Anabaena catenula, Anabaena flosaquae, Aporrectodea calignosa, Aspergillus nidulans, Astacus leptodactylus, Boana pardalis, Brachionus calyciflorus, Brassica napus, Caenorhabditis elegans, Calyptocarpus vialis, Carassius auratus, Ceriodaphnia dubia, Channa punctata, Chironomus plumosus, Chlorella pyrenoidosa, Chlorella saccharophila, Chlorella vulgaris, Chloris elata, Chlorococcum hypnosporum, Chordodes nobilii, Clarias gariepinus, Conium maculatum, Conyza canadensis, Crassostrea gigas, Crinia insignifera, Cynodon dactylon, Cynodon sp., Cyprinodon variegatus, Cyprinus carpio, Danio rerio, Daphnia magna, Daphnia spinulata, Datura stramonium, Dendrocephalus brasiliensis, Desmanthus illinoensis, Desmodesmus subspicatus, Digitaria insularis, Digitaria sanguinalis, Eisenia fetida, Encyonema gracile, Euplotes vannus, Folsomia candida, Gambusia affinis, Gambusia yucatana, Gammarus pseudolimnaeus, Glomus intraradices, Glycine max, Glyptocidaris crenularis, Gomphonema sp., Helix aspersa, Hoplobatrachus rugulosus, Hydra vulgaris, Ictalurus punctatus, Ipomoea indivisa, Ipomoea purpurea, Lactuca sativa, Lecane quadridentata, Lemna aequinoctialis, Lemna gibba, Lepomis macrochirus, Leptolyngbya boryana, Litoria moorei, Lolium perenne, Microcystis aeruginosa, Misgurnus anguillicaudatus, Myriophyllum aquaticum, Myriophyllum sibiricum, Myriophyllum spicatum, Navicula pelliculosa, Nicotiana plumbaginifolia, Nostoc commune, Oncorhynchus gorbuscha, Oncorhynchus keta, Oncorhynchus kisutch, Oncorhynchus mykiss, Oncorhynchus tshawytscha, Orconectes nais, Oreochromis niloticus, Oryza sativa, Pelophylax ridibundus, Perkinsus olseni, Phelipanche aegyptiaca, Pheretima peguana, Physalaemus albonotatus, Physalaemus cuvieri, Pimephales promelas, Plasmodium falciparum, Poecilia reticulata, Polypedates cruciger, Pomacea canaliculata, Pontoscolex corethrurus, Pseudokirchneriella subcapitata, Pueraria montana, Richardia brasiliensis, Salmo trutta, Scapholeberis kingi, Scenedesmus acutus, Scenedesmus quadricauda, Senna obtusifolia, Senna occidentalis, Sesbania herbacea, Skeletonema costatum, Sorghum arundinaceum, Sorghum bicolor, Spermacoce alata, Stictocardia tiliifolia, Synechocystis aquatilis, Tetrahymena pyriformis, Vigna unguiculata, Xenopus laevis, Zea mays
+#&gt; 
+#&gt; $meta
+#&gt;             variable               value
+#&gt; 1           accessed 2020-05-13 10:29:08
+#&gt; 2 standartox_version            20191212
+#&gt; </div><div class='input'><span class='fu'>stx_query</span>(<span class='st'>'1071-83-6'</span>, <span class='kw'>duration</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>48</span>, <span class='fl'>120</span>))</div><div class='output co'>#&gt; <span class='message'>Standartox query running..</span>
 #&gt; <span class='message'>Parameters:</span>
-#&gt; <span class='message'>vers: 1071-83-6</span>
+#&gt; <span class='message'>casnr: 1071-83-6</span>
 #&gt; <span class='message'>duration: 48, 120</span>
-#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Provided version number not in data.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 400</span></div><div class='output co'>#&gt; <span class='error'>Error in stx_query("1071-83-6", duration = c(48, 120)): object 'filtered' not found</span></div><div class='input'><span class='fu'>stx_query</span>(<span class='st'>'1071-83-6'</span>, <span class='kw'>duration</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>48</span>, <span class='fl'>120</span>), <span class='kw'>endpoint</span> <span class='kw'>=</span> <span class='st'>'XX50'</span>)</div><div class='output co'>#&gt; <span class='message'>Standartox query running..</span>
+#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; $filtered
+#&gt;           cname       cas                    inchikey endpoint    effect
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;  ---                                                                    
+#&gt; 242: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 243: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 244: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 245: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 246: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;           exposure trophic_lvl ecotox_grp concentration_type concentration
+#&gt;   1:       aquatic heterotroph       fish       not reported         67900
+#&gt;   2:       aquatic heterotroph       fish       not reported         77600
+#&gt;   3:       aquatic heterotroph       fish  active ingredient        134000
+#&gt;   4:       aquatic heterotroph       fish       not reported        824000
+#&gt;   5:       aquatic heterotroph       fish  active ingredient        240000
+#&gt;  ---                                                                      
+#&gt; 242:       aquatic heterotroph       fish  active ingredient        180000
+#&gt; 243:       aquatic heterotroph   amphibia        formulation          5380
+#&gt; 244: environmental heterotroph      fungi        formulation        250000
+#&gt; 245:       aquatic heterotroph   amphibia  active ingredient        106000
+#&gt; 246:       aquatic heterotroph   amphibia  active ingredient        115000
+#&gt;      concentration_unit concentration_orig concentration_unit_orig duration
+#&gt;   1:                ppb               67.9                     ppm       96
+#&gt;   2:                ppb               77.6                     ppm       96
+#&gt;   3:                ppb                134                     ppm       96
+#&gt;   4:                ppb                824                     ppm       96
+#&gt;   5:                ppb                240                     ppm       96
+#&gt;  ---                                                                       
+#&gt; 242:               ug/l                180                    mg/L       96
+#&gt; 243:               ug/l               5.38                    mg/L       96
+#&gt; 244:                ppb              0.025                       %       48
+#&gt; 245:               ug/l                106                 AI mg/L       96
+#&gt; 246:               ug/l                115                 AI mg/L       96
+#&gt;      duration_unit outlier tax_rank               tax_taxon    tax_genus
+#&gt;   1:             h   FALSE  species     Pimephales promelas   Pimephales
+#&gt;   2:             h   FALSE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:             h   FALSE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:             h    TRUE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:             h   FALSE  species   Cyprinodon variegatus   Cyprinodon
+#&gt;  ---                                                                    
+#&gt; 242:             h   FALSE  species     Poecilia reticulata     Poecilia
+#&gt; 243:             h   FALSE  species Physalaemus albonotatus  Physalaemus
+#&gt; 244:             h   FALSE  species    Aspergillus nidulans  Aspergillus
+#&gt; 245:             h   FALSE  species          Boana pardalis        Boana
+#&gt; 246:             h   FALSE  species     Physalaemus cuvieri  Physalaemus
+#&gt;           tax_family          tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae      Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5: Cyprinodontidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt;  ---                                                                 
+#&gt; 242:     Poeciliidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt; 243: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 244:  Trichocomaceae         Eurotiales Eurotiomycetes           &lt;NA&gt;
+#&gt; 245:         Hylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 246: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom
+#&gt;   1:        Vertebrata            Chordata    Animalia
+#&gt;   2:        Vertebrata            Chordata    Animalia
+#&gt;   3:        Vertebrata            Chordata    Animalia
+#&gt;   4:        Vertebrata            Chordata    Animalia
+#&gt;   5:        Vertebrata            Chordata    Animalia
+#&gt;  ---                                                  
+#&gt; 242:        Vertebrata            Chordata    Animalia
+#&gt; 243:        Vertebrata            Chordata    Animalia
+#&gt; 244:              &lt;NA&gt;          Ascomycota       Fungi
+#&gt; 245:        Vertebrata            Chordata    Animalia
+#&gt; 246:        Vertebrata            Chordata    Animalia
+#&gt; 
+#&gt; $filtered_all
+#&gt;           cname       cas                 iupac_name
+#&gt;   1: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   2: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   3: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   4: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   5: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;  ---                                                
+#&gt; 242: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 243: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 244: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 245: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 246: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;                         inchikey
+#&gt;   1: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                            
+#&gt; 242: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 243: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 244: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 245: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 246: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;  ---                                                              
+#&gt; 242: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 243: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 244: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 245: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 246: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;      molecularweight result_id endpoint    effect      exposure trophic_lvl
+#&gt;   1:        169.0731   2105550     XX50 Mortality       aquatic heterotroph
+#&gt;   2:        169.0731   2101423     XX50 Mortality       aquatic heterotroph
+#&gt;   3:        169.0731   2114879     XX50 Mortality       aquatic heterotroph
+#&gt;   4:        169.0731   2115068     XX50 Mortality       aquatic heterotroph
+#&gt;   5:        169.0731   2114880     XX50 Mortality       aquatic heterotroph
+#&gt;  ---                                                                       
+#&gt; 242:        169.0731   2470910     XX50 Mortality       aquatic heterotroph
+#&gt; 243:        169.0731   2475114     XX50 Mortality       aquatic heterotroph
+#&gt; 244:        169.0731   2480702     XX50 Mortality environmental heterotroph
+#&gt; 245:        169.0731   2489643     XX50 Mortality       aquatic heterotroph
+#&gt; 246:        169.0731   2489605     XX50 Mortality       aquatic heterotroph
+#&gt;      ecotox_grp concentration_type concentration concentration_unit
+#&gt;   1:       fish       not reported         67900                ppb
+#&gt;   2:       fish       not reported         77600                ppb
+#&gt;   3:       fish  active ingredient        134000                ppb
+#&gt;   4:       fish       not reported        824000                ppb
+#&gt;   5:       fish  active ingredient        240000                ppb
+#&gt;  ---                                                               
+#&gt; 242:       fish  active ingredient        180000               ug/l
+#&gt; 243:   amphibia        formulation          5380               ug/l
+#&gt; 244:      fungi        formulation        250000                ppb
+#&gt; 245:   amphibia  active ingredient        106000               ug/l
+#&gt; 246:   amphibia  active ingredient        115000               ug/l
+#&gt;      concentration_orig concentration_unit_orig duration duration_unit outlier
+#&gt;   1:               67.9                     ppm       96             h   FALSE
+#&gt;   2:               77.6                     ppm       96             h   FALSE
+#&gt;   3:                134                     ppm       96             h   FALSE
+#&gt;   4:                824                     ppm       96             h    TRUE
+#&gt;   5:                240                     ppm       96             h   FALSE
+#&gt;  ---                                                                          
+#&gt; 242:                180                    mg/L       96             h   FALSE
+#&gt; 243:               5.38                    mg/L       96             h   FALSE
+#&gt; 244:              0.025                       %       48             h   FALSE
+#&gt; 245:                106                 AI mg/L       96             h   FALSE
+#&gt; 246:                115                 AI mg/L       96             h   FALSE
+#&gt;      species_number tax_rank               tax_taxon    tax_genus
+#&gt;   1:              1  species     Pimephales promelas   Pimephales
+#&gt;   2:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:             86  species   Cyprinodon variegatus   Cyprinodon
+#&gt;  ---                                                             
+#&gt; 242:             28  species     Poecilia reticulata     Poecilia
+#&gt; 243:          52467  species Physalaemus albonotatus  Physalaemus
+#&gt; 244:          17465  species    Aspergillus nidulans  Aspergillus
+#&gt; 245:          52888  species          Boana pardalis        Boana
+#&gt; 246:          51910  species     Physalaemus cuvieri  Physalaemus
+#&gt;           tax_family          tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae      Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5: Cyprinodontidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt;  ---                                                                 
+#&gt; 242:     Poeciliidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt; 243: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 244:  Trichocomaceae         Eurotiales Eurotiomycetes           &lt;NA&gt;
+#&gt; 245:         Hylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 246: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom hab_marine hab_brackish
+#&gt;   1:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt;   2:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   3:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   4:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   5:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;  ---                                                                          
+#&gt; 242:        Vertebrata            Chordata    Animalia         NA         TRUE
+#&gt; 243:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 244:              &lt;NA&gt;          Ascomycota       Fungi       TRUE         TRUE
+#&gt; 245:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 246:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt;      hab_freshwater hab_terrestrial reg_africa reg_america_north
+#&gt;   1:           TRUE              NA         NA              TRUE
+#&gt;   2:           TRUE              NA         NA              TRUE
+#&gt;   3:           TRUE              NA         NA              TRUE
+#&gt;   4:           TRUE              NA         NA              TRUE
+#&gt;   5:           TRUE              NA         NA              TRUE
+#&gt;  ---                                                            
+#&gt; 242:           TRUE              NA         NA              TRUE
+#&gt; 243:             NA              NA         NA                NA
+#&gt; 244:           TRUE            TRUE       TRUE              TRUE
+#&gt; 245:             NA              NA         NA                NA
+#&gt; 246:             NA              NA         NA                NA
+#&gt;      reg_america_south reg_asia reg_europe reg_oceania cro_endocrine_disruptor
+#&gt;   1:                NA       NA       TRUE          NA                    TRUE
+#&gt;   2:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   3:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   4:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   5:                NA       NA         NA          NA                    TRUE
+#&gt;  ---                                                                          
+#&gt; 242:              TRUE     TRUE       TRUE        TRUE                    TRUE
+#&gt; 243:              TRUE       NA         NA          NA                    TRUE
+#&gt; 244:              TRUE     TRUE       TRUE        TRUE                    TRUE
+#&gt; 245:              TRUE       NA         NA          NA                    TRUE
+#&gt; 246:              TRUE       NA         NA          NA                    TRUE
+#&gt;      cro_herbicide cro_pesticide ccl_organophosphorus ref_number
+#&gt;   1:          TRUE          TRUE                 TRUE        344
+#&gt;   2:          TRUE          TRUE                 TRUE        344
+#&gt;   3:          TRUE          TRUE                 TRUE        344
+#&gt;   4:          TRUE          TRUE                 TRUE        344
+#&gt;   5:          TRUE          TRUE                 TRUE        344
+#&gt;  ---                                                            
+#&gt; 242:          TRUE          TRUE                 TRUE     179273
+#&gt; 243:          TRUE          TRUE                 TRUE     179421
+#&gt; 244:          TRUE          TRUE                 TRUE     179826
+#&gt; 245:          TRUE          TRUE                 TRUE     180342
+#&gt; 246:          TRUE          TRUE                 TRUE     180342
+#&gt;                                                                                                                                                                            ref_title
+#&gt;   1:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   2:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   3:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   4:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   5:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;  ---                                                                                                                                                                                
+#&gt; 242:                                    Gender-Specific Histopathological Response in Guppies Poecilia reticulata Exposed to Glyphosate or Its Metabolite Aminomethylphosphonic Acid
+#&gt; 243:                                                                                      Toxicity of Glyphosate on Physalaemus albonotatus (Steindachner, 1864) from Western Brazil
+#&gt; 244: Multiple Effects of a Commercial Roundup Formulation on the Soil Filamentous Fungus Aspergillus nidulans at Low Doses: Evidence of an Unexpected Impact on Energetic Metabolism
+#&gt; 245:                                                                        Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt; 246:                                                                        Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt;                                                                                                                   ref_author
+#&gt;   1:                                                                                    U.S. Environmental Protection Agency
+#&gt;   2:                                                                                    U.S. Environmental Protection Agency
+#&gt;   3:                                                                                    U.S. Environmental Protection Agency
+#&gt;   4:                                                                                    U.S. Environmental Protection Agency
+#&gt;   5:                                                                                    U.S. Environmental Protection Agency
+#&gt;  ---                                                                                                                        
+#&gt; 242: Antunes,A.M., T.L. Rocha, F.S. Pires, M.A. De Freitas, V.R.M.C. Leite, S. Arana, P.C. Moreira, and S.M.T. Saboia-Morais
+#&gt; 243:                                                                                Simioni,F., D.F.N. Da Silva, and T. Mott
+#&gt; 244:                                                                                Nicolas,V., N. Oestreicher, and C. Velot
+#&gt; 245:                                                            Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt; 246:                                                            Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt;      ref_year
+#&gt;   1:     1992
+#&gt;   2:     1992
+#&gt;   3:     1992
+#&gt;   4:     1992
+#&gt;   5:     1992
+#&gt;  ---         
+#&gt; 242:     2017
+#&gt; 243:     2013
+#&gt; 244:     2016
+#&gt; 245:     2019
+#&gt; 246:     2019
+#&gt; 
+#&gt; $id
+#&gt;           cname       cas                    inchikey
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                                                 
+#&gt; 242: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 243: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 244: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 245: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 246: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi result_id
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2105550
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2101423
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114879
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2115068
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114880
+#&gt;  ---                                                                        
+#&gt; 242: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2470910
+#&gt; 243: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2475114
+#&gt; 244: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2480702
+#&gt; 245: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489643
+#&gt; 246: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489605
+#&gt;      species_number ref_number
+#&gt;   1:              1        344
+#&gt;   2:              4        344
+#&gt;   3:              4        344
+#&gt;   4:              4        344
+#&gt;   5:             86        344
+#&gt;  ---                          
+#&gt; 242:             28     179273
+#&gt; 243:          52467     179421
+#&gt; 244:          17465     179826
+#&gt; 245:          52888     180342
+#&gt; 246:          51910     180342
+#&gt; 
+#&gt; $aggregated
+#&gt;         cname       cas    min           tax_min      gmn    gmnsd     max
+#&gt; 1: glyphosate 1071-83-6 2.5145 Pheretima peguana 13614.71 2.399646 6209704
+#&gt;              tax_max   n
+#&gt; 1: Carassius auratus 246
+#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              tax_all
+#&gt; 1: Acartia tonsa, Americamysis bahia, Anabaena flosaquae, Aspergillus nidulans, Astacus leptodactylus, Boana pardalis, Carassius auratus, Ceriodaphnia dubia, Channa punctata, Chironomus plumosus, Chlorella pyrenoidosa, Chlorella saccharophila, Chlorella vulgaris, Chlorococcum hypnosporum, Chordodes nobilii, Clarias gariepinus, Crassostrea gigas, Crinia insignifera, Cyprinodon variegatus, Cyprinus carpio, Danio rerio, Daphnia magna, Daphnia spinulata, Dendrocephalus brasiliensis, Desmodesmus subspicatus, Eisenia fetida, Encyonema gracile, Euplotes vannus, Gambusia affinis, Gambusia yucatana, Gammarus pseudolimnaeus, Glyptocidaris crenularis, Gomphonema sp., Hoplobatrachus rugulosus, Hydra vulgaris, Ictalurus punctatus, Lactuca sativa, Lecane quadridentata, Lemna gibba, Lepomis macrochirus, Litoria moorei, Microcystis aeruginosa, Myriophyllum spicatum, Navicula pelliculosa, Oncorhynchus gorbuscha, Oncorhynchus keta, Oncorhynchus kisutch, Oncorhynchus mykiss, Oncorhynchus tshawytscha, Orconectes nais, Oreochromis niloticus, Pelophylax ridibundus, Perkinsus olseni, Pheretima peguana, Physalaemus albonotatus, Physalaemus cuvieri, Pimephales promelas, Plasmodium falciparum, Poecilia reticulata, Polypedates cruciger, Pomacea canaliculata, Pseudokirchneriella subcapitata, Salmo trutta, Scenedesmus acutus, Scenedesmus quadricauda, Skeletonema costatum, Xenopus laevis
+#&gt; 
+#&gt; $meta
+#&gt;             variable               value
+#&gt; 1           accessed 2020-05-13 10:29:08
+#&gt; 2 standartox_version            20191212
+#&gt; </div><div class='input'><span class='fu'>stx_query</span>(<span class='st'>'1071-83-6'</span>, <span class='kw'>duration</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>48</span>, <span class='fl'>120</span>), <span class='kw'>endpoint</span> <span class='kw'>=</span> <span class='st'>'XX50'</span>)</div><div class='output co'>#&gt; <span class='message'>Standartox query running..</span>
 #&gt; <span class='message'>Parameters:</span>
-#&gt; <span class='message'>vers: 1071-83-6</span>
+#&gt; <span class='message'>casnr: 1071-83-6</span>
 #&gt; <span class='message'>duration: 48, 120</span>
-#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Provided version number not in data.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 400</span></div><div class='output co'>#&gt; <span class='error'>Error in stx_query("1071-83-6", duration = c(48, 120), endpoint = "XX50"): object 'filtered' not found</span></div><div class='input'># }
+#&gt; <span class='message'>endpoint: XX50</span></div><div class='output co'>#&gt; $filtered
+#&gt;           cname       cas                    inchikey endpoint    effect
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;  ---                                                                    
+#&gt; 242: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 243: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 244: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 245: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt; 246: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N     XX50 Mortality
+#&gt;           exposure trophic_lvl ecotox_grp concentration_type concentration
+#&gt;   1:       aquatic heterotroph       fish       not reported         67900
+#&gt;   2:       aquatic heterotroph       fish       not reported         77600
+#&gt;   3:       aquatic heterotroph       fish  active ingredient        134000
+#&gt;   4:       aquatic heterotroph       fish       not reported        824000
+#&gt;   5:       aquatic heterotroph       fish  active ingredient        240000
+#&gt;  ---                                                                      
+#&gt; 242:       aquatic heterotroph       fish  active ingredient        180000
+#&gt; 243:       aquatic heterotroph   amphibia        formulation          5380
+#&gt; 244: environmental heterotroph      fungi        formulation        250000
+#&gt; 245:       aquatic heterotroph   amphibia  active ingredient        106000
+#&gt; 246:       aquatic heterotroph   amphibia  active ingredient        115000
+#&gt;      concentration_unit concentration_orig concentration_unit_orig duration
+#&gt;   1:                ppb               67.9                     ppm       96
+#&gt;   2:                ppb               77.6                     ppm       96
+#&gt;   3:                ppb                134                     ppm       96
+#&gt;   4:                ppb                824                     ppm       96
+#&gt;   5:                ppb                240                     ppm       96
+#&gt;  ---                                                                       
+#&gt; 242:               ug/l                180                    mg/L       96
+#&gt; 243:               ug/l               5.38                    mg/L       96
+#&gt; 244:                ppb              0.025                       %       48
+#&gt; 245:               ug/l                106                 AI mg/L       96
+#&gt; 246:               ug/l                115                 AI mg/L       96
+#&gt;      duration_unit outlier tax_rank               tax_taxon    tax_genus
+#&gt;   1:             h   FALSE  species     Pimephales promelas   Pimephales
+#&gt;   2:             h   FALSE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:             h   FALSE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:             h    TRUE  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:             h   FALSE  species   Cyprinodon variegatus   Cyprinodon
+#&gt;  ---                                                                    
+#&gt; 242:             h   FALSE  species     Poecilia reticulata     Poecilia
+#&gt; 243:             h   FALSE  species Physalaemus albonotatus  Physalaemus
+#&gt; 244:             h   FALSE  species    Aspergillus nidulans  Aspergillus
+#&gt; 245:             h   FALSE  species          Boana pardalis        Boana
+#&gt; 246:             h   FALSE  species     Physalaemus cuvieri  Physalaemus
+#&gt;           tax_family          tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae      Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5: Cyprinodontidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt;  ---                                                                 
+#&gt; 242:     Poeciliidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt; 243: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 244:  Trichocomaceae         Eurotiales Eurotiomycetes           &lt;NA&gt;
+#&gt; 245:         Hylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 246: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom
+#&gt;   1:        Vertebrata            Chordata    Animalia
+#&gt;   2:        Vertebrata            Chordata    Animalia
+#&gt;   3:        Vertebrata            Chordata    Animalia
+#&gt;   4:        Vertebrata            Chordata    Animalia
+#&gt;   5:        Vertebrata            Chordata    Animalia
+#&gt;  ---                                                  
+#&gt; 242:        Vertebrata            Chordata    Animalia
+#&gt; 243:        Vertebrata            Chordata    Animalia
+#&gt; 244:              &lt;NA&gt;          Ascomycota       Fungi
+#&gt; 245:        Vertebrata            Chordata    Animalia
+#&gt; 246:        Vertebrata            Chordata    Animalia
+#&gt; 
+#&gt; $filtered_all
+#&gt;           cname       cas                 iupac_name
+#&gt;   1: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   2: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   3: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   4: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;   5: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;  ---                                                
+#&gt; 242: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 243: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 244: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 245: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt; 246: glyphosate 1071-83-6 n-(phosphonomethyl)glycine
+#&gt;                         inchikey
+#&gt;   1: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                            
+#&gt; 242: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 243: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 244: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 245: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 246: XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;  ---                                                              
+#&gt; 242: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 243: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 244: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 245: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt; 246: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)
+#&gt;      molecularweight result_id endpoint    effect      exposure trophic_lvl
+#&gt;   1:        169.0731   2105550     XX50 Mortality       aquatic heterotroph
+#&gt;   2:        169.0731   2101423     XX50 Mortality       aquatic heterotroph
+#&gt;   3:        169.0731   2114879     XX50 Mortality       aquatic heterotroph
+#&gt;   4:        169.0731   2115068     XX50 Mortality       aquatic heterotroph
+#&gt;   5:        169.0731   2114880     XX50 Mortality       aquatic heterotroph
+#&gt;  ---                                                                       
+#&gt; 242:        169.0731   2470910     XX50 Mortality       aquatic heterotroph
+#&gt; 243:        169.0731   2475114     XX50 Mortality       aquatic heterotroph
+#&gt; 244:        169.0731   2480702     XX50 Mortality environmental heterotroph
+#&gt; 245:        169.0731   2489643     XX50 Mortality       aquatic heterotroph
+#&gt; 246:        169.0731   2489605     XX50 Mortality       aquatic heterotroph
+#&gt;      ecotox_grp concentration_type concentration concentration_unit
+#&gt;   1:       fish       not reported         67900                ppb
+#&gt;   2:       fish       not reported         77600                ppb
+#&gt;   3:       fish  active ingredient        134000                ppb
+#&gt;   4:       fish       not reported        824000                ppb
+#&gt;   5:       fish  active ingredient        240000                ppb
+#&gt;  ---                                                               
+#&gt; 242:       fish  active ingredient        180000               ug/l
+#&gt; 243:   amphibia        formulation          5380               ug/l
+#&gt; 244:      fungi        formulation        250000                ppb
+#&gt; 245:   amphibia  active ingredient        106000               ug/l
+#&gt; 246:   amphibia  active ingredient        115000               ug/l
+#&gt;      concentration_orig concentration_unit_orig duration duration_unit outlier
+#&gt;   1:               67.9                     ppm       96             h   FALSE
+#&gt;   2:               77.6                     ppm       96             h   FALSE
+#&gt;   3:                134                     ppm       96             h   FALSE
+#&gt;   4:                824                     ppm       96             h    TRUE
+#&gt;   5:                240                     ppm       96             h   FALSE
+#&gt;  ---                                                                          
+#&gt; 242:                180                    mg/L       96             h   FALSE
+#&gt; 243:               5.38                    mg/L       96             h   FALSE
+#&gt; 244:              0.025                       %       48             h   FALSE
+#&gt; 245:                106                 AI mg/L       96             h   FALSE
+#&gt; 246:                115                 AI mg/L       96             h   FALSE
+#&gt;      species_number tax_rank               tax_taxon    tax_genus
+#&gt;   1:              1  species     Pimephales promelas   Pimephales
+#&gt;   2:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   3:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   4:              4  species     Oncorhynchus mykiss Oncorhynchus
+#&gt;   5:             86  species   Cyprinodon variegatus   Cyprinodon
+#&gt;  ---                                                             
+#&gt; 242:             28  species     Poecilia reticulata     Poecilia
+#&gt; 243:          52467  species Physalaemus albonotatus  Physalaemus
+#&gt; 244:          17465  species    Aspergillus nidulans  Aspergillus
+#&gt; 245:          52888  species          Boana pardalis        Boana
+#&gt; 246:          51910  species     Physalaemus cuvieri  Physalaemus
+#&gt;           tax_family          tax_order      tax_class tax_superclass
+#&gt;   1:      Cyprinidae      Cypriniformes Actinopterygii   Osteichthyes
+#&gt;   2:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   3:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   4:      Salmonidae      Salmoniformes Actinopterygii   Osteichthyes
+#&gt;   5: Cyprinodontidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt;  ---                                                                 
+#&gt; 242:     Poeciliidae Cyprinodontiformes Actinopterygii   Osteichthyes
+#&gt; 243: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 244:  Trichocomaceae         Eurotiales Eurotiomycetes           &lt;NA&gt;
+#&gt; 245:         Hylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt; 246: Leptodactylidae              Anura       Amphibia           &lt;NA&gt;
+#&gt;      tax_subphylum_div tax_phylum_division tax_kingdom hab_marine hab_brackish
+#&gt;   1:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt;   2:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   3:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   4:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;   5:        Vertebrata            Chordata    Animalia       TRUE         TRUE
+#&gt;  ---                                                                          
+#&gt; 242:        Vertebrata            Chordata    Animalia         NA         TRUE
+#&gt; 243:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 244:              &lt;NA&gt;          Ascomycota       Fungi       TRUE         TRUE
+#&gt; 245:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt; 246:        Vertebrata            Chordata    Animalia         NA           NA
+#&gt;      hab_freshwater hab_terrestrial reg_africa reg_america_north
+#&gt;   1:           TRUE              NA         NA              TRUE
+#&gt;   2:           TRUE              NA         NA              TRUE
+#&gt;   3:           TRUE              NA         NA              TRUE
+#&gt;   4:           TRUE              NA         NA              TRUE
+#&gt;   5:           TRUE              NA         NA              TRUE
+#&gt;  ---                                                            
+#&gt; 242:           TRUE              NA         NA              TRUE
+#&gt; 243:             NA              NA         NA                NA
+#&gt; 244:           TRUE            TRUE       TRUE              TRUE
+#&gt; 245:             NA              NA         NA                NA
+#&gt; 246:             NA              NA         NA                NA
+#&gt;      reg_america_south reg_asia reg_europe reg_oceania cro_endocrine_disruptor
+#&gt;   1:                NA       NA       TRUE          NA                    TRUE
+#&gt;   2:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   3:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   4:              TRUE       NA       TRUE          NA                    TRUE
+#&gt;   5:                NA       NA         NA          NA                    TRUE
+#&gt;  ---                                                                          
+#&gt; 242:              TRUE     TRUE       TRUE        TRUE                    TRUE
+#&gt; 243:              TRUE       NA         NA          NA                    TRUE
+#&gt; 244:              TRUE     TRUE       TRUE        TRUE                    TRUE
+#&gt; 245:              TRUE       NA         NA          NA                    TRUE
+#&gt; 246:              TRUE       NA         NA          NA                    TRUE
+#&gt;      cro_herbicide cro_pesticide ccl_organophosphorus ref_number
+#&gt;   1:          TRUE          TRUE                 TRUE        344
+#&gt;   2:          TRUE          TRUE                 TRUE        344
+#&gt;   3:          TRUE          TRUE                 TRUE        344
+#&gt;   4:          TRUE          TRUE                 TRUE        344
+#&gt;   5:          TRUE          TRUE                 TRUE        344
+#&gt;  ---                                                            
+#&gt; 242:          TRUE          TRUE                 TRUE     179273
+#&gt; 243:          TRUE          TRUE                 TRUE     179421
+#&gt; 244:          TRUE          TRUE                 TRUE     179826
+#&gt; 245:          TRUE          TRUE                 TRUE     180342
+#&gt; 246:          TRUE          TRUE                 TRUE     180342
+#&gt;                                                                                                                                                                            ref_title
+#&gt;   1:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   2:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   3:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   4:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;   5:                                                                                               Pesticide Ecotoxicity Database (Formerly:  Environmental Effects Database (EEDB))
+#&gt;  ---                                                                                                                                                                                
+#&gt; 242:                                    Gender-Specific Histopathological Response in Guppies Poecilia reticulata Exposed to Glyphosate or Its Metabolite Aminomethylphosphonic Acid
+#&gt; 243:                                                                                      Toxicity of Glyphosate on Physalaemus albonotatus (Steindachner, 1864) from Western Brazil
+#&gt; 244: Multiple Effects of a Commercial Roundup Formulation on the Soil Filamentous Fungus Aspergillus nidulans at Low Doses: Evidence of an Unexpected Impact on Energetic Metabolism
+#&gt; 245:                                                                        Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt; 246:                                                                        Lethal Toxicity of the Herbicides Acetochlor, Ametryn, Glyphosate and Metribuzin to Tropical Frog Larvae
+#&gt;                                                                                                                   ref_author
+#&gt;   1:                                                                                    U.S. Environmental Protection Agency
+#&gt;   2:                                                                                    U.S. Environmental Protection Agency
+#&gt;   3:                                                                                    U.S. Environmental Protection Agency
+#&gt;   4:                                                                                    U.S. Environmental Protection Agency
+#&gt;   5:                                                                                    U.S. Environmental Protection Agency
+#&gt;  ---                                                                                                                        
+#&gt; 242: Antunes,A.M., T.L. Rocha, F.S. Pires, M.A. De Freitas, V.R.M.C. Leite, S. Arana, P.C. Moreira, and S.M.T. Saboia-Morais
+#&gt; 243:                                                                                Simioni,F., D.F.N. Da Silva, and T. Mott
+#&gt; 244:                                                                                Nicolas,V., N. Oestreicher, and C. Velot
+#&gt; 245:                                                            Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt; 246:                                                            Daam,M.A., M.F. Moutinho, E.L.G. Espindola, and L. Schiesari
+#&gt;      ref_year
+#&gt;   1:     1992
+#&gt;   2:     1992
+#&gt;   3:     1992
+#&gt;   4:     1992
+#&gt;   5:     1992
+#&gt;  ---         
+#&gt; 242:     2017
+#&gt; 243:     2013
+#&gt; 244:     2016
+#&gt; 245:     2019
+#&gt; 246:     2019
+#&gt; 
+#&gt; $id
+#&gt;           cname       cas                    inchikey
+#&gt;   1: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   2: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   3: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   4: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;   5: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;  ---                                                 
+#&gt; 242: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 243: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 244: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 245: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt; 246: glyphosate 1071-83-6 XDDAORKBJWWYJS-UHFFFAOYSA-N
+#&gt;                                                              inchi result_id
+#&gt;   1: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2105550
+#&gt;   2: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2101423
+#&gt;   3: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114879
+#&gt;   4: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2115068
+#&gt;   5: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2114880
+#&gt;  ---                                                                        
+#&gt; 242: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2470910
+#&gt; 243: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2475114
+#&gt; 244: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2480702
+#&gt; 245: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489643
+#&gt; 246: 1S/C3H8NO5P/c5-3(6)1-4-2-10(7,8)9/h4H,1-2H2,(H,5,6)(H2,7,8,9)   2489605
+#&gt;      species_number ref_number
+#&gt;   1:              1        344
+#&gt;   2:              4        344
+#&gt;   3:              4        344
+#&gt;   4:              4        344
+#&gt;   5:             86        344
+#&gt;  ---                          
+#&gt; 242:             28     179273
+#&gt; 243:          52467     179421
+#&gt; 244:          17465     179826
+#&gt; 245:          52888     180342
+#&gt; 246:          51910     180342
+#&gt; 
+#&gt; $aggregated
+#&gt;         cname       cas    min           tax_min      gmn    gmnsd     max
+#&gt; 1: glyphosate 1071-83-6 2.5145 Pheretima peguana 13614.71 2.399646 6209704
+#&gt;              tax_max   n
+#&gt; 1: Carassius auratus 246
+#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              tax_all
+#&gt; 1: Acartia tonsa, Americamysis bahia, Anabaena flosaquae, Aspergillus nidulans, Astacus leptodactylus, Boana pardalis, Carassius auratus, Ceriodaphnia dubia, Channa punctata, Chironomus plumosus, Chlorella pyrenoidosa, Chlorella saccharophila, Chlorella vulgaris, Chlorococcum hypnosporum, Chordodes nobilii, Clarias gariepinus, Crassostrea gigas, Crinia insignifera, Cyprinodon variegatus, Cyprinus carpio, Danio rerio, Daphnia magna, Daphnia spinulata, Dendrocephalus brasiliensis, Desmodesmus subspicatus, Eisenia fetida, Encyonema gracile, Euplotes vannus, Gambusia affinis, Gambusia yucatana, Gammarus pseudolimnaeus, Glyptocidaris crenularis, Gomphonema sp., Hoplobatrachus rugulosus, Hydra vulgaris, Ictalurus punctatus, Lactuca sativa, Lecane quadridentata, Lemna gibba, Lepomis macrochirus, Litoria moorei, Microcystis aeruginosa, Myriophyllum spicatum, Navicula pelliculosa, Oncorhynchus gorbuscha, Oncorhynchus keta, Oncorhynchus kisutch, Oncorhynchus mykiss, Oncorhynchus tshawytscha, Orconectes nais, Oreochromis niloticus, Pelophylax ridibundus, Perkinsus olseni, Pheretima peguana, Physalaemus albonotatus, Physalaemus cuvieri, Pimephales promelas, Plasmodium falciparum, Poecilia reticulata, Polypedates cruciger, Pomacea canaliculata, Pseudokirchneriella subcapitata, Salmo trutta, Scenedesmus acutus, Scenedesmus quadricauda, Skeletonema costatum, Xenopus laevis
+#&gt; 
+#&gt; $meta
+#&gt;             variable               value
+#&gt; 1           accessed 2020-05-13 10:29:09
+#&gt; 2 standartox_version            20191212
+#&gt; </div><div class='input'># }
 
 </div></pre>
   </div>

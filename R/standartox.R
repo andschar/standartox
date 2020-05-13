@@ -68,9 +68,8 @@ stx_catalog = function(vers = NULL) {
 #'
 #' Retrieve toxicity values from the Standartox data base \url{http://standartox.uni-landau.de/}.
 #'
-#' @import data.table
+#' @import httr jsonlite fst data.table
 #'
-#' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.
 #' @param cas character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default).
 #' @param concentration_unit character; Limit data base query to specific concentration units (e.g. ug/l - default).
 #' @param concentration_type character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4.
@@ -85,6 +84,7 @@ stx_catalog = function(vers = NULL) {
 #' @param tropic_lvl character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.
+#' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.
 #' @param ... currently not used
 #'
 #' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
@@ -100,8 +100,7 @@ stx_catalog = function(vers = NULL) {
 #' 
 #' @export
 #'
-stx_query = function(vers = NULL,
-                     casnr = NULL,
+stx_query = function(casnr = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
                      duration = NULL,
@@ -115,6 +114,7 @@ stx_query = function(vers = NULL,
                      trophic_lvl = NULL,
                      habitat = NULL,
                      region = NULL,
+                     vers = NULL,
                      ...) {
   # browser() # debuging
   # read binary vector function
@@ -135,8 +135,7 @@ stx_query = function(vers = NULL,
   # checks
   endpoint = match.arg(endpoint)
   # request
-  body = list(vers = vers,
-              casnr = casnr,
+  body = list(casnr = casnr,
               concentration_unit = concentration_unit,
               concentration_type = concentration_type,
               duration = duration,
@@ -149,7 +148,8 @@ stx_query = function(vers = NULL,
               ecotox_grp = ecotox_grp,
               trophic_lvl = trophic_lvl,
               habitat = habitat,
-              region = region)
+              region = region,
+              vers = vers)
   # POST
   stx_message(body)
   res = httr::POST(

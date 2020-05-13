@@ -3,3 +3,6 @@
 export(stx_catalog)
 export(stx_query)
 import(data.table)
+import(fst)
+import(httr)
+import(jsonlite)
