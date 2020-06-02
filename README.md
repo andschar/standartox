@@ -88,7 +88,7 @@ data according to the parameters below.
 | region              | america\_north, europe, america\_south |
 | ecotox\_grp         | invertebrate, plant, fungi             |
 | duration            | 24, 96                                 |
-| effect              | Mortality, Population, Biochemistry    |
+| effect              | mortality, population, biochemistry    |
 | endpoint            | NOEX, LOEX, XX50                       |
 | exposure            | aquatic, environmental, diet           |
 
@@ -141,9 +141,9 @@ latter):
 
 | cas       | cname          | concentration | concentration\_unit | effect    | endpoint |
 | :-------- | :------------- | ------------: | :------------------ | :-------- | :------- |
-| 7758-98-7 | cupric sulfate |        1100.0 | ug/l                | Mortality | XX50     |
-| 7758-98-7 | cupric sulfate |          18.9 | ug/l                | Mortality | XX50     |
-| 7758-98-7 | cupric sulfate |          36.0 | ug/l                | Mortality | XX50     |
+| 7758-98-7 | cupric sulfate |        1100.0 | ug/l                | mortality | XX50     |
+| 7758-98-7 | cupric sulfate |          18.9 | ug/l                | mortality | XX50     |
+| 7758-98-7 | cupric sulfate |          36.0 | ug/l                | mortality | XX50     |
 
   - `l$aggregated` contains the several aggregates of the Standartox
     data:
@@ -186,7 +186,7 @@ latter):
 
 | variable            | value               |
 | :------------------ | :------------------ |
-| accessed            | 2020-05-13 10:53:54 |
+| accessed            | 2020-06-02 10:05:51 |
 | standartox\_version | 20191212            |
 
 ## Example: *Oncorhynchus*
@@ -268,8 +268,8 @@ if (run) {
 
 ## Article
 
-The article on Standartox is currently work in progress and will be,
-once published linked here.
+The article on Standartox is published
+[here](https://www.mdpi.com/2306-5729/5/2/46).
 
 ## Information
 

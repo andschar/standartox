@@ -194,7 +194,7 @@ if (run) {
 
 ## Article
 
-The article on Standartox is currently work in progress and will be, once published linked here.
+The article on Standartox is published [here](https://www.mdpi.com/2306-5729/5/2/46).
 
 ## Information
 

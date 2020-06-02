@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">standartox</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9015</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9016</span>
       </span>
     </div>
 
@@ -73,6 +73,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#standartox" class="anchor"></a>Standartox</h1></div>
 
+<!-- TODO enable once it's on CRAN [![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox) -->
 <p>Standartox is a database and tool facilitating the retrieval of ecotoxicological test data. It is based on the <a href="https://cfpub.epa.gov/ecotox/">EPA ECOTOX database</a> as well as on data from several other chemical databases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via <a href="http://standartox.uni-landau.de" class="uri">http://standartox.uni-landau.de</a> or this R-package <a href="https://github.com/andschar/standartox">standartox</a>. Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as <a href="https://en.wikipedia.org/wiki/Toxic_unit">TU - Toxic Units</a> or <a href="https://edild.github.io/ssd/">SSD - Species Sensitivity Distributions</a> to asses environmental toxicity of chemicals.</p>
 <p>The project lives in two repositories:</p>
 <ul>
@@ -112,29 +113,25 @@
 <th align="right">n</th>
 <th align="right">n_total</th>
 <th align="right">perc</th>
-<th align="left">name_perc</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">NOEX</td>
-<td align="right">215089</td>
-<td align="right">561258</td>
+<td align="right">213692</td>
+<td align="right">558384</td>
 <td align="right">39</td>
-<td align="left">NOEX (39%)</td>
 </tr>
 <tr class="even">
 <td align="left">LOEX</td>
-<td align="right">174291</td>
-<td align="right">561258</td>
+<td align="right">173111</td>
+<td align="right">558384</td>
 <td align="right">32</td>
-<td align="left">LOEX (32%)</td>
 </tr>
 <tr class="odd">
 <td align="left">XX50</td>
-<td align="right">171878</td>
-<td align="right">561258</td>
+<td align="right">171581</td>
+<td align="right">558384</td>
 <td align="right">31</td>
-<td align="left">XX50 (31%)</td>
 </tr>
 </tbody>
 </table>
@@ -152,7 +149,7 @@
 <tbody>
 <tr class="odd">
 <td align="left">vers</td>
-<td align="left">20190912</td>
+<td align="left">20191212</td>
 </tr>
 <tr class="even">
 <td align="left">casnr</td>
@@ -180,7 +177,7 @@
 </tr>
 <tr class="even">
 <td align="left">taxa</td>
-<td align="left">Fusarium oxysporum, Oncorhynchus clarkii, Apis mellifera</td>
+<td align="left">species, genus, Fusarium oxysporum</td>
 </tr>
 <tr class="odd">
 <td align="left">trophic_lvl</td>
@@ -188,15 +185,15 @@
 </tr>
 <tr class="even">
 <td align="left">habitat</td>
-<td align="left">freshwater, marine, terrestrial</td>
+<td align="left">freshwater, terrestrial, marine</td>
 </tr>
 <tr class="odd">
 <td align="left">region</td>
-<td align="left">europe, america_north, america_south</td>
+<td align="left">america_north, europe, america_south</td>
 </tr>
 <tr class="even">
 <td align="left">ecotox_grp</td>
-<td align="left">Invertebrate, Plant, Fungi</td>
+<td align="left">invertebrate, plant, fungi</td>
 </tr>
 <tr class="odd">
 <td align="left">duration</td>
@@ -204,7 +201,7 @@
 </tr>
 <tr class="even">
 <td align="left">effect</td>
-<td align="left">Mortality, Population, Biochemistry</td>
+<td align="left">mortality, population, biochemistry</td>
 </tr>
 <tr class="odd">
 <td align="left">endpoint</td>
@@ -233,7 +230,7 @@
 <a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">## duration: 24, 120</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">## endpoint: XX50</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">## exposure: aquatic</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]</span></a></code></pre></div>
 <div id="important-parameter-settings" class="section level4">
 <h4 class="hasAnchor">
 <a href="#important-parameter-settings" class="anchor"></a>Important parameter settings</h4>
@@ -279,7 +276,7 @@
 <td align="left">cupric sulfate</td>
 <td align="right">1100.0</td>
 <td align="left">ug/l</td>
-<td align="left">Mortality</td>
+<td align="left">mortality</td>
 <td align="left">XX50</td>
 </tr>
 <tr class="even">
@@ -287,15 +284,15 @@
 <td align="left">cupric sulfate</td>
 <td align="right">18.9</td>
 <td align="left">ug/l</td>
-<td align="left">Mortality</td>
+<td align="left">mortality</td>
 <td align="left">XX50</td>
 </tr>
 <tr class="odd">
 <td align="left">7758-98-7</td>
 <td align="left">cupric sulfate</td>
-<td align="right">46.4</td>
+<td align="right">36.0</td>
 <td align="left">ug/l</td>
-<td align="left">Mortality</td>
+<td align="left">mortality</td>
 <td align="left">XX50</td>
 </tr>
 </tbody>
@@ -392,18 +389,9 @@
 </li>
 </ul>
 <table class="table">
-<colgroup>
-<col width="7%">
-<col width="5%">
-<col width="68%">
-<col width="5%">
-<col width="7%">
-<col width="5%">
-</colgroup>
 <thead><tr class="header">
 <th align="left">cname</th>
 <th align="left">cas</th>
-<th align="left">inchi</th>
 <th align="right">result_id</th>
 <th align="right">species_number</th>
 <th align="right">ref_number</th>
@@ -412,7 +400,6 @@
 <tr class="odd">
 <td align="left">cupric sulfate</td>
 <td align="left">7758-98-7</td>
-<td align="left">1S/Cu.H2O4S/c;1-5(2,3)4/h;(H2,1,2,3,4)/q+2;/p-2</td>
 <td align="right">114026</td>
 <td align="right">4</td>
 <td align="right">104</td>
@@ -420,7 +407,6 @@
 <tr class="even">
 <td align="left">imidacloprid</td>
 <td align="left">138261-41-3</td>
-<td align="left">1S/C9H10ClN5O2/c10-8-2-1-7(5-12-8)6-14-4-3-11-9(14)13-15(16)17/h1-2,5H,3-4,6H2,(H,11,13)</td>
 <td align="right">2109867</td>
 <td align="right">4</td>
 <td align="right">344</td>
@@ -428,7 +414,6 @@
 <tr class="odd">
 <td align="left">permethrin</td>
 <td align="left">52645-53-1</td>
-<td align="left">1S/C21H20Cl2O3/c1-21(2)17(12-18(22)23)19(21)20(24)25-13-14-7-6-10-16(11-14)26-15-8-4-3-5-9-15/h3-12,17,19H,13H2,1-2H3/t17-,19-/m0/s1</td>
 <td align="right">2103751</td>
 <td align="right">4</td>
 <td align="right">344</td>
@@ -447,7 +432,7 @@
 <tbody>
 <tr class="odd">
 <td align="left">accessed</td>
-<td align="left">2020-04-22 11:59:43</td>
+<td align="left">2020-06-02 10:05:51</td>
 </tr>
 <tr class="even">
 <td align="left">standartox_version</td>
@@ -471,7 +456,7 @@
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">## concentration_type: active ingredient</span></a>
 <a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">## duration: 48, 120</span></a>
 <a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">## endpoint: XX50</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus mykiss, Oncorhy...[truncated]</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]</span></a></code></pre></div>
 <p>We subset the retrieved data to the 20 most tested chemicals and plot the result.</p>
 <div class="sourceCode" id="cb9"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="no">data.table</span>)
 <span class="no">dat</span> <span class="kw">=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html">merge</a></span>(<span class="no">l2</span>$<span class="no">filtered</span>, <span class="no">l2</span>$<span class="no">aggregated</span>, <span class="kw">by</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'cas'</span>, <span class="st">'cname'</span>))
@@ -515,7 +500,7 @@
 <div id="article" class="section level2">
 <h2 class="hasAnchor">
 <a href="#article" class="anchor"></a>Article</h2>
-<p>The article on Standartox is currently work in progress and will be, once published linked here.</p>
+<p>The article on Standartox is published <a href="https://www.mdpi.com/2306-5729/5/2/46">here</a>.</p>
 </div>
 <div id="information" class="section level2">
 <h2 class="hasAnchor">
@@ -576,7 +561,7 @@
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://cran.r-project.org/package=standartox"><img src="http://www.r-pkg.org/badges/version-ago/standartox" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://cran.r-project.org/package=standartox"><img src="http://cranlogs.r-pkg.org/badges/last-month/standartox" alt="CRAN_Downloads_Badge"></a></li>
+<li><a href=""><img src="https://img.shields.io/github/downloads-pre/andschar/standartox/latest/total.svg" alt="Github All Releases"></a></li>
 </ul>
 </div>
 </div>
