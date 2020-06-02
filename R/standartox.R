@@ -1,37 +1,3 @@
-#' connection
-#' 
-#' @author Andreas Scharmüller
-#' @noRd
-#' 
-domain = function() {
-  baseurl = 'http://139.14.20.252'
-  # baseurl = 'http://127.0.0.1' # debuging
-  port = 8000
-  domain = paste0(baseurl, ':', port)
-  
-  return(domain)
-}
-
-#' Retrieve meta data
-#' 
-#' @author Andreas Scharmüller
-#' @noRd
-#' 
-stx_meta = function(vers = NULL) {
-  # request
-  body = list(vers = vers)
-  # POST
-  res = httr::POST(
-    url = file.path(domain(), 'meta'),
-    body = body,
-    encode = 'json'
-  )
-  cont = httr::content(res, type = 'text', encoding = 'UTF-8')
-  out = jsonlite::fromJSON(cont)
-  
-  return(out)
-}
-
 #' Retrieve data catalog
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
@@ -52,12 +18,12 @@ stx_catalog = function(vers = NULL) {
   body = list(vers = vers)
   # POST
   message('Retrieving Standartox catalog..')
-  res = httr::POST(
+  res = try(httr::POST(
     url = file.path(domain(), 'catalog'),
     body = body,
     encode = 'json',
-    # httr::verbose()
-  )
+  ), silent = TRUE)
+  stx_availability(res)
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
   out = jsonlite::fromJSON(cont)
   
@@ -116,7 +82,9 @@ stx_query = function(casnr = NULL,
                      region = NULL,
                      vers = NULL,
                      ...) {
+  # debuging
   # browser() # debuging
+  # casnr = '1071-83-6'; concentration_unit = NULL; concentration_type = NULL; duration = NULL; endpoint = 'XX50'; effect = NULL; exposure = NULL; chemical_role = NULL; chemical_class = NULL; taxa = NULL; ecotox_grp = NULL; trophic_lvl = NULL; habitat = NULL; region = NULL; vers = NULL
   # read binary vector function
   read_bin_vec = function(vec, type = c('rds', 'fst')) {
     if (type == 'rds') {
@@ -152,12 +120,12 @@ stx_query = function(casnr = NULL,
               vers = vers)
   # POST
   stx_message(body)
-  res = httr::POST(
+  res = try(httr::POST(
     file.path(domain(), 'filter'),
     body = body,
     encode = 'json',
-    # httr::verbose()
-  )
+  ), silent = TRUE)
+  stx_availability(res)
   if (res$status_code == 400) {
     warning(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
     out_fil = data.table(NA)
@@ -282,4 +250,50 @@ stx_aggregate = function(dat = NULL) {
   out
 }
 
+#' Connection URL
+#' 
+#' @author Andreas Scharmüller
+#' @noRd
+#' 
+domain = function() {
+  baseurl = 'http://139.14.20.252'
+  # baseurl = 'http://127.0.0.1' # debuging
+  port = 8000
+  domain = paste0(baseurl, ':', port)
+  
+  return(domain)
+}
 
+#' Retrieve meta data
+#' 
+#' @author Andreas Scharmüller
+#' @noRd
+#' 
+stx_meta = function(vers = NULL) {
+  # request
+  body = list(vers = vers)
+  # POST
+  res = httr::POST(
+    url = file.path(domain(), 'meta'),
+    body = body,
+    encode = 'json'
+  )
+  cont = httr::content(res, type = 'text', encoding = 'UTF-8')
+  out = jsonlite::fromJSON(cont)
+  
+  return(out)
+}
+
+#' Check availability of connection
+#' 
+#' @author Andreas Scharmüller
+#' @noRd
+#' 
+stx_availability = function(res) {
+  if (inherits(res, 'try-error')) {
+    msg = 'The standartox web service seems currently unavailable. Please try again after some time.
+      Should it still not work then, please file an issue here:
+      https://github.com/andschar/standartox/issues'
+    stop(msg)
+  }
+}
