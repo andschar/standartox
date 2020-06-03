@@ -1,5 +1,25 @@
 #' Utility functions for the standartox package
 
+#' Read binary vector function
+#' 
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @noRd
+#'   
+read_bin_vec = function(vec, type = c('rds', 'fst')) {
+  if (type == 'rds') {
+    # from https://stackoverflow.com/questions/58135794/read-binary-vector/58136567#58136567
+    con = gzcon(rawConnection(vec))
+    res = readRDS(con)
+    on.exit(close(con))
+  }
+  if (type == 'fst') {
+    tmp = tempfile()
+    writeBin(vec, tmp)
+    res = fst::read_fst(tmp, as.data.table = TRUE)
+  }
+  res
+}
+
 #' Convert CAS betwenn hyphen and hyphenless form
 #'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}

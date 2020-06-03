@@ -25,9 +25,8 @@ stx_catalog = function(vers = NULL) {
   ), silent = TRUE)
   stx_availability(res)
   cont = httr::content(res, type = 'text', encoding = 'UTF-8')
-  out = jsonlite::fromJSON(cont)
   
-  out
+  jsonlite::fromJSON(cont)
 }
 
 #' Retrieve Standartox toxicity values
@@ -85,21 +84,6 @@ stx_query = function(casnr = NULL,
   # debuging
   # browser() # debuging
   # casnr = '1071-83-6'; concentration_unit = NULL; concentration_type = NULL; duration = NULL; endpoint = 'XX50'; effect = NULL; exposure = NULL; chemical_role = NULL; chemical_class = NULL; taxa = NULL; ecotox_grp = NULL; trophic_lvl = NULL; habitat = NULL; region = NULL; vers = NULL
-  # read binary vector function
-  read_bin_vec = function(vec, type = c('rds', 'fst')) {
-    if (type == 'rds') {
-      # from https://stackoverflow.com/questions/58135794/read-binary-vector/58136567#58136567
-      con = gzcon(rawConnection(vec))
-      res = readRDS(con)
-      on.exit(close(con))
-    }
-    if (type == 'fst') {
-      tmp = tempfile()
-      writeBin(vec, tmp)
-      res = fst::read_fst(tmp, as.data.table = TRUE)
-    }
-    res
-  }
   # checks
   endpoint = match.arg(endpoint)
   # request
@@ -228,7 +212,7 @@ stx_aggregate = function(dat = NULL) {
   # checking
   if (is.null(dat)) stop('Provide table.')
   # aggregation
-  out = dat[
+  dat[
     ,
     .(gmn = gm_mean(concentration),
       gmnsd = gm_sd(concentration),
@@ -246,8 +230,6 @@ stx_aggregate = function(dat = NULL) {
         tax_all = paste0(sort(unique(tax_taxon)), collapse = ', ')),
       .(cname, cas)
   ]
-  
-  out
 }
 
 #' Connection URL
