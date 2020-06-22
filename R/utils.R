@@ -122,7 +122,7 @@ gm_sd = function (x, na.rm = TRUE, sqrt.unbiased = TRUE) {
 flag_outliers = function(x, lim = 1.5, na.rm = TRUE, ...) {
   qnt = quantile(x, probs = c(.25, .75), na.rm = na.rm)
   H = lim * IQR(x, na.rm = na.rm)
-  fifelse(x < qnt[1] - H | x > qnt[2], TRUE, FALSE)
+  fifelse(x < qnt[1] - H | x > qnt[2] + H, TRUE, FALSE)
 }
 
 
