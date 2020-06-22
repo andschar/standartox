@@ -1,5 +1,5 @@
 Package: standartox
-Version: 0.0.0.9017
+Version: 0.0.0.9018
 Date: 2020-05-01
 Title: Ecotoxicological information from the standartox database
 Authors@R: c(person("Andreas", "Scharmüller", role = c("aut", "cre"),

@@ -66,8 +66,13 @@ Retrieve toxicity values from the Standartox data base \url{http://standartox.un
 \donttest{
 # might fail if API is not available
 stx_query('1071-83-6')
-stx_query('1071-83-6', duration = c(48, 120))
-stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50')
+stx_query(casnr = '1071-83-6',
+          duration = c(48, 120),
+          concentration_unit = 'ug/l')
+stx_query(casnr = '1071-83-6',
+          duration = c(48, 120),
+          concentration_unit = 'ug/l',
+          endpoint = 'XX50')
 }
 
 }

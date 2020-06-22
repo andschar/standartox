@@ -59,8 +59,13 @@ stx_catalog = function(vers = NULL) {
 #' \donttest{
 #' # might fail if API is not available
 #' stx_query('1071-83-6')
-#' stx_query('1071-83-6', duration = c(48, 120))
-#' stx_query('1071-83-6', duration = c(48, 120), endpoint = 'XX50')
+#' stx_query(casnr = '1071-83-6',
+#'           duration = c(48, 120),
+#'           concentration_unit = 'ug/l')
+#' stx_query(casnr = '1071-83-6',
+#'           duration = c(48, 120),
+#'           concentration_unit = 'ug/l',
+#'           endpoint = 'XX50')
 #' }
 #' 
 #' @export
@@ -178,6 +183,60 @@ stx_query = function(casnr = NULL,
        aggregated = out_agg,
        meta = out_meta)
 }
+
+#' Retrieve chemical data
+#' 
+#' Retrieve data on all chemicals in Standartox.
+#' 
+#' @return Returns a data.table containing informaiton on chemicals in Standartox.
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @examples
+#' \donttest{
+#' # might fail if API is not available
+#' stx_chem()
+#' }
+#' 
+#' @export
+#' 
+stx_chem = function() {
+  message('This endpoint is still experimental.')
+  res = try(httr::GET(
+    url = file.path(domain(), 'chem'),
+    encode = 'json'
+  ), silent = TRUE)
+  stx_availability(res)
+  out = read_bin_vec(res$content, type = 'fst')
+  setnames(out, sub('ccl_|cro_', '', names(out)))
+  out
+}
+
+#' Retrieve taxa data
+#' 
+#' Retrieve data on all taxa in Standartox.
+#' 
+#' @return Returns a data.table containing informaiton on taxa in Standartox.
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @examples
+#' \donttest{
+#' # might fail if API is not available
+#' stx_taxa()
+#' }
+#' 
+#' @export
+#' 
+stx_taxa = function() {
+  message('This endpoint is still experimental.')
+  res = try(httr::GET(
+    url = file.path(domain(), 'taxa'),
+    encode = 'json'
+  ), silent = TRUE)
+  stx_availability(res)
+  out = read_bin_vec(res$content, type = 'fst')
+  setnames(out, sub('hab_|reg_', '', names(out)))
+  out
+}
+
+
 
 # IDEA
 # microbenchmark::microbenchmark({
