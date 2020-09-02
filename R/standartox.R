@@ -118,11 +118,13 @@ stx_query = function(casnr = NULL,
   if (res$status_code == 400) {
     warning(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
     out_fil = data.table(NA)
+    filtered = data.table(NA)
     out_agg = data.table(NA)
   }
   if (res$status_code != 200) {
     warning(res$status_code)
     out_fil = data.table(NA)
+    filtered = data.table(NA)
     out_agg = data.table(NA)
   }
   if (res$status_code == 200) {
@@ -130,6 +132,7 @@ stx_query = function(casnr = NULL,
     if (nrow(out_fil) == 0) {
       warning('No results found.')
       out_fil = data.table(NA)
+      filtered = data.table(NA)
       out_agg = data.table(NA)
     } else {
       # CAS column (not sent through API to reduce size)
@@ -179,7 +182,7 @@ stx_query = function(casnr = NULL,
   # return
   list(filtered = filtered,
        filtered_all = rm_col_na(out_fil),
-       id = id,
+       # TODO id = id,
        aggregated = out_agg,
        meta = out_meta)
 }
