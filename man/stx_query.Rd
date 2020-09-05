@@ -44,6 +44,8 @@ stx_query(
 
 \item{ecotox_grp}{character; Convenience grouping of organisms in ecotoxicology, must be one of NULL (default), 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae'.}
 
+\item{trophic_lvl}{character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.}
+
 \item{habitat}{character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.}
 
 \item{region}{character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.}
@@ -53,8 +55,6 @@ stx_query(
 \item{...}{currently not used}
 
 \item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default).}
-
-\item{tropic_lvl}{character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.}
 }
 \value{
 Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)

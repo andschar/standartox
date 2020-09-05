@@ -46,7 +46,7 @@ stx_catalog = function(vers = NULL) {
 #' @param chemical_class character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible. NULL (default).
 #' @param taxa character; Limit data base query to specific taxa, multiple entries possible. NULL (default).
 #' @param ecotox_grp character; Convenience grouping of organisms in ecotoxicology, must be one of NULL (default), 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae'.
-#' @param tropic_lvl character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.
+#' @param trophic_lvl character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.
 #' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.
 #' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.
 #' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.
