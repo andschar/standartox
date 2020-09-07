@@ -121,12 +121,6 @@ stx_query = function(casnr = NULL,
     filtered = data.table(NA)
     out_agg = data.table(NA)
   }
-  if (res$status_code != 200) {
-    warning(res$status_code)
-    out_fil = data.table(NA)
-    filtered = data.table(NA)
-    out_agg = data.table(NA)
-  }
   if (res$status_code == 200) {
     out_fil = read_bin_vec(res$content, type = 'fst')
     if (nrow(out_fil) == 0) {
@@ -333,11 +327,12 @@ stx_meta = function(vers = NULL) {
 #' @author Andreas Scharmüller
 #' @noRd
 #' 
-stx_availability = function(res) {
-  if (inherits(res, 'try-error')) {
-    msg = 'The standartox web service seems currently unavailable. Please try again after some time.
-      Should it still not work then, please file an issue here:
-      https://github.com/andschar/standartox/issues'
+stx_availability = function(res,
+                            http_codes = c(200, 400)) {
+  if (inherits(res, 'try-error') || ! httr::status_code(res) %in% http_codes) {
+    msg = '
+The standartox web service seems currently unavailable. Please try again after some time. Should it still not work then, please file an issue here:
+https://github.com/andschar/standartox/issues'
     stop(msg)
   }
 }
