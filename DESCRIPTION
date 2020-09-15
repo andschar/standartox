@@ -1,9 +1,13 @@
 Package: standartox
-Version: 0.0.0.9023
+Version: 0.0.0.9024
 Date: 2020-09-05
 Title: Ecotoxicological information from the standartox database
-Authors@R: c(person("Andreas", "Scharmüller", role = c("aut", "cre"),
-    email = "andschar@protonmail.com"))
+Authors@R: c(
+    person("Andreas", "Scharmüller",
+            role = c("aut", "cre"),
+            email = "andschar@protonmail.com",
+            comment = c(ORCID = "0000-0002-9290-3965"))
+    )
 Maintainer: Andreas Scharmüller <andschar@protonmail.com>
 Description: The <standartox.uni-landau.de> database offers cleaned,
     harmonized and aggregated ecotoxicological test data, which can
