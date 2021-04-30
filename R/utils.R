@@ -105,7 +105,7 @@ gm_sd = function (x, na.rm = TRUE, sqrt.unbiased = TRUE) {
     warning("Non-positive values in 'x'")
     return(NA_real_)
   } else {
-    sd.log = sd(log(x))
+    sd.log = stats::sd(log(x))
     if (!sqrt.unbiased) {
       n = length(x)
       sd.log = sqrt((n - 1)/n) * sd.log
@@ -120,8 +120,8 @@ gm_sd = function (x, na.rm = TRUE, sqrt.unbiased = TRUE) {
 #' @noRd
 #' 
 flag_outliers = function(x, lim = 1.5, na.rm = TRUE, ...) {
-  qnt = quantile(x, probs = c(.25, .75), na.rm = na.rm)
-  H = lim * IQR(x, na.rm = na.rm)
+  qnt = stats::quantile(x, probs = c(.25, .75), na.rm = na.rm)
+  H = lim * stats::IQR(x, na.rm = na.rm)
   fifelse(x < qnt[1] - H | x > qnt[2] + H, TRUE, FALSE)
 }
 

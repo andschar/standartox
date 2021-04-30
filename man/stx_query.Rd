@@ -5,7 +5,7 @@
 \title{Retrieve Standartox toxicity values}
 \usage{
 stx_query(
-  casnr = NULL,
+  cas = NULL,
   concentration_unit = NULL,
   concentration_type = NULL,
   duration = NULL,
@@ -24,6 +24,8 @@ stx_query(
 )
 }
 \arguments{
+\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default).}
+
 \item{concentration_unit}{character; Limit data base query to specific concentration units (e.g. ug/l - default).}
 
 \item{concentration_type}{character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4.}
@@ -53,8 +55,6 @@ stx_query(
 \item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.}
 
 \item{...}{currently not used}
-
-\item{cas}{character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. 1071-83-6, 1071836), NULL (default).}
 }
 \value{
 Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
@@ -66,10 +66,10 @@ Retrieve toxicity values from the Standartox data base \url{http://standartox.un
 \donttest{
 # might fail if API is not available
 stx_query('1071-83-6')
-stx_query(casnr = '1071-83-6',
+stx_query(cas = '1071-83-6',
           duration = c(48, 120),
           concentration_unit = 'ug/l')
-stx_query(casnr = '1071-83-6',
+stx_query(cas = '1071-83-6',
           duration = c(48, 120),
           concentration_unit = 'ug/l',
           endpoint = 'XX50')

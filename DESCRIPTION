@@ -1,7 +1,7 @@
 Package: standartox
-Version: 0.0.0.9024
-Date: 2020-09-05
-Title: Ecotoxicological information from the standartox database
+Version: 0.0.1
+Date: 2021-04-30
+Title: Ecotoxicological Information from the Standartox Database
 Authors@R: c(
     person("Andreas", "Scharmüller",
             role = c("aut", "cre"),
@@ -16,6 +16,7 @@ Description: The <standartox.uni-landau.de> database offers cleaned,
 Depends:
     R (>= 3.5.0)
 Imports:
+    stats,
     httr (>= 1.4.1),
     curl (>= 3.4),
     jsonlite (>= 1.6.1),

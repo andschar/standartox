@@ -59,10 +59,10 @@ stx_catalog = function(vers = NULL) {
 #' \donttest{
 #' # might fail if API is not available
 #' stx_query('1071-83-6')
-#' stx_query(casnr = '1071-83-6',
+#' stx_query(cas = '1071-83-6',
 #'           duration = c(48, 120),
 #'           concentration_unit = 'ug/l')
-#' stx_query(casnr = '1071-83-6',
+#' stx_query(cas = '1071-83-6',
 #'           duration = c(48, 120),
 #'           concentration_unit = 'ug/l',
 #'           endpoint = 'XX50')
@@ -70,7 +70,7 @@ stx_catalog = function(vers = NULL) {
 #' 
 #' @export
 #'
-stx_query = function(casnr = NULL,
+stx_query = function(cas = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
                      duration = NULL,
@@ -86,13 +86,15 @@ stx_query = function(casnr = NULL,
                      region = NULL,
                      vers = NULL,
                      ...) {
+  # to avoid NOTE in R CMD check --as-cran
+  casnr = outlier = concentration = cname = NULL
   # debuging
   # browser() # debuging
-  # casnr = '1071-83-6'; concentration_unit = NULL; concentration_type = NULL; duration = NULL; endpoint = 'XX50'; effect = NULL; exposure = NULL; chemical_role = NULL; chemical_class = NULL; taxa = NULL; ecotox_grp = NULL; trophic_lvl = NULL; habitat = NULL; region = NULL; vers = NULL
+  # cas = '1071-83-6'; concentration_unit = NULL; concentration_type = NULL; duration = NULL; endpoint = 'XX50'; effect = NULL; exposure = NULL; chemical_role = NULL; chemical_class = NULL; taxa = NULL; ecotox_grp = NULL; trophic_lvl = NULL; habitat = NULL; region = NULL; vers = NULL
   # checks
   endpoint = match.arg(endpoint)
   # request
-  body = list(casnr = casnr,
+  body = list(casnr = cas,
               concentration_unit = concentration_unit,
               concentration_type = concentration_type,
               duration = duration,
@@ -237,11 +239,11 @@ stx_taxa = function() {
 
 # IDEA
 # microbenchmark::microbenchmark({
-# col_test = c('result_id', 'casnr', 'species_number', 'ref_number',
+# col_test = c('result_id', 'cas', 'species_number', 'ref_number',
 #              'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
 #              'concentration_type', 'duration', 'duration_unit',
 #              'endpoint', 'effect', 'exposure', 'outlier')
-# col_chem = c('cname', 'iupac_name', 'cas', 'casnr', 'inchikey', 'inchi',
+# col_chem = c('cname', 'iupac_name', 'cas', 'cas', 'inchikey', 'inchi',
 #              'molecularweight',
 #              grep('cro|ccl', names(out_fil), value = TRUE))
 # col_taxa = c(
@@ -261,10 +263,13 @@ stx_taxa = function() {
 
 #' Function to aggregate filtered test results
 #' 
+#' 
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @noRd
 #'  
 stx_aggregate = function(dat = NULL) {
+  # assign variables to avoid R CMD check NOTES
+  . = concentration = cname = cas = tax_taxon = gmn = gmnsd = n = NULL
   # checking
   if (is.null(dat)) stop('Provide table.')
   # aggregation
