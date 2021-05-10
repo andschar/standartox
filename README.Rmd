@@ -18,7 +18,7 @@ The project lives in two repositories:
 ## Installation
 
 ```{r eval=FALSE}
-install.packages('remotes')
+install.packages('standartox')
 # remotes::install_github('andschar/standartox') # development version
 ```
 

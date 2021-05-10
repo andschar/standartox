@@ -26,7 +26,7 @@ The project lives in two repositories:
 ## Installation
 
 ``` r
-install.packages('remotes')
+install.packages('standartox')
 # remotes::install_github('andschar/standartox') # development version
 ```
 
@@ -166,7 +166,7 @@ Standartox returns a list object with five entries.
 
 | variable            | value               |
 | :------------------ | :------------------ |
-| accessed            | 2021-05-10 10:15:38 |
+| accessed            | 2021-05-10 10:17:29 |
 | standartox\_version | 20210315            |
 
 ## Example: *Oncorhynchus*
