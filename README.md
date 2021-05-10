@@ -1,11 +1,8 @@
 Standartox
 ================
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
-[![Github All
-Releases](https://img.shields.io/github/downloads-pre/andschar/standartox/latest/total.svg)]()
-
-<!-- TODO enable once it's on CRAN [![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox) -->
+[![CRAN](https://www.r-pkg.org/badges/version/standartox)](https://CRAN.R-project.org/package=standartox)
+[![Downloads](https://cranlogs.r-pkg.org/badges/standartox)](https://cran.r-project.org/package=standartox)
 
 Standartox is a database and tool facilitating the retrieval of
 ecotoxicological test data. It is based on the [EPA ECOTOX
@@ -29,8 +26,8 @@ The project lives in two repositories:
 ## Installation
 
 ``` r
-# install.packages('remotes')
-remotes::install_github('andschar/standartox') # package not yet on CRAN
+install.packages('remotes')
+# remotes::install_github('andschar/standartox') # development version
 ```
 
 ## Functions
@@ -51,12 +48,12 @@ catal = stx_catalog()
 names(catal)
 ```
 
-    ##  [1] "vers"               "casnr"              "cname"             
-    ##  [4] "concentration_unit" "concentration_type" "chemical_role"     
-    ##  [7] "chemical_class"     "taxa"               "trophic_lvl"       
-    ## [10] "habitat"            "region"             "ecotox_grp"        
-    ## [13] "duration"           "effect"             "endpoint"          
-    ## [16] "exposure"
+    ##  [1] "casnr"              "cname"              "concentration_unit"
+    ##  [4] "concentration_type" "chemical_role"      "chemical_class"    
+    ##  [7] "taxa"               "trophic_lvl"        "habitat"           
+    ## [10] "region"             "ecotox_grp"         "duration"          
+    ## [13] "effect"             "endpoint"           "exposure"          
+    ## [16] "vers"
 
 ``` r
 catal$endpoint # access the parameter endpoint
@@ -64,33 +61,33 @@ catal$endpoint # access the parameter endpoint
 
 | variable |      n | n\_total | perc |
 | :------- | -----: | -------: | ---: |
-| NOEX     | 213692 |   558384 |   39 |
-| LOEX     | 173111 |   558384 |   32 |
-| XX50     | 171581 |   558384 |   31 |
+| NOEX     | 237616 |   609435 |   39 |
+| LOEX     | 192718 |   609435 |   32 |
+| XX50     | 179101 |   609435 |   30 |
 
 ### `stx_query()`
 
 The function allows you to retrieve filtered and aggregated toxicity
 data according to the parameters below.
 
-| parameter           | example                                |
-| :------------------ | :------------------------------------- |
-| vers                | 20191212                               |
-| casnr               | 50000, 95716, 95727                    |
-| cname               | 2291, 4, 3                             |
-| concentration\_unit | ug/l, mg/kg, g/m2                      |
-| concentration\_type | active ingredient, formulation, total  |
-| chemical\_role      | pesticide, herbicide, insecticide      |
-| chemical\_class     | amide, aromatic, organochlorine        |
-| taxa                | species, genus, Fusarium oxysporum     |
-| trophic\_lvl        | heterotroph, autotroph                 |
-| habitat             | freshwater, terrestrial, marine        |
-| region              | america\_north, europe, america\_south |
-| ecotox\_grp         | invertebrate, plant, fungi             |
-| duration            | 24, 96                                 |
-| effect              | mortality, population, biochemistry    |
-| endpoint            | NOEX, LOEX, XX50                       |
-| exposure            | aquatic, environmental, diet           |
+| parameter           | example                                     |
+| :------------------ | :------------------------------------------ |
+| casnr               | 50000, 94520, 94531                         |
+| cname               | 2718, 4, 3                                  |
+| concentration\_unit | ug/l, mg/kg, ppb                            |
+| concentration\_type | active ingredient, formulation, total       |
+| chemical\_role      | pesticide, herbicide, drug                  |
+| chemical\_class     | amide, aromatic, organochlorine             |
+| taxa                | species, Fusarium oxysporum, Apis mellifera |
+| trophic\_lvl        | heterotroph, autotroph                      |
+| habitat             | freshwater, terrestrial, marine             |
+| region              | europe, america\_north, america\_south      |
+| ecotox\_grp         | invertebrate, plant, fish                   |
+| duration            | 24, 96                                      |
+| effect              | mortality, population, biochemistry         |
+| endpoint            | NOEX, LOEX, XX50                            |
+| exposure            | aquatic, environmental, diet                |
+| vers                | 20191212                                    |
 
 You can type in parameters manually or subset the object returned by
 `stx_catalog()`:
@@ -114,7 +111,7 @@ l = stx_query(cas = cas,
     ## duration: 24, 120
     ## endpoint: XX50
     ## exposure: aquatic
-    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus mykiss, Oncorhynchus nerka, Oncorhy...[truncated]
 
 #### Important parameter settings
 
@@ -127,7 +124,7 @@ l = stx_query(cas = cas,
         (i.e. LOEC, LOEL, etc.)
       - `XX50` summarises [Half maximal effective
         concentration](https://en.wikipedia.org/wiki/EC50) (i.e. EC50,
-        LC50, LD50 etc.)
+        LC50, LD50, etc.)
   - If you leave a parameter empty Standartox will not filter for it
 
 ## Query result
@@ -136,14 +133,13 @@ Standartox returns a list object with five entries.
 
   - `l$filtred` and `l$filtered_all` contain the filtered Standartox
     data set (the former only is a shorter and more concise version of
-    the
-latter):
+    the latter):
 
 | cas       | cname          | concentration | concentration\_unit | effect    | endpoint |
 | :-------- | :------------- | ------------: | :------------------ | :-------- | :------- |
 | 7758-98-7 | cupric sulfate |        1100.0 | ug/l                | mortality | XX50     |
 | 7758-98-7 | cupric sulfate |          18.9 | ug/l                | mortality | XX50     |
-| 7758-98-7 | cupric sulfate |          36.0 | ug/l                | mortality | XX50     |
+| 7758-98-7 | cupric sulfate |          46.4 | ug/l                | mortality | XX50     |
 
   - `l$aggregated` contains the several aggregates of the Standartox
     data:
@@ -166,28 +162,12 @@ latter):
 | imidacloprid   | 138261-41-3 | 2.291000e+05 | Oncorhynchus mykiss  | 2.291000e+05 | 229100.0000 |
 | permethrin     | 52645-53-1  | 1.896481e+00 | Oncorhynchus gilae   | 4.505877e+00 |     17.0000 |
 
-  - `l$id` contains important data identifiers:
-      - `cname`, `cas`
-      - `inchikey`, `inchi`
-      - `result_id` - result ID from the underlying data source
-        (i.e. EPA)
-      - `species_number` - taxon ID from the underlying data source
-        (i.e. EPA)
-      - `ref_number` - reference ID from the underlying data source
-        (i.e. EPA)
-
-| cname          | cas         | result\_id | species\_number | ref\_number |
-| :------------- | :---------- | ---------: | --------------: | ----------: |
-| cupric sulfate | 7758-98-7   |     114026 |               4 |         104 |
-| imidacloprid   | 138261-41-3 |    2109867 |               4 |         344 |
-| permethrin     | 52645-53-1  |    2103751 |               4 |         344 |
-
   - `l$meta` contains meta information on the request:
 
 | variable            | value               |
 | :------------------ | :------------------ |
-| accessed            | 2020-06-02 10:05:51 |
-| standartox\_version | 20191212            |
+| accessed            | 2021-05-10 10:15:38 |
+| standartox\_version | 20210315            |
 
 ## Example: *Oncorhynchus*
 
@@ -211,7 +191,7 @@ l2 = stx_query(concentration_type = 'active ingredient',
     ## concentration_type: active ingredient
     ## duration: 48, 120
     ## endpoint: XX50
-    ## taxa: Oncorhynchus clarkii, Oncorhynchus gilae, Oncorhynchus nerka, Oncorhyn...[truncated]
+    ## taxa: Oncorhynchus clarkii, Oncorhynchus mykiss, Oncorhynchus nerka, Oncorhy...[truncated]
 
 We subset the retrieved data to the 20 most tested chemicals and plot
 the result.
@@ -240,7 +220,7 @@ ggplot(dat, aes(y = reorder(cname, -gmn))) +
   theme(axis.title.y = element_blank())
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ## Usage
 

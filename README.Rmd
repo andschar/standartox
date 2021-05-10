@@ -5,11 +5,8 @@ editor_options:
   chunk_output_type: console
 ---
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/standartox)](https://cran.r-project.org/package=standartox)
-[![Github All Releases](https://img.shields.io/github/downloads-pre/andschar/standartox/latest/total.svg)]()
-
-<!-- TODO enable once it's on CRAN [![CRAN_Downloads_Badge](http://cranlogs.r-pkg.org/badges/last-month/standartox)](https://cran.r-project.org/package=standartox) -->
-
+[![CRAN](https://www.r-pkg.org/badges/version/standartox)](https://CRAN.R-project.org/package=standartox)
+[![Downloads](https://cranlogs.r-pkg.org/badges/standartox)](https://cran.r-project.org/package=standartox)
 
 Standartox is a database and tool facilitating the retrieval of ecotoxicological test data. It is based on the [EPA ECOTOX database](https://cfpub.epa.gov/ecotox/) as well as on data from several other chemical databases and allows users to filter and aggregate ecotoxicological test data in an easy way. It can either be accessed via <http://standartox.uni-landau.de> or this R-package [standartox](https://github.com/andschar/standartox). Ecotoxicological test data is used in environmental risk assessment to calculate effect measures such as [TU - Toxic Units](https://en.wikipedia.org/wiki/Toxic_unit) or [SSD - Species Sensitivity Distributions](https://edild.github.io/ssd/) to asses environmental toxicity of chemicals.
 
@@ -21,8 +18,8 @@ The project lives in two repositories:
 ## Installation
 
 ```{r eval=FALSE}
-# install.packages('remotes')
-remotes::install_github('andschar/standartox') # package not yet on CRAN
+install.packages('remotes')
+# remotes::install_github('andschar/standartox') # development version
 ```
 
 ## Functions
@@ -84,7 +81,7 @@ l = stx_query(cas = cas,
 - __Endpoints__ (`endpoint =`) Only one endpoint per query is allowed:
     - `NOEX` summarises [No observed effect concentration/level](https://en.wikipedia.org/wiki/No-observed-adverse-effect_level) (i.e. NOEC, NOEL, NOAEL, etc.)
     - `LOEX` summarises Lowest observed effects concentration (i.e. LOEC, LOEL, etc.)
-    - `XX50` summarises [Half maximal effective concentration](https://en.wikipedia.org/wiki/EC50) (i.e. EC50, LC50, LD50 etc.)
+    - `XX50` summarises [Half maximal effective concentration](https://en.wikipedia.org/wiki/EC50) (i.e. EC50, LC50, LD50, etc.)
 - If you leave a parameter empty Standartox will not filter for it
 
 ## Query result
@@ -111,20 +108,8 @@ knitr::kable(l$filtered[1:3, .SD, .SDcols = cols ])
   - `n` - Number of distinct taxa used for the aggregation
   - `tax_all` - Concatenated string of all taxa used for the aggregation
   
-
 ```{r echo=FALSE}
 knitr::kable(head(l$aggregated[ , .SD, .SDcols = c('cname', 'cas', 'min', 'tax_min', 'gmn', 'max')], 3))
-```
-
-- `l$id` contains important data identifiers:
-  - `cname`, `cas`
-  - `inchikey`, `inchi`
-  - `result_id` - result ID from the underlying data source (i.e. EPA)
-  - `species_number` - taxon ID from the underlying data source (i.e. EPA)
-  - `ref_number` - reference ID from the underlying data source (i.e. EPA)
-
-```{r echo=FALSE}
-knitr::kable(head(unique(l$id, by = 'cname')[ , !c('inchikey', 'inchi')], 3))
 ```
 
 - `l$meta` contains meta information on the request:

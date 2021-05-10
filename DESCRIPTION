@@ -9,7 +9,7 @@ Authors@R: c(
             comment = c(ORCID = "0000-0002-9290-3965"))
     )
 Maintainer: Andreas Scharmüller <andschar@protonmail.com>
-Description: The <standartox.uni-landau.de> database offers cleaned,
+Description: The <http://standartox.uni-landau.de> database offers cleaned,
     harmonized and aggregated ecotoxicological test data, which can
     be used for assessing effects and risks of chemical concentrations
     found in the environment.
