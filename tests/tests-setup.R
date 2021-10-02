@@ -1,6 +1,6 @@
 # Test setup script
 
-if (!require(pacman)) {
+if (!require(pacman, quietly = TRUE)) {
   install.packages('pacman')
   require(pacman)
 }

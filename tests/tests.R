@@ -8,7 +8,7 @@ require(tinytest)
 catal = stx_catalog()
 # class
 expect_equal(class(catal), 'list')
-expect_equal(class(catal$casnr), 'list')
+expect_equal(class(catal$casnr), 'data.frame')
 
 # Standartox query --------------------------------------------------------
 stx = stx_query(cas = '1071-83-6',
