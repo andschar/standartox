@@ -38,6 +38,10 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Dependencies
+        run: source('tests/tests-setup.R')
+        shell: Rscript {0}
+        
       - name: Tests
         run: |
             out = tinytest::run_test_dir('tests')
