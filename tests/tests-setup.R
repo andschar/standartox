@@ -1,7 +1,8 @@
 # Test setup script
 
 if (!require(pacman)) {
-  install.packages('pacman')  
+  install.packages('pacman')
+  require(pacman)
 }
 
 # CRAN packages
