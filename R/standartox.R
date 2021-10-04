@@ -334,10 +334,13 @@ stx_meta = function(vers = NULL) {
 #' 
 stx_availability = function(res,
                             http_codes = c(200, 400)) {
-  if (inherits(res, 'try-error') || ! httr::status_code(res) %in% http_codes) {
-    msg = '
-The standartox web service seems currently unavailable. Please try again after some time. Should it still not work then, please file an issue here:
-https://github.com/andschar/standartox/issues'
+  if (inherits(res, 'try-error') ||
+      ! httr::status_code(res) %in% http_codes) {
+    msg = paste0(
+    'The standartox web service seems currently unavailable.
+    Please try again after some time. Should it still not work then, please file an issue here:
+https://github.com/andschar/standartox/issues
+Error code: ', res)
     stop(msg)
   }
 }
