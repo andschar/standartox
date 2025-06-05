@@ -124,7 +124,3 @@ flag_outliers = function(x, lim = 1.5, na.rm = TRUE, ...) {
   H = lim * stats::IQR(x, na.rm = na.rm)
   fifelse(x < qnt[1] - H | x > qnt[2] + H, TRUE, FALSE)
 }
-
-
-
-
