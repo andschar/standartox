@@ -5,3 +5,5 @@
 
 *.Rproj
 *.ini
+R/my_custom_fun.R
+R/testing_zenodo.R
