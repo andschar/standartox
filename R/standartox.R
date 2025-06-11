@@ -48,7 +48,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
       curl::curl_download(url = URL,
                           destfile = destfile,
                           quiet = TRUE)
-      message('Done! Downloaded and unzipped to:\n', destfile)
+      message('Done! Downloaded to:\n', destfile)
     }
     else { message('File ', n, ' already exists, skipping download.') }
     
