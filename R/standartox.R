@@ -1,3 +1,75 @@
+#' Download Standartox Data Tables from Zenodo.org
+#' 
+#' Downloads the Standartox data tables from Zenodo.org and reads them into R. Specific data_types can be specified.
+#' 
+#' @param data_type character; Specify the type of data to download. Can be one of NULL (default, downloads and imports all), "meta.fst", "phch.fst", "refs.fst", "test_fin.fst", "taxa.fst", etc.
+#' @param dir_out character; Directory to which the downloaded files should be saved. Default is a temporary directory.
+#' 
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
+#' @examples
+#' \donttest{
+#' # might fail if there is no internet connection or Zenodo.org not not available
+#' stx_download()
+#' }
+#' @noRd
+stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standartox") ) {
+  # Check if the output directory exists, if not create it
+  if (!dir.exists(dir_out)) { dir.create(dir_out, recursive = TRUE) }
+  
+  # HACK this has to be done, because doi.org is the only permanent link between versions
+  qurl_permanent = 'https://doi.org/10.5281/zenodo.3785030'
+  req = httr::GET(qurl_permanent)
+  cont = httr::content(req, as = 'text')
+  # extract all zenodo download links from the content
+  qurl = unique(stringr::str_extract_all(cont, 'https://zenodo.org/records/[0-9]+/files/.+')[[1]])
+  qurl = grep("[.]rds|[.]fst", qurl, value = TRUE) # filter for .rsd and .fst files only! 
+  
+  # Filter for specific data_type if provided
+  if(!is.null(data_type)){
+    # could be one of: "meta.fst","phch.fst","refs.fst","test_fin.fst","taxa.fst", ...
+    regx_str = paste0("/files/", sub("[.]fst$","[.]fst", sub("[.]rds$","[.]rds", data_type)) )
+    regx_str = paste(regx_str, collapse = "|")
+    qurl = grep(regx_str, qurl, value = TRUE)
+  }
+  
+  # For each link in qurl check if destination file exists and if not download it.
+  stxDb_ls = list() # output list 
+  for(k in qurl){
+    URL = sub('\">','', k)
+    n   = sub("^.+/files/","", URL)
+    message('\nChecking standartox file: ', n)
+    
+    # Define destination file path
+    destfile = file.path(dir_out, n)
+    
+    # Check if the file already exists
+    if ( !file.exists(destfile) ) {
+      message('Downloading standartox ',n,' ...')
+      curl::curl_download(url = URL,
+                          destfile = destfile,
+                          quiet = TRUE)
+      message('Done! Downloaded and unzipped to:\n', destfile)
+    }
+    else { message('File ', n, ' already exists, skipping download.') }
+    
+    message('Reading in file:\t', n)
+    # Read in the downloaded files based on their extension 
+    # for .fst: fst::read_fst() 
+    # for .rds: readRDS()
+    sfx = sub("^.+/standartox/.+[.]","",destfile)
+    if( sfx == "fst" ) { 
+      stxDb_ls[[n]] = try ( fst::read_fst(destfile) )
+      message("Done!\n")
+    } else if (sfx == "rds") { 
+      stxDb_ls[[n]] = readRDS(destfile)
+      message("Done!\n")
+    } else { warning("Unknown file format: ", sfx, "Expecting .fst or .rds files.\n") }
+  }
+  # Return the list of data frames
+  return(stxDb_ls)
+}
+
+
 #' Retrieve data catalog
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
