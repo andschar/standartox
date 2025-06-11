@@ -32,3 +32,4 @@ zenodo <- ZenodoManager$new(
   logger = "INFO" # use "DEBUG" to see detailed API operation logs, use NULL if you don't want logs at all
 )
 # Great :) that works!
+
