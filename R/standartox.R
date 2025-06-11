@@ -54,9 +54,8 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
     
     message('Reading in file:\t', n)
     # Read in the downloaded files based on their extension 
-    # for .fst: fst::read_fst() 
-    # for .rds: readRDS()
-    sfx = sub("^.+/standartox/.+[.]","",destfile)
+    # for .fst: fst::read_fst(); for .rds: readRDS()
+    sfx = sub("^.+[.]","", basename(destfile))
     if( sfx == "fst" ) { 
       stxDb_ls[[n]] = try ( fst::read_fst(destfile) )
       message("Done!\n")
