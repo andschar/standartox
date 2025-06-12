@@ -70,7 +70,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
 }
 
 
-#' Retrieve data catalog (DEPRECEATED)
+#' Retrieve data catalog (DEPRECIATED)
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
 #' 
@@ -179,7 +179,6 @@ stx_catalog.NEW = function(silent = TRUE, ...) {
 #' }
 #' 
 #' @export
-#'
 stx_query = function(cas = NULL,
                      concentration_unit = NULL,
                      concentration_type = NULL,
@@ -293,7 +292,9 @@ stx_query = function(cas = NULL,
        meta = out_meta)
 }
 
-#' Retrieve chemical data
+
+
+#' Retrieve chemical data (DEPRECIATED)
 #' 
 #' Retrieve data on all chemicals in Standartox.
 #' 
@@ -306,7 +307,6 @@ stx_query = function(cas = NULL,
 #' }
 #' 
 #' @export
-#' 
 stx_chem = function() {
   message('This endpoint is still experimental.')
   res = try(httr::GET(
@@ -319,7 +319,42 @@ stx_chem = function() {
   out
 }
 
-#' Retrieve taxa data
+#' Retrieve chemical data - NEW
+#' 
+#' Retrieve data on all chemicals in Standartox.
+#' 
+#' @return Returns a data.table containing informaiton on chemicals in Standartox.
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
+#' @examples
+#' \donttest{
+#' # might fail if there is no internet connection or Zenodo.org not not available
+#' # basic function call
+#' df = stx_chem.NEW()
+#' 
+#' # to get verbose output from the function
+#' df = stx_chem.NEW(silent = FALSE)
+#' 
+#' # to specify a directory to which the catalog should be downloaded
+#' df = stx_chem.NEW(silent = FALSE, dir_out = "~/tmp")
+#' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
+#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' }
+#' 
+#' @export
+stx_chem.NEW = function(silent = TRUE, ...) {
+  if (!silent) message('Retrieving Standartox listed Chemicals ...')
+  if (silent) {
+    result = suppressMessages( stx_download(data_type = 'phch.fst', ...)[[1]] )
+  } else {
+    result = stx_download(data_type = 'phch.fst', ...)[[1]]
+  }
+  return(result)
+}
+
+
+
+#' Retrieve taxa data (DEPRECIATED)
 #' 
 #' Retrieve data on all taxa in Standartox.
 #' 
@@ -332,7 +367,6 @@ stx_chem = function() {
 #' }
 #' 
 #' @export
-#' 
 stx_taxa = function() {
   message('This endpoint is still experimental.')
   res = try(httr::GET(
@@ -345,6 +379,38 @@ stx_taxa = function() {
   out
 }
 
+#' Retrieve taxa data - NEW
+#' 
+#' Retrieve data on all taxa in Standartox.
+#' 
+#' @return Returns a data.table containing informaiton on taxa in Standartox.
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
+#' @examples
+#' \donttest{
+#' # might fail if there is no internet connection or Zenodo.org not not available
+#' # basic function call
+#' df = stx_taxa.NEW()
+#' 
+#' # to get verbose output from the function
+#' df = stx_taxa.NEW(silent = FALSE)
+#' 
+#' # to specify a directory to which the catalog should be downloaded
+#' df = stx_taxa.NEW(silent = FALSE, dir_out = "~/tmp")
+#' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
+#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' }
+#' 
+#' @export
+stx_taxa.NEW = function(silent = TRUE, ...) {
+  if (!silent) message('Retrieving Standartox listed Taxa ...')
+  if (silent) {
+    result = suppressMessages( stx_download(data_type = 'taxa.fst', ...)[[1]] )
+  } else {
+    result = stx_download(data_type = 'taxa.fst', ...)[[1]]
+  }
+  return(result)
+}
 
 
 # IDEA
