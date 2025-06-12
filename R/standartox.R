@@ -70,38 +70,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
 }
 
 
-#' Retrieve data catalog (DEPRECIATED)
-#' 
-#' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
-#' 
-#' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version
-#' 
-#' @return Returns a list of data.frames containing information on data base variables
-#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' @examples
-#' \donttest{
-#' # might fail if API is not available
-#' stx_catalog()
-#' }
-#' 
-#' @export
-stx_catalog = function(vers = NULL) {
-  # request
-  body = list(vers = vers)
-  # POST
-  message('Retrieving Standartox catalog..')
-  res = try(httr::POST(
-    url = file.path(domain(), 'catalog'),
-    body = body,
-    encode = 'json',
-  ), silent = TRUE)
-  stx_availability(res)
-  cont = httr::content(res, type = 'text', encoding = 'UTF-8')
-  
-  jsonlite::fromJSON(cont)
-}
-
-#' Retrieve data catalog - NEW
+#' Retrieve data catalog
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
 #' 
@@ -116,18 +85,18 @@ stx_catalog = function(vers = NULL) {
 #' \donttest{
 #' # might fail if there is no internet connection or Zenodo.org not not available
 #' # basic function call
-#' ls = stx_catalog.NEW()
+#' ls = stx_catalog()
 #' 
 #' # to get verbose output from the function
-#' ls = stx_catalog.NEW(silent = FALSE)
+#' ls = stx_catalog(silent = FALSE)
 #' 
 #' # to specify a directory to which the catalog should be downloaded
-#' ls = stx_catalog.NEW(silent = FALSE, dir_out = "~/tmp")
+#' ls = stx_catalog(silent = FALSE, dir_out = "~/tmp")
 #' # This will create a directory under ~/tmp and download the catalog.rds file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' @export
-stx_catalog.NEW = function(silent = TRUE, ...) {
+stx_catalog = function(silent = TRUE, ...) {
   if (!silent) message('Retrieving Standartox catalog ...')
   if (silent) {
     result = suppressMessages( stx_download(data_type = 'catalog.rds', ...)[[1]] )
@@ -136,7 +105,6 @@ stx_catalog.NEW = function(silent = TRUE, ...) {
   }
   return(result)
 }
-
 
 
 #' Retrieve Standartox toxicity values
@@ -293,33 +261,7 @@ stx_query = function(cas = NULL,
 }
 
 
-
-#' Retrieve chemical data (DEPRECIATED)
-#' 
-#' Retrieve data on all chemicals in Standartox.
-#' 
-#' @return Returns a data.table containing informaiton on chemicals in Standartox.
-#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' @examples
-#' \donttest{
-#' # might fail if API is not available
-#' stx_chem()
-#' }
-#' 
-#' @export
-stx_chem = function() {
-  message('This endpoint is still experimental.')
-  res = try(httr::GET(
-    url = file.path(domain(), 'chem'),
-    encode = 'json'
-  ), silent = TRUE)
-  stx_availability(res)
-  out = read_bin_vec(res$content, type = 'fst')
-  setnames(out, sub('ccl_|cro_', '', names(out)))
-  out
-}
-
-#' Retrieve chemical data - NEW
+#' Retrieve chemical data
 #' 
 #' Retrieve data on all chemicals in Standartox.
 #' 
@@ -330,19 +272,19 @@ stx_chem = function() {
 #' \donttest{
 #' # might fail if there is no internet connection or Zenodo.org not not available
 #' # basic function call
-#' df = stx_chem.NEW()
+#' df = stx_chem()
 #' 
 #' # to get verbose output from the function
-#' df = stx_chem.NEW(silent = FALSE)
+#' df = stx_chem(silent = FALSE)
 #' 
 #' # to specify a directory to which the catalog should be downloaded
-#' df = stx_chem.NEW(silent = FALSE, dir_out = "~/tmp")
+#' df = stx_chem(silent = FALSE, dir_out = "~/tmp")
 #' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' 
 #' @export
-stx_chem.NEW = function(silent = TRUE, ...) {
+stx_chem = function(silent = TRUE, ...) {
   if (!silent) message('Retrieving Standartox listed Chemicals ...')
   if (silent) {
     result = suppressMessages( stx_download(data_type = 'phch.fst', ...)[[1]] )
@@ -353,33 +295,7 @@ stx_chem.NEW = function(silent = TRUE, ...) {
 }
 
 
-
-#' Retrieve taxa data (DEPRECIATED)
-#' 
-#' Retrieve data on all taxa in Standartox.
-#' 
-#' @return Returns a data.table containing informaiton on taxa in Standartox.
-#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' @examples
-#' \donttest{
-#' # might fail if API is not available
-#' stx_taxa()
-#' }
-#' 
-#' @export
-stx_taxa = function() {
-  message('This endpoint is still experimental.')
-  res = try(httr::GET(
-    url = file.path(domain(), 'taxa'),
-    encode = 'json'
-  ), silent = TRUE)
-  stx_availability(res)
-  out = read_bin_vec(res$content, type = 'fst')
-  setnames(out, sub('hab_|reg_', '', names(out)))
-  out
-}
-
-#' Retrieve taxa data - NEW
+#' Retrieve taxa data
 #' 
 #' Retrieve data on all taxa in Standartox.
 #' 
@@ -390,19 +306,19 @@ stx_taxa = function() {
 #' \donttest{
 #' # might fail if there is no internet connection or Zenodo.org not not available
 #' # basic function call
-#' df = stx_taxa.NEW()
+#' df = stx_taxa()
 #' 
 #' # to get verbose output from the function
-#' df = stx_taxa.NEW(silent = FALSE)
+#' df = stx_taxa(silent = FALSE)
 #' 
 #' # to specify a directory to which the catalog should be downloaded
-#' df = stx_taxa.NEW(silent = FALSE, dir_out = "~/tmp")
+#' df = stx_taxa(silent = FALSE, dir_out = "~/tmp")
 #' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' 
 #' @export
-stx_taxa.NEW = function(silent = TRUE, ...) {
+stx_taxa = function(silent = TRUE, ...) {
   if (!silent) message('Retrieving Standartox listed Taxa ...')
   if (silent) {
     result = suppressMessages( stx_download(data_type = 'taxa.fst', ...)[[1]] )
