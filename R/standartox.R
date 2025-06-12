@@ -5,6 +5,7 @@
 #' @param data_type character; Specify the type of data to download. Can be one of NULL (default, downloads and imports all), "meta.fst", "phch.fst", "refs.fst", "test_fin.fst", "taxa.fst", etc.
 #' @param dir_out character; Directory to which the downloaded files should be saved. Default is a temporary directory.
 #' 
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
 #' @examples
 #' \donttest{
@@ -69,7 +70,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
 }
 
 
-#' Retrieve data catalog
+#' Retrieve data catalog (DEPRECEATED)
 #' 
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
 #' 
@@ -99,6 +100,44 @@ stx_catalog = function(vers = NULL) {
   
   jsonlite::fromJSON(cont)
 }
+
+#' Retrieve data catalog - NEW
+#' 
+#' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
+#' 
+#' @param silent logical; If TRUE, suppresses messages. Default is TRUE.
+#' @param ... character; Option to specify further stx_download() parameters, e.g. dir_out. Useful if you wish to keep the files permanently on your local system by storing standartox data in a specific directory and not under tempdir().
+#' 
+#' @return Returns a list of data.frames containing information on data base variables
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
+#' 
+#' @examples
+#' \donttest{
+#' # might fail if there is no internet connection or Zenodo.org not not available
+#' # basic function call
+#' ls = stx_catalog.NEW()
+#' 
+#' # to get verbose output from the function
+#' ls = stx_catalog.NEW(silent = FALSE)
+#' 
+#' # to specify a directory to which the catalog should be downloaded
+#' ls = stx_catalog.NEW(silent = FALSE, dir_out = "~/tmp")
+#' # This will create a directory under ~/tmp and download the catalog.rds file to that directory.
+#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' }
+#' @export
+stx_catalog.NEW = function(silent = TRUE, ...) {
+  if (!silent) message('Retrieving Standartox catalog ...')
+  if (silent) {
+    result = suppressMessages( stx_download(data_type = 'catalog.rds', ...)[[1]] )
+  } else {
+    result = stx_download(data_type = 'catalog.rds', ...)[[1]]
+  }
+  return(result)
+}
+
+
 
 #' Retrieve Standartox toxicity values
 #'
