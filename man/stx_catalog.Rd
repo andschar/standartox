@@ -4,10 +4,12 @@
 \alias{stx_catalog}
 \title{Retrieve data catalog}
 \usage{
-stx_catalog(vers = NULL)
+stx_catalog(silent = FALSE, dir_out = file.path(tempdir(), "standartox"))
 }
 \arguments{
-\item{vers}{integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version}
+\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+
+\item{dir_out}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
 }
 \value{
 Returns a list of data.frames containing information on data base variables
@@ -17,11 +19,21 @@ Retrieve a data catalog for all variables (and their values) that can be retriev
 }
 \examples{
 \donttest{
-# might fail if API is not available
-stx_catalog()
-}
+# might fail if there is no internet connection or Zenodo.org not not available
+# basic function call
+l = stx_catalog()
 
+# to get verbose output from the function
+l = stx_catalog(silent = FALSE)
+
+# to specify a directory to which the catalog should be downloaded
+l = stx_catalog(silent = FALSE, dir_out = "~/tmp")
+# This will create a directory under ~/tmp and download the catalog.rds file to that directory.
+# The files are then permanently stored in that directory and can be directly read when restarting your R session.
+}
 }
 \author{
 Andreas Scharmueller \email{andschar@protonmail.com}
+
+Hannes Reinwald
 }
