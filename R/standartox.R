@@ -60,15 +60,15 @@ stx_download = function(data_type, dir_out = file.path(tempdir(), "standartox"))
     # Read in the downloaded files based on their extension 
     sfx = sub("^.+[.]", "", fl)
     if( sfx == "fst" ) { 
-      l[[fl_name]] = fst::read_fst(destfile, as.data.table = TRUE)
+      out = fst::read_fst(destfile, as.data.table = TRUE)
     } else if (sfx == "rds") { 
-      l[[fl_name]] = readRDS(destfile)
+      out = readRDS(destfile)
     } else { 
       stop("Unknown file format: ", sfx, "Expecting .fst or .rds files.")
     }
   }
   
-  return(l)
+  return(out)
 }
 
 #' Retrieve data catalog
@@ -103,7 +103,7 @@ stx_catalog = function(silent = FALSE, dir_out = file.path(tempdir(), "standarto
   if (!silent) message('Retrieving Standartox catalog..')
   l = stx_download(data_type = 'catalog', dir_out = dir_out)
 
-  return(l[[1]])
+  return(l)
 }
 
 #' Retrieve Standartox toxicity values
@@ -130,9 +130,9 @@ stx_catalog = function(silent = FALSE, dir_out = file.path(tempdir(), "standarto
 #' 
 stx_data = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox data..')
-  l = stx_download(data_type = 'test_fin', dir_out = dir_out)
+  out = stx_download(data_type = 'test_fin', dir_out = dir_out)
 
-  return(l)
+  return(out)
 }
 
 #' Retrieve chemical data
@@ -166,9 +166,9 @@ stx_data = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' 
 stx_chem = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox chemical information..')
-  l = stx_download(data_type = 'phch', dir_out = dir_out)
+  out = stx_download(data_type = 'phch', dir_out = dir_out)
 
-  return(l[[1]])
+  return(out)
 }
 
 #' Retrieve taxa data
@@ -202,9 +202,9 @@ stx_chem = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' 
 stx_taxa = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox taxa information..')
-  l = stx_download(data_type = 'taxa', dir_out = dir_out)
+  out = stx_download(data_type = 'taxa', dir_out = dir_out)
 
-  return(l[[1]])
+  return(out)
 }
 
 #' Function to aggregate filtered test results
@@ -239,7 +239,6 @@ stx_aggregate = function(dat = NULL) {
   ]
 }
 
-
 #' Retrieve meta data
 #' 
 #' @return Returns a data.table containing meta informaiton on Standartox.
@@ -269,7 +268,7 @@ stx_aggregate = function(dat = NULL) {
 #' 
 stx_meta = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox meta information..')
-  l = stx_download(data_type = 'meta', dir_out = dir_out)
+  out = stx_download(data_type = 'meta', dir_out = dir_out)
 
-  return(l[[1]])
+  return(out)
 }
