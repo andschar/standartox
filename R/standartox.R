@@ -330,6 +330,24 @@ stx_taxa = function(silent = TRUE, ...) {
   return(result)
 }
 
+#' Retrieve taxa groups
+#' 
+#' Retrieve a character vector of all tax_groups defined in Standartox.
+#' 
+#' @return Returns a character vector of all tax_groups defined in Standartox.
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
+#' @examples
+#' \donttest{
+#' # might fail if there is no internet connection or Zenodo.org not not available
+#' stx_tax_groups()
+#' }
+#' 
+#' @export
+stx_tax_groups = function(...){
+  taxa = na.omit( unique(stx_taxa(...)$tax_group) )
+  taxa = unique( unlist( strsplit(taxa, "\\s*\\|\\|\\s*") ) )
+  return(sort(taxa))
+}
 
 # IDEA
 # microbenchmark::microbenchmark({
