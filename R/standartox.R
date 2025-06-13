@@ -10,7 +10,9 @@
 #' @examples
 #' \donttest{
 #' # might fail if there is no internet connection or Zenodo.org not not available
-#' stx_download()
+#' stxDb = stx_download()
+#' names(stxDb) # files downloaded from zenodo.org
+#' View(stxDb)
 #' }
 #' @noRd
 stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standartox") ) {
@@ -385,54 +387,39 @@ stx_aggregate = function(dat = NULL) {
   ]
 }
 
-#' Connection URL
-#' 
-#' @author Andreas Scharmüller
-#' @noRd
-#' 
-domain = function() {
-  baseurl = 'http://139.14.20.252'
-  # baseurl = 'http://127.0.0.1' # debuging
-  port = 8000
-  domain = paste0(baseurl, ':', port)
-  
-  return(domain)
-}
 
 #' Retrieve meta data
 #' 
-#' @author Andreas Scharmüller
+#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
+#' @author Hannes Reinwald \email{hannes.reinwald@@bayer.com}
 #' @noRd
 #' 
-stx_meta = function(vers = NULL) {
-  # request
-  body = list(vers = vers)
-  # POST
-  res = httr::POST(
-    url = file.path(domain(), 'meta'),
-    body = body,
-    encode = 'json'
-  )
-  cont = httr::content(res, type = 'text', encoding = 'UTF-8')
-  out = jsonlite::fromJSON(cont)
-  
-  return(out)
+stx_meta = function(silent = TRUE, ...) {
+  if (!silent) message('Retrieving Standartox listed Taxa ...')
+  if (silent) {
+    result = suppressMessages( stx_download(data_type = 'meta.fst', ...)[[1]] )
+  } else {
+    result = stx_download(data_type = 'meta.fst', ...)[[1]]
+  }
+  return(result)
 }
 
+
+# No longer needed I guess ... 
 #' Check availability of connection
 #' 
-#' @author Andreas Scharmüller
-#' @noRd
+# #' @author Andreas Scharmüller
+# #' @noRd
 #' 
-stx_availability = function(res,
-                            http_codes = c(200, 400)) {
-  if (inherits(res, 'try-error') ||
-      ! httr::status_code(res) %in% http_codes) {
-    msg = paste0(
-    'The standartox web service seems currently unavailable.
-    Please try again after some time. Should it still not work then, please file an issue here:
-https://github.com/andschar/standartox/issues
-Error code: ', res)
-    stop(msg)
-  }
-}
+#stx_availability = function(res,
+#                            http_codes = c(200, 400)) {
+#  if (inherits(res, 'try-error') ||
+#      ! httr::status_code(res) %in% http_codes) {
+#    msg = paste0(
+#    'The standartox web service seems currently unavailable.
+#    Please try again after some time. Should it still not work then, please file an issue here:
+#https://github.com/andschar/standartox/issues
+#Error code: ', res)
+#    stop(msg)
+#  }
+#}
