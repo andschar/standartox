@@ -4,7 +4,12 @@
 \alias{stx_taxa}
 \title{Retrieve taxa data}
 \usage{
-stx_taxa()
+stx_taxa(silent = FALSE, dir_out = file.path(tempdir(), "standartox"))
+}
+\arguments{
+\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+
+\item{dir_out}{character; Directory to which the taxa information should be downloaded. Default is a temporary directory.}
 }
 \value{
 Returns a data.table containing informaiton on taxa in Standartox.
@@ -14,11 +19,22 @@ Retrieve data on all taxa in Standartox.
 }
 \examples{
 \donttest{
-# might fail if API is not available
-stx_taxa()
+# might fail if there is no internet connection or Zenodo.org not not available
+# basic function call
+df = stx_taxa()
+
+# to get verbose output from the function
+df = stx_taxa(silent = FALSE)
+
+# to specify a directory to which the taxa information should be downloaded
+df = stx_taxa(silent = FALSE, dir_out = "~/tmp")
+# This will create a directory under ~/tmp and download the respective standartox file to that directory.
+# The files are then permanently stored in that directory and can be directly read when restarting your R session.
 }
 
 }
 \author{
 Andreas Scharmueller \email{andschar@protonmail.com}
+
+Hannes Reinwald
 }

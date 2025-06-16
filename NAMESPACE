@@ -2,9 +2,6 @@
 
 export(stx_catalog)
 export(stx_chem)
-export(stx_query)
+export(stx_data)
+export(stx_meta)
 export(stx_taxa)
-import(data.table)
-import(fst)
-import(httr)
-import(jsonlite)

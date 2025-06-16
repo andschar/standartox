@@ -1,6 +1,6 @@
 Package: standartox
-Version: 0.0.1.9002
-Date: 2021-10-04
+Version: 0.0.2
+Date: 2025-06-13
 Title: Ecotoxicological Information from the Standartox Database
 Authors@R: c(
     person("Andreas", "Scharmüller",
@@ -9,7 +9,7 @@ Authors@R: c(
             comment = c(ORCID = "0000-0002-9290-3965"))
     )
 Maintainer: Andreas Scharmüller <andschar@protonmail.com>
-Description: The <http://standartox.uni-landau.de> database offers cleaned,
+Description: The Standartox database offers cleaned,
     harmonized and aggregated ecotoxicological test data, which can
     be used for assessing effects and risks of chemical concentrations
     found in the environment.
@@ -25,5 +25,5 @@ Imports:
 License: MIT + file LICENSE
 URL: https://github.com/andschar/standartox
 BugReports: https://github.com/andschar/standartox/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Encoding: UTF-8
