@@ -149,118 +149,192 @@ stx_catalog = function(silent = TRUE, ...) {
 #' }
 #' 
 #' @export
-stx_query = function(cas = NULL,
-                     concentration_unit = NULL,
-                     concentration_type = NULL,
-                     duration = NULL,
-                     endpoint = c('XX50', 'NOEX', 'LOEX'),
-                     effect = NULL,
-                     exposure = NULL,
-                     chemical_role = NULL,
-                     chemical_class = NULL,
-                     taxa = NULL,
-                     ecotox_grp = NULL,
-                     trophic_lvl = NULL,
-                     habitat = NULL,
-                     region = NULL,
-                     vers = NULL,
-                     ...) {
-  # to avoid NOTE in R CMD check --as-cran
-  casnr = outlier = concentration = cname = NULL
-  # debuging
-  # browser() # debuging
-  # cas = '1071-83-6'; concentration_unit = NULL; concentration_type = NULL; duration = NULL; endpoint = 'XX50'; effect = NULL; exposure = NULL; chemical_role = NULL; chemical_class = NULL; taxa = NULL; ecotox_grp = NULL; trophic_lvl = NULL; habitat = NULL; region = NULL; vers = NULL
-  # checks
-  endpoint = match.arg(endpoint)
-  # request
-  body = list(casnr = cas,
-              concentration_unit = concentration_unit,
-              concentration_type = concentration_type,
-              duration = duration,
-              endpoint = endpoint,
-              effect = effect,
-              exposure = exposure,
-              chemical_role = chemical_role,
-              chemical_class = chemical_class,
-              taxa = taxa,
-              ecotox_grp = ecotox_grp,
-              trophic_lvl = trophic_lvl,
-              habitat = habitat,
-              region = region,
-              vers = vers)
-  # POST
-  stx_message(body)
-  res = try(httr::POST(
-    file.path(domain(), 'filter'),
-    body = body,
-    encode = 'json',
-  ), silent = TRUE)
-  stx_availability(res)
-  if (res$status_code == 400) {
-    warning(jsonlite::fromJSON(httr::content(res, type = 'text', encoding = 'UTF-8')))
-    out_fil = data.table(NA)
-    filtered = data.table(NA)
-    out_agg = data.table(NA)
+#' 
+stx_query_import = function(silent = TRUE, 
+                            data_type = c('test_fin.fst','phch.fst','taxa.fst','refs.fst'),
+                            ...) {
+  if (!silent) message('Retrieving Standartox listed Chemicals ...')
+  if (silent) {
+    result = suppressMessages( stx_download(data_type = data_type, ...) )
+  } else {
+    result = stx_download(data_type = data_type, ...)
   }
-  if (res$status_code == 200) {
-    out_fil = read_bin_vec(res$content, type = 'fst')
-    if (nrow(out_fil) == 0) {
-      warning('No results found.')
-      out_fil = data.table(NA)
-      filtered = data.table(NA)
-      out_agg = data.table(NA)
-    } else {
-      # CAS column (not sent through API to reduce size)
-      out_fil[ , cas := cas_conv(casnr) ][ , casnr := NULL ]
-      # outliers
-      para = c('cas',
-               'concentration_unit',
-               'concentration_type',
-               'duration',
-               'tax_taxon',
-               'effect',
-               'endpoint',
-               'exposure')
-      out_fil[ ,
-               outlier := flag_outliers(concentration),
-               by = para ]
-      # colorder
-      nam = names(out_fil)
-      col_order = c('cname', 'cas', 'iupac_name', 'inchikey', 'inchi', 'molecularweight',
-                    'result_id', 'endpoint', 'effect', 'exposure', 'trophic_lvl', 'ecotox_grp', 'concentration_type',
-                    'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
-                    'duration', 'duration_unit', 'outlier',
-                    c('species_number', grep('tax_|hab_|reg_', nam, value = TRUE)),
-                    grep('cro_|ccl_', nam, value = TRUE),
-                    grep('ref', nam, value = TRUE))
-      setcolorder(out_fil, col_order)
-      # order
-      setorder(out_fil, cname)
-      # id
-      col_id = c('cname', 'cas', 'inchikey', 'inchi', 'result_id', 'species_number', 'ref_number')
-      id = out_fil[ , .SD, .SDcols = col_id ]
-      # short
-      col_short = c('cname', 'cas', 'inchikey',
-                    'endpoint', 'effect', 'exposure', 'trophic_lvl', 'ecotox_grp', 'concentration_type',
-                    'concentration', 'concentration_unit', 'concentration_orig', 'concentration_unit_orig',
-                    'duration', 'duration_unit', 'outlier',
-                    grep('tax_', nam, value = TRUE))
-      filtered = out_fil[ , .SD, .SDcols = col_short ]
-      # aggregate
-      out_agg = suppressWarnings(
-        stx_aggregate(out_fil)
-      )
+  # Convert data frame to data table
+  result = lapply( result, function(dt) data.table::setDT(dt) )
+  return(result)
+}
+
+filter_dt = function(dt, var_ls){
+  stopifnot(is.data.frame(dt))
+  stopifnot(is.list(var_ls))
+  data.table::setDT(dt) # Ensure dt is a data.table
+  
+  var_check = !unlist( lapply(var_ls, is.null) )
+  var_check = names( which(var_check) ) # select only those variables that are not NULL
+  
+  # Loop through the variables and filter the taxa.fst data frame 
+  if (length(var_check) > 0) {
+    dt.out = list()
+    
+    for(var in var_check){
+      message("Filtering for variable: ", var)
+      if (var %in% colnames(dt)) { # Check if the variable exists as a column in data table
+        if( !is.null(var_ls[[var]]) ){
+          # Filter the data table based on the specified column and the values in the variable
+          filter_val = var_ls[[var]]
+          dt.out[[var]] <- dt[ dt[[var]] %in% filter_val ]
+          if(nrow(dt.out[[var]]) == 0){ warning( paste("No query matches found for:\t", var) ) } 
+        }
+      } else {
+        warning(paste("Variable", var, "not found in data table. Skipping filter."))
+      }
+    }
+    
+    # Combine results
+    dt.out = distinct( data.table::rbindlist(dt.out) )
+    # Check 
+    if( nrow(dt.out) == 0 ) {
+      warning("No query results for the provided ",paste(var_check, collapse = " & "),
+              ". Please check the input values.")
+      return(NULL) }
+    return(dt.out)
+  } else { dt }
+}
+
+stx_query = function(
+  ## COMPOUND FILTERING ##
+  cas_number = NULL,
+  ## BASIC TOX DATA FILTERING ##
+  endpoint_group = c('XX50', 'NOEX', 'LOEX'),
+  exposure = NULL,           # character vector
+  effect = NULL,             # character vector
+  duration = c(0, Inf),      # numeric vector 
+  duration_unit = "h",       # character vector; set to NULL if you want to keep all results!
+  concentration_unit = NULL, # character vector
+  concentration_type = NULL, # character vector
+  ## TAXA FILTERING ##
+  tax_columns = c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family'), # Taxonomy columns to append to the query results. DEFAULT: c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family')
+  tax_genus  = NULL, # character vector
+  tax_family = NULL, # character vector
+  tax_order  = NULL, # character vector
+  tax_class  = NULL, # character vector
+  ecotox_grp = NULL, # character vector
+  ## REFERENCE SECTION ##
+  include_reference = FALSE, # Default FALSE
+  ...){ 
+  # Import stxDb 
+  message("Reading in Standartox Data ...")
+  stx_table = c('test_fin.fst','phch.fst','taxa.fst') # 
+  if(include_reference) { stx_table = unique(c(stx_table,'refs.fst')) }
+  stxDb = stx_query_import(data_type = stx_table, ...)
+  # stxDb  = stx_query_import(data_type = stx_table)
+  tox.dt = stxDb$test_fin.fst # final output object. LARGE right after import!
+  stxDb  = stxDb[stx_table[-1]] # dump the largest object!
+  
+  # First quick filter steps:
+  # Remove rows where the specified columns contain "NR" <- NA values
+  message("Removing 'NA' values ...")
+  tox.dt <- tox.dt[!grepl("NR", endpoint) & !grepl("NR", duration_unit) ]
+  # Quick fix for endpoint values
+  tox.dt[, endpoint := sub("[/*]+$","", endpoint)]
+  if(!is.null(endpoint_group)){
+    tmp_var = endpoint_group # quick fix
+    tox.dt = tox.dt[endpoint_group %in% tmp_var]
+  }
+  if(!is.null(duration_unit)){
+    tmp_var = duration_unit # quick fix
+    tox.dt = tox.dt[duration_unit %in% tmp_var]
+  }
+  if( nrow(tox.dt) == 0 ) {
+    warning("No query matches found for the provided endpoint_group or duration_unit. Please check the input values.")
+  }
+  
+  # Step 1: Filter for cas_number then merge with toxdata
+  message("Appending chemical information ...")
+  ## Filter chem data for cas_number
+  if(!is.null(cas_number)){
+    stxDb$phch.fst <- stxDb$phch.fst[cas %in% cas_number]
+    if( nrow(stxDb$phch.fst) == 0 ) {
+      warning("No query matches found for the provided CAS numbers. Please check the input values.")
     }
   }
-  # meta
-  out_meta = stx_meta()
-  # return
-  list(filtered = filtered,
-       filtered_all = rm_col_na(out_fil),
-       # TODO id = id,
-       aggregated = out_agg,
-       meta = out_meta)
-}
+  ## Merge with tox data by cl_id
+  merge(stxDb$phch.fst, tox.dt, all.x = TRUE, by = "cl_id") -> tox.dt
+  tox.dt[, c("chem_class","casnr", "cl_id") := NULL] # don't need the cl_id column anymore.
+  
+  
+  # Step 2: Filter for taxonomic groups then merge with toxdata
+  message("Appending taxonomic information ...")
+  ## Filtering ecotox_grp ##
+  if(!is.null(ecotox_grp)){
+    regstr = paste(ecotox_grp, collapse = "|")
+    stxDb$taxa.fst = stxDb$taxa.fst[ grepl(regstr, stxDb$taxa.fst$tax_group) ]
+    if( nrow( stxDb$taxa.fst ) == 0 ) {
+      warning("No query matches found for the provided tax_group. Please check the input values.")
+      return(NULL)
+    }
+  }
+  ## Filtering tax_columns ##
+  # Specify taxonomy columns for which tax filtering can be applied
+  var_ls = list(
+    tax_class  = tax_class,
+    tax_order  = tax_order, 
+    tax_family = tax_family,
+    tax_genus  = tax_genus
+  )
+  tax.out = filter_dt( stxDb$taxa.fst, var_ls)
+  if( is.null(tax.out) ) { return(NULL) } # Check 
+  
+  # Select pre-defined columns for output
+  tax_key = "tl_id"
+  tax.out = tax.out[, c(tax_key, tax_columns), with = FALSE]
+  # Merge taxonomy data with tox data by tl_id
+  merge(tax.out, tox.dt, all.x = TRUE, by = tax_key) -> tox.dt
+  tox.dt[, (tax_key) := NULL] # drop columns here 
+  
+  
+  # Step 3: Final Tox data filtering 
+  # rmv any rows with NA in result_id
+  tox.dt = tox.dt[!is.na(result_id)]
+  # Filter for the selected columns 
+  var_ls = list(
+    concentration_unit  = concentration_unit,
+    concentration_type  = concentration_type, 
+    effect = effect,
+    exposure  = exposure
+  )
+  tox.dt = filter_dt( tox.dt, var_ls )
+  if( is.null(tox.dt) ) { return(NULL) } # Check 
+  
+  # Filter for duration
+  lower_bound = min(duration)
+  upper_bound = max(duration)
+  tox.dt = tox.dt[duration >= lower_bound & duration <= upper_bound]
+  # Check
+  if( nrow( tox.dt ) == 0 ) {
+    warning("No query matches found. Please check the input filter values.")
+    return(NULL)
+  }
+  
+  # Step 4: Append references if wanted 
+  if(include_reference){
+    message("Appending reference information ...")
+    tox.dt = merge(tox.dt, stxDb$refs.fst, all.x = TRUE, by = "ref_number")
+    tox.dt[, c("ref_number") := NULL]
+  } 
+  
+  # Step 5: Final Cleanup 
+  # Replace all occurrences of "NR" with NA
+  tox.dt = tox.dt[, lapply(.SD, function(x) {
+    if (is.character(x)) {
+      x[x == "NR"] <- NA  # Replace "NR" with NA for character columns
+    }
+    return(x)  # Return the modified column
+  })]
+  # Filter out the "result_id" column
+  message("Done!\n")
+  return( tox.dt[, c("result_id") := NULL] )
+} 
 
 
 #' Retrieve chemical data
