@@ -154,35 +154,75 @@ filter_dt = function(dt, var_ls, silent = TRUE){
 }
 
 
-#' Query Standartox toxicity values
+#' Query Standartox Toxicity Data
 #'
-#' Retrieve toxicity values from the Standartox data base on Zenodo.org \url{https://doi.org/10.5281/zenodo.3785030}.
-#' 
-#' @return Returns a data.table containing Standartox data base query results. 
+#' Retrieve and filter toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}) using chemical, experimental, and taxonomic criteria.
 #'
-#' @param cas character, integer; Limit data base query to specific CAS numbers, multiple entries possible (e.g. c('1071-83-6', '1071836'), NULL (default).
-#' @param concentration_unit character; Limit data base query to specific concentration units (e.g. ug/l - default).
-#' @param concentration_type character; Limit data base query to specific concentration types, can be one of NULL (default), 'active ingredient', 'formulation', 'total', 'not reported', 'unionized', 'dissolved', 'labile'. See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.4.
-#' @param duration integer vector of length two; Limit data base query to specific test durations (hours) (e.g. c(24, 48)). NULL (default).
-#' @param endpoint character; Choose endypoint type, must be one of 'XX50' (default), 'NOEX', 'LOEX'.
-#' @param effect character; Limit data base query to specific effect groups, multiple entries possible (e.g. 'Mortality', 'Intoxication', 'Growth'). See \url{https://cfpub.epa.gov/ecotox/pdf/codeappendix.pdf} p.95. NULL (default).
-#' @param exposure character; Choose exposure type, (e.g. aquatic, environmental, diet). NULL (default).
-#' @param chemical_role character; Limit data base query to specific chemical roles (e.g. insecticide), multiple entries possible. NULL (default).
-#' @param chemical_class character; Limit data base query to specific chemical classes (e.g. neonicotinoid), multiple entries possible. NULL (default).
-#' @param taxa character; Limit data base query to specific taxa, multiple entries possible. NULL (default).
-#' @param ecotox_grp character; Convenience grouping of organisms in ecotoxicology, must be one of NULL (default), 'invertebrate', 'fish', 'plant_land', 'macrophyte', 'algae'.
-#' @param trophic_lvl character; Trophic level of organism, must be one of NULL (default), 'autotroph', 'heterotroph'.
-#' @param habitat character; Limit data base query to specific organism habitats, can be one of NULL (default) 'marine', 'brackish', 'freshwater', 'terrestrial'.
-#' @param region character; Limit data base query to organisms occurring in specific regions, can be one of NULL (default) 'africa', 'america_north', 'america_south', 'asia', 'europe', 'oceania'.
-#' @param vers integer; Choose the version of the EPA Ecotox on which Standartox is based on. NULL (default) accesses the most recent version.
-#' @param ... currently not used
+#' @param cas_number character; Optional. Vector of CAS numbers to filter chemicals (e.g. \code{c("1071-83-6","63-25-2","138261-41-3")}). Default is \code{NULL} (no filtering).
+#' @param endpoint_group character; Optional. Endpoint group(s) to filter results. All possible endpoint groups can be checked via \code{stx_catalog()$endpoint_group}. Default is \code{c("XX50", "NOEX", "LOEX")}.
+#' @param exposure character; Optional. Vector of exposure types (e.g. \code{"aquatic"}). All possible exposure types can be checked via \code{stx_catalog()$exposure}. Default is \code{NULL}.
+#' @param effect character; Optional. Vector of effect types (e.g. \code{"Mortality", "Growth"}). All possible effect types can be checked via \code{stx_catalog()$effect}. Default is \code{NULL}.
+#' @param duration numeric; Optional. Numeric vector of length two specifying minimum and maximum test duration (in hours), e.g. \code{c(0, 48)}. Default is \code{c(0, Inf)}.
+#' @param duration_unit character; Optional. Filter by duration unit (e.g. \code{"h"} for hours). All possible duration units can be checked via \code{stx_catalog()$duration_unit}. Set to \code{NULL} to keep all. Default is \code{"h"}.
+#' @param concentration_unit character; Optional. Filter by concentration unit (e.g. \code{"g/l"}). All possible concentration units can be checked via \code{stx_catalog()$concentration_unit}. Default is \code{NULL}.
+#' @param concentration_type character; Optional. Filter by concentration type (e.g. \code{"active ingredient"}). All possible concentration types can be checked via \code{stx_catalog()$concentration_type}. Default is \code{NULL}.
+#' @param tax_columns character; Columns of taxonomic information to append to results. All possible columns can be checked via \code{colnames(stx_taxa())}. Default is \code{c("group", "taxon", "genus", "family")}.
+#' @param tax_genus character; Optional. Filter by genus. All possible genera can be checked via \code{stx_catalog()$genus}. Default is \code{NULL}.
+#' @param tax_family character; Optional. Filter by family. All possible families can be checked via \code{stx_catalog()$family}. Default is \code{NULL}.
+#' @param tax_order character; Optional. Filter by order. All possible orders can be checked via \code{stx_catalog()$order}. Default is \code{NULL}.
+#' @param tax_class character; Optional. Filter by class. All possible classes can be checked via \code{stx_catalog()$class}. Default is \code{NULL}.
+#' @param ecotox_grp character; Optional. Filter by one or more ecotoxicological groups. Possible values are \code{"invertebrate"}, \code{"plant"}, \code{"fish"}, \code{"fungi"}, \code{"algae"}, \code{"aves"}, \code{"amphibia"}, \code{"mammalia"}, \code{"reptilia"}, \code{"macrophyte"}. All possible ecotox groups can be checked via \code{stx_catalog()$group}. Multiple entries possible. Default is \code{NULL}.
+#' @param include_reference logical; If \code{TRUE}, append reference information. Default is \code{FALSE}.
+#' @param rm_na logical; If \code{TRUE}, remove rows with "NR" (not reported) values. Default is \code{TRUE}.
+#' @param verbose logical; If \code{TRUE}, print progress messages. Default is \code{FALSE}.
+#' @param ... Additional arguments passed to \code{stx_download}.
 #'
-#' @return Returns a list of three data.tables (filtered data base query results, aggregated data base query results, meta information)
-#' @author Andreas Scharmueller \email{andschar@@protonmail.com}
-#' 
+#' @return Returns a \code{data.table} with filtered Standartox toxicity data.
+#'
+#' @author Hannes Reinwald
+#'
 #' @examples
 #' \donttest{
 #' 
+#' Basic stx_query() call: Will return results filtered for default endpoint_group = c("XX50", "NOEX", "LOEX") and duration_unit = "h"
+#' stx_query(verbose = T)
+#' 
+#' # If you wish to filter for different endpoint groups, you can specify them in the query.
+#' stx_catalog()$endpoint_group # to view available endpoint groups
+#' stx_query(endpoint_group = c("Bioconc","MATC","MCIG"))
+#' 
+#' # Query for a specific CAS number, endpoint group, and tax group(s)
+#' stx_query(
+#'   cas_number = "1071-83-6",
+#'   endpoint_group = "NOEX",
+#'   duration = c(0, 48),
+#'   ecotox_group = c("invertebrate", "fish"),
+#'   tax_family = "Daphniidae"
+#' )
+#' 
+#' # get ALL LC50 values for 96 - 120 h of exposure for zebra fish (Danio rerio)
+#' stx_query(
+#'   endpoint_group = "XX50",
+#'   duration = c(96, 120),
+#'   effect = "mortality",
+#'   concentration_unit = "g/l",
+#'   concentration_type = "active ingredient",
+#'   tax_genus = "Danio",
+#'   include_reference = TRUE
+#' )
+#' 
+#' # get ALL LC50 values for 24 - 48 h of exposure for Daphnia
+#' stx_query(
+#'   endpoint_group = "XX50",
+#'   duration = c(24, 48),
+#'   effect = "mortality",
+#'   concentration_unit = "g/l",
+#'   concentration_type = "active ingredient",
+#'   tax_genus = "Daphnia",
+#'   include_reference = TRUE
+#' )
+#' }
+#'
 #' @export
 #' 
 stx_query = function(
@@ -197,12 +237,12 @@ stx_query = function(
   concentration_unit = NULL, # character vector
   concentration_type = NULL, # character vector
   ## TAXA FILTERING ##
-  tax_columns = c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family'), # Taxonomy columns to append to the query results. DEFAULT: c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family')
+  tax_columns = c('group', 'taxon', 'genus', 'family'), # Taxonomy columns to append to the query results. DEFAULT: c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family')
   tax_genus  = NULL, # character vector
   tax_family = NULL, # character vector
   tax_order  = NULL, # character vector
   tax_class  = NULL, # character vector
-  ecotox_grp = NULL, # character vector
+  tax_group = NULL, # character vector
   ## REFERENCE SECTION ##
   include_reference = FALSE, # Default FALSE
   rm_na = TRUE, # Default TRUE; if FALSE, keep NR values in the result
@@ -266,6 +306,7 @@ stx_query = function(
   tax_col = paste0("tax_", colnames(stxDb$taxa))
   tax_col[ grep(paste0("^tax_",tax_key,"$"),tax_col) ] <- tax_key # replace tax_key with tl_id
   colnames(stxDb$taxa) <- tax_col # set new column names
+  tax_columns = paste0("tax_", tax_columns) # append 'tax_' prefix to tax_columns
   
   # Select pre-defined columns for output
   tax.out = stxDb$taxa[, c(tax_key, tax_columns), with = FALSE]
@@ -273,8 +314,8 @@ stx_query = function(
   tox.dt = merge(tox.dt, tax.out, all.x = TRUE, by = tax_key)
   
   ## Filtering ecotox_grp ##
-  if(!is.null(ecotox_grp)){
-    regstr = paste(ecotox_grp, collapse = "|")
+  if(!is.null(tax_group)){
+    regstr = paste(tax_group, collapse = "|")
     tox.dt = tox.dt[ grepl(regstr, tox.dt$tax_group) ]
     if( nrow( tox.dt ) == 0 ) {
       warning("No query matches found for the provided tax_group. Please check the input values.")
@@ -289,7 +330,8 @@ stx_query = function(
     tax_genus  = tax_genus
   )
   tox.dt = filter_dt( tox.dt, var_ls)
-  if( is.null(tox.dt) ) { return(NULL) } # Check 
+  if( is.null(tox.dt) ) { return(NULL) } # Check
+  suppressWarnings( tox.dt[, (tax_key) := NULL] ) # don't need the tl_id column anymore.
   
   # Step 3: Final Tox data filtering 
   tox.dt = tox.dt[!is.na(result_id)] # rmv any rows with NA in result_id <- this should not be the case but to be save!
@@ -336,7 +378,6 @@ stx_query = function(
   message("Done!\n")
   return( tox.dt[, c("result_id") := NULL] )
 } 
-
 
 
 #' Retrieve data catalog
