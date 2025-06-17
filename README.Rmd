@@ -21,7 +21,7 @@ remotes::install_github('andschar/standartox') # development version
 
 ## Functions
 
-Standartox mainly consists of the functions `stx_catalog()` and `stx_datay()`. The former allows you to retrieve a summary catalog of the data. The latter fetches toxicity values from the database. There are also `stx_chem()`, `stx_taxa()` and `stx_meta()` funcitons which fetch chemical, taxonomic and meta data respectively.
+Standartox mainly consists of the functions `stx_catalog()` and `stx_query()`. The former allows you to retrieve a summary catalog of the data. The latter querries and aggregates the data from the database. There are also `stx_data()`, `stx_chem()`, `stx_taxa()` and `stx_meta()` funcitons which fetch the whole toxicity, chemical, taxonomic and meta data tables respectively.
 
 ### `stx_catalog()`
 
@@ -37,17 +37,23 @@ names(catal)
 catal$endpoint # access the parameter top five endpoints
 ```
 
+Showing the top 10 endpoint values from `stx_catalog()`  
 ```{r echo=FALSE}
 endpoint = catal$endpoint
-knitr::kable(endpoint[1:5])
+knitr::kable(endpoint[1:10])
 ```
 
-### `stx_data()`
+### `stx_query()`
 
-The function allows you to retrieve all the Standartox data.
+The function allows you to query and filter the standartox data base.
+
+The most basic function call will return a data table filtered with default settings: 
+`endpoint_group = c("XX50", "NOEX", "LOEX")` and `duration_unit = "h"`.
+
+By setting `verbose = TRUE` the user can follow all the query steps in more detail.
 
 ```{r echo=FALSE}
-dat = stx_data()
+dat = stx_query( verbose = TRUE )
 ```
 
 ## Example: _Oncorhynchus_
