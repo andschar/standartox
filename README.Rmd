@@ -16,7 +16,12 @@ Standartox is a database and tool facilitating the retrieval of ecotoxicological
 
 ```{r eval=FALSE}
 # install.packages('standartox') # Currently only available on GitHub
-remotes::install_github('andschar/standartox') # development version
+if (!requireNamespace("standartox", quietly = TRUE)) {
+  remotes::install_github('andschar/standartox') # development version
+}
+
+# if you are experiencing problems with the installation you can also simply source the R script:
+# source("path/to/local/github/standartox/R/standartox.R")
 ```
 
 ## Functions
@@ -63,45 +68,46 @@ Let's say, we want to retrieve the 20 most tested chemicals on the genus _[Oncor
 ```{r warning=FALSE}
 require(data.table)
 require(standartox)
-# Retrieve the data
-dat = stx_data()
-tax = stx_taxa()
-che = stx_chem()
-# Merge
-dat2 = merge(dat, tax, by = 'tl_id', all.x = TRUE)
-dat2 = merge(dat2, che, by = 'cl_id', all.x = TRUE)
-dat3 = dat2[
-  endpoint == 'LC50' &
-  duration %between% c(48, 120) &
-  concentration_type == 'active ingredient' &
-  grepl('Oncorhynchus', taxon) # fish genus
-]
+
+# Run query
+oncor = stx_query(
+  tax_genus = 'Oncorhynchus',
+  endpoint_group = 'XX50',
+  concentration_unit = 'g/l',
+  effect = 'mortality',
+  duration = c(48, 120),
+  concentration_type = 'active ingredient',
+  verbose = TRUE
+)
 ```
 
 We subset the retrieved data to the 20 most tested chemicals and plot the result.
 
 ```{r warning=FALSE, message=FALSE}
-cas20 = dat3[ , .N, cas ][ order(-N) ][1:20]
-dat4 = dat3[ cas %in% cas20$cas ]
-dat4_gmn = dat4[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, cname, taxon)]
+cas20 = oncor[ , .N, cas ][ order(-N) ][1:20]
+oncor20 = oncor[ cas %in% cas20$cas ]
+# add new column which combines cname & cas
+oncor20[ , cname := paste0(cname, ' [CAS: ', cas, ']') ]
+gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, cname, tax_genus)]
 ```
 
 ```{r warning=FALSE, message=FALSE, fig.width=9, fig.height=6, dpi=300}
 require(ggplot2)
-ggplot(dat4, aes(y = cname)) +
+ggplot(oncor20, aes(y = cname)) +
   geom_point(aes(x = concentration, col = 'All values'),
              pch = 1, alpha = 0.3) +
-  geom_point(data = dat4_gmn,
+  geom_point(data = gmn_dt,
              aes(y = reorder(cname, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
              size = 3) +
   scale_x_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000),
                 labels = c(0.01, 0.1, 1, 10, 100, 1000, 10000)) +
   scale_color_viridis_d(name = '') +
-  labs(title = 'Oncorhynchus EC50 values',
+  labs(title = 'LC50 values for Genus: Oncorhynchus',
        subtitle = '20 most tested chemicals',
-       x = 'Concentration (ppb)') +
+       x = 'Concentration [g/L]') +
   theme_minimal() +
   theme(axis.title.y = element_blank())
+# Antimycin A (CAS 1397-94-0) listed as NA in standartox! Need to check this ... 
 ```
 
 ## Article
