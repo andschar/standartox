@@ -5,7 +5,7 @@
 #' @return Returns a list of data.tables containing the downloaded data. 
 #'
 #' @param data_type character; Specify the type of data to download. Select from c("meta", "phch", "refs", "test_fin", "taxa", "catalog"). NULL (default) will download and imports all,
-#' @param dir_out character; Directory to which the downloaded files should be saved. Default is a temporary directory.
+#' @param stx_dir character; Directory to which the downloaded files should be saved. Default is a temporary directory.
 #' @param silent logical; If TRUE, suppresses messages. Default is TRUE.
 #' 
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
@@ -19,7 +19,7 @@
 #' }
 #' @noRd
 #' 
-stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standartox"), silent = TRUE) {
+stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standartox"), silent = TRUE) {
   
   # Please keep this! Makes it easier to quickly pull everything without the need of having to specify specific 
   stx_files = c("meta", "phch", "refs", "test_fin", "taxa", "catalog")
@@ -28,7 +28,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
   data_type = match.arg( data_type, stx_files, several.ok = TRUE )
   
   # Check if the output directory exists, if not create it
-  if (!dir.exists(dir_out)) { dir.create(dir_out, recursive = TRUE) }
+  if (!dir.exists(stx_dir)) { dir.create(stx_dir, recursive = TRUE) }
   
   # HACK this has to be done, because doi.org is the only permanent link between versions
   qurl_permanent = 'https://doi.org/10.5281/zenodo.3785030'
@@ -54,7 +54,7 @@ stx_download = function(data_type = NULL, dir_out = file.path(tempdir(),"standar
     if(!silent) message('\nChecking standartox file: ', n)
     
     # Define destination file path
-    destfile = file.path(dir_out, n)
+    destfile = file.path(stx_dir, n)
     
     # Check if the file already exists
     if ( !file.exists(destfile) ) {
@@ -384,7 +384,7 @@ stx_query = function(
 #' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
 #' 
 #' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param dir_out character; Directory to which the catalog should be downloaded. Default is a temporary directory.
+#' @param stx_dir character; Directory to which the catalog should be downloaded. Default is a temporary directory.
 #' 
 #' @return Returns a list of data.frames containing information on data base variables
 #' 
@@ -401,15 +401,15 @@ stx_query = function(
 #' l = stx_catalog(silent = FALSE)
 #' 
 #' # to specify a directory to which the catalog should be downloaded
-#' l = stx_catalog(silent = FALSE, dir_out = "~/tmp")
+#' l = stx_catalog(silent = FALSE, stx_dir = "~/tmp")
 #' # This will create a directory under ~/tmp and download the catalog.rds file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' @export
 #' 
-stx_catalog = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
+stx_catalog = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox catalog..')
-  ls = stx_download(data_type = 'catalog', dir_out = dir_out)[[1]]
+  ls = stx_download(data_type = 'catalog', stx_dir = stx_dir)[[1]]
   
   return(ls)
 }
@@ -419,7 +419,7 @@ stx_catalog = function(silent = FALSE, dir_out = file.path(tempdir(), "standarto
 #' Retrieve a data.table containing the Standartox toxicity data
 #' 
 #' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param dir_out character; Directory to which the catalog should be downloaded. Default is a temporary directory.
+#' @param stx_dir character; Directory to which the catalog should be downloaded. Default is a temporary directory.
 #' 
 #' @return Returns a data.table.
 #' 
@@ -436,9 +436,9 @@ stx_catalog = function(silent = FALSE, dir_out = file.path(tempdir(), "standarto
 #' }
 #' @export
 #' 
-stx_data = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
+stx_data = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if(!silent) message('Retrieving Standartox data..')
-  out = stx_download(data_type = 'test_fin', dir_out = dir_out)[[1]]
+  out = stx_download(data_type = 'test_fin', stx_dir = stx_dir)[[1]]
   
   return(out)
 }
@@ -450,7 +450,7 @@ stx_data = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' @return Returns a data.table containing informaiton on chemicals in Standartox.
 #' 
 #' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param dir_out character; Directory to which the chemical information should be downloaded. Default is a temporary directory.
+#' @param stx_dir character; Directory to which the chemical information should be downloaded. Default is a temporary directory.
 #' 
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
@@ -465,16 +465,16 @@ stx_data = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' df = stx_chem(silent = FALSE)
 #' 
 #' # to specify a directory to which the chemical information should be downloaded
-#' df = stx_chem(silent = FALSE, dir_out = "~/tmp")
+#' df = stx_chem(silent = FALSE, stx_dir = "~/tmp")
 #' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' 
 #' @export
 #' 
-stx_chem = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
+stx_chem = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox chemical information..')
-  out = stx_download(data_type = 'phch', dir_out = dir_out)[[1]]
+  out = stx_download(data_type = 'phch', stx_dir = stx_dir)[[1]]
   
   return(out)
 }
@@ -486,7 +486,7 @@ stx_chem = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' @return Returns a data.table containing informaiton on taxa in Standartox.
 #' 
 #' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param dir_out character; Directory to which the taxa information should be downloaded. Default is a temporary directory.
+#' @param stx_dir character; Directory to which the taxa information should be downloaded. Default is a temporary directory.
 #' 
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
@@ -501,16 +501,16 @@ stx_chem = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")
 #' df = stx_taxa(silent = FALSE)
 #' 
 #' # to specify a directory to which the taxa information should be downloaded
-#' df = stx_taxa(silent = FALSE, dir_out = "~/tmp")
+#' df = stx_taxa(silent = FALSE, stx_dir = "~/tmp")
 #' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' 
 #' @export
 #' 
-stx_taxa = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
+stx_taxa = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox taxa information..')
-  out = stx_download(data_type = 'taxa', dir_out = dir_out)[[1]]
+  out = stx_download(data_type = 'taxa', stx_dir = stx_dir)[[1]]
   
   return(out)
 }
@@ -552,7 +552,7 @@ stx_aggregate = function(dat = NULL) {
 #' @return Returns a data.table containing meta informaiton on Standartox.
 #' 
 #' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param dir_out character; Directory to which the meta information should be downloaded. Default is a temporary directory.#' 
+#' @param stx_dir character; Directory to which the meta information should be downloaded. Default is a temporary directory.#' 
 #'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
@@ -567,16 +567,16 @@ stx_aggregate = function(dat = NULL) {
 #' df = stx_meta(silent = FALSE)
 #' 
 #' # to specify a directory to which the taxa information should be downloaded
-#' df = stx_meta(silent = FALSE, dir_out = "~/tmp")
+#' df = stx_meta(silent = FALSE, stx_dir = "~/tmp")
 #' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' 
 #' @export
 #' 
-stx_meta = function(silent = FALSE, dir_out = file.path(tempdir(), "standartox")) {
+stx_meta = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox meta information..')
-  out = stx_download(data_type = 'meta', dir_out = dir_out)[[1]]
+  out = stx_download(data_type = 'meta', stx_dir = stx_dir)[[1]]
   
   return(out)
 }
