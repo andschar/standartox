@@ -19,9 +19,6 @@ Standartox is a database and tool facilitating the retrieval of ecotoxicological
 if (!requireNamespace("standartox", quietly = TRUE)) {
   remotes::install_github('andschar/standartox') # development version
 }
-
-# if you are experiencing problems with the installation you can also simply source the R script:
-# source("path/to/local/github/standartox/R/standartox.R")
 ```
 
 ## Functions
@@ -34,6 +31,7 @@ The function returns a list of all possible arguments that can bes use in `stx_q
 
 ```{r message=FALSE}
 require(standartox)
+require(data.table)
 catal = stx_catalog()
 names(catal)
 ```
@@ -66,9 +64,6 @@ dat = stx_query( verbose = TRUE )
 Let's say, we want to retrieve the 20 most tested chemicals on the genus _[Oncorhynchus](https://en.wikipedia.org/wiki/Oncorhynchus)_. We allow for test durations between 48 and 120 hours and want the tests restricted to active ingredients only. Since we are only interested in the half maximal effective concentration, we choose XX50 as our endpoint. As an aggregation method we choose the geometric mean. The code below makes use of the data.table package.
 
 ```{r warning=FALSE}
-require(data.table)
-require(standartox)
-
 # Run query
 oncor = stx_query(
   tax_genus = 'Oncorhynchus',

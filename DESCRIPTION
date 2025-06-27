@@ -1,12 +1,15 @@
 Package: standartox
-Version: 0.0.2
-Date: 2025-06-13
+Version: 1.0.0
+Date: 2025-06-27
 Title: Ecotoxicological Information from the Standartox Database
 Authors@R: c(
     person("Andreas", "Scharmüller",
             role = c("aut", "cre"),
             email = "andschar@protonmail.com",
-            comment = c(ORCID = "0000-0002-9290-3965"))
+            comment = c(ORCID = "0000-0002-9290-3965")),
+    person("Hannes", "Reinwald",
+            role = c("ctb"),
+            comment = c(ORCID = "0000-0003-3133-679X"))
     )
 Maintainer: Andreas Scharmüller <andschar@protonmail.com>
 Description: The Standartox database offers cleaned,

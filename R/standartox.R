@@ -71,7 +71,7 @@ stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standar
     # for .fst: fst::read_fst(); for .rds: readRDS()
     sfx = sub("^.+[.]","", basename(destfile))
     if( sfx == "fst" ) { 
-      stxDb_ls[[n]] = try ( fst::read_fst(destfile) )
+      stxDb_ls[[n]] = try ( fst::read_fst(destfile, as.data.table = TRUE) )
       if(!silent) message("Done!\n")
     } else if (sfx == "rds") { 
       stxDb_ls[[n]] = readRDS(destfile)
@@ -257,7 +257,6 @@ stx_query = function(
   names(stxDb) = sub("[.]fst$","",names(stxDb)) # FIX
   
   # Convert data frame to data table
-  stxDb = lapply( stxDb, function(dt) data.table::setDT(dt) )
   tox.dt = stxDb$test_fin # final output object. LARGE right after import!
   stxDb  = stxDb[stx_table[-1]] # dump the largest object! <- hope to save some memory with that.
   
@@ -265,11 +264,11 @@ stx_query = function(
   # Remove rows where the specified columns contain "NR" <- NA values
   if(rm_NR){
     if(verbose) message("Removing rows with 'NR' (not reported) for endpoint & duration_unit ...")
-    tox.dt = tox.dt[!grepl("NR", endpoint) & !grepl("NR", duration_unit) ] 
+    tox.dt = tox.dt[endpoint != "NR" & duration_unit != "NR"] # <- this should not be the case but to be save!
   }
   
   # Quick fix for endpoint values - some contain weird string endings.
-  tox.dt[, endpoint := sub("[/*]+$","", endpoint)]
+  # tox.dt[, endpoint := sub("[/*]+$","", endpoint)] # <- no longer needed
   if(!is.null(endpoint_group)){
     tmp_var = endpoint_group # quick fix
     tox.dt = tox.dt[endpoint_group %in% tmp_var]

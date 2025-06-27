@@ -4,12 +4,12 @@
 \alias{stx_taxa}
 \title{Retrieve taxa data}
 \usage{
-stx_taxa(silent = FALSE, dir_out = file.path(tempdir(), "standartox"))
+stx_taxa(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
 \item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
 
-\item{dir_out}{character; Directory to which the taxa information should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory to which the taxa information should be downloaded. Default is a temporary directory.}
 }
 \value{
 Returns a data.table containing informaiton on taxa in Standartox.
@@ -27,7 +27,7 @@ df = stx_taxa()
 df = stx_taxa(silent = FALSE)
 
 # to specify a directory to which the taxa information should be downloaded
-df = stx_taxa(silent = FALSE, dir_out = "~/tmp")
+df = stx_taxa(silent = FALSE, stx_dir = "~/tmp")
 # This will create a directory under ~/tmp and download the respective standartox file to that directory.
 # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 }
