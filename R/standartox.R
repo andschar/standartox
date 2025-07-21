@@ -160,7 +160,7 @@ filter_dt = function(dt, var_ls, silent = TRUE){
 #'
 #' @param cas_number character; Optional. Vector of CAS numbers to filter chemicals (e.g. \code{c("1071-83-6","63-25-2","138261-41-3")}). Default is \code{NULL} (no filtering).
 #' @param endpoint_group character; Optional. Endpoint group(s) to filter results. All possible endpoint groups can be checked via \code{stx_catalog()$endpoint_group}. Default is \code{c("XX50", "NOEX", "LOEX")}.
-#' @param exposure character; Optional. Vector of exposure types (e.g. \code{"aquatic"}). All possible exposure types can be checked via \code{stx_catalog()$exposure}. Default is \code{NULL}.
+#' @param exposure character; Optional. Vector of exposure types (e.g. \code{"static"}). All possible exposure types can be checked via \code{stx_catalog()$exposure}. Default is \code{NULL}.
 #' @param effect character; Optional. Vector of effect types (e.g. \code{"Mortality", "Growth"}). All possible effect types can be checked via \code{stx_catalog()$effect}. Default is \code{NULL}.
 #' @param duration numeric; Optional. Numeric vector of length two specifying minimum and maximum test duration (in hours), e.g. \code{c(0, 48)}. Default is \code{c(0, Inf)}.
 #' @param duration_unit character; Optional. Filter by duration unit (e.g. \code{"h"} for hours). All possible duration units can be checked via \code{stx_catalog()$duration_unit}. Set to \code{NULL} to keep all. Default is \code{"h"}.
