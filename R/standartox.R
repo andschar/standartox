@@ -111,12 +111,12 @@ stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standar
 #' )
 #' 
 #' # Filter your taxonomy table for genus and family specified.
-#' tax.out = filter_dt( taxa.dt, var_ls, silent = FALSE)
+#' tax.out = filter_dt.OR( taxa.dt, var_ls, silent = FALSE)
 #' View(tax.out) # inspect the output
 #' }
 #' 
 #' @noRd
-filter_dt = function(dt, var_ls, silent = TRUE){
+filter_dt.OR = function(dt, var_ls, silent = TRUE){
   stopifnot(is.data.frame(dt))
   stopifnot(is.list(var_ls))
   data.table::setDT(dt) # Ensure dt is a data.table
@@ -154,6 +154,81 @@ filter_dt = function(dt, var_ls, silent = TRUE){
 }
 
 
+
+#' Filter data.table based on a list of variables with AND logic
+#' 
+#' This function filters a data.table by sequentially applying filters for each column.
+#' It returns only the rows that satisfy *all* specified filtering criteria.
+#' 
+#' @param dt data.table; The data.table to filter.
+#' @param var_ls list; A named list where each element is a vector of values to filter by. The names of the list must match column names in the data.table.
+#' @param silent logical; If TRUE, suppresses messages. Default is TRUE.
+#' 
+#' @return Returns a filtered data.table containing only the rows that match all specified criteria. If no matches are found, a warning is issued and an empty data.table is returned.
+#' 
+#' @author Hannes Reinwald (revised for 'AND' logic)
+#' 
+#' @examples
+#' \donttest{
+#' # Import the standartox taxonomy data table as example
+#' taxa.dt = stx_taxa()
+#' colnames(taxa.dt) # inspect column names to filter for
+#' 
+#' # Specify filters. We want rows where family is 'Daphniidae' AND
+#' # genus is 'Daphnia'.
+#' var_ls <- list(
+#'   tax_family = 'Daphniidae',
+#'   tax_genus  = 'Daphnia'
+#' )
+#' 
+#' # This should return only the 'Daphnia magna' row.
+#' tax.out <- filter_dt.AND(taxa.dt, var_ls, silent = FALSE)
+#' print(tax.out) 
+#' }
+#' 
+#' @noRd
+filter_dt.AND <- function(dt, var_ls, silent = TRUE) {
+  # --- Initial Checks ---
+  stopifnot(is.data.frame(dt))
+  stopifnot(is.list(var_ls))
+  dt_out <- data.table::setDT(data.table::copy(dt)) # Use a copy to avoid modifying the original dt by reference
+  
+  # --- Identify valid filters ---
+  # Select only those variables that are not NULL in the list
+  var_check <- names(var_ls)[!sapply(var_ls, is.null)]
+  
+  if (length(var_check) == 0) {
+    if (!silent) message("No filters provided in var_ls. Returning original data.table.")
+    return(dt_out)
+  }
+  
+  # --- Iteratively apply filters (AND logic) ---
+  for (var in var_check) {
+    if (!var %in% colnames(dt_out)) {
+      warning("Column '", var, "' not found in data.table. Skipping this filter.")
+      next # Skip to the next iteration
+    }
+    
+    filter_val <- var_ls[[var]]
+    if (!silent) message("Applying filter on '", var, "'...")
+    
+    # This is the key change: filter the already-filtered data.table
+    dt_out <- dt_out[dt_out[[var]] %in% filter_val]
+    
+    # Early exit if a filter results in zero rows
+    if (nrow(dt_out) == 0) {
+      if (!silent) {
+        warning("Filter on '", var, "' resulted in 0 rows. No final matches possible.")
+      }
+      return(dt_out) # Return the empty data.table
+    }
+  }
+  
+  return(dt_out)
+}
+
+
+
 #' Query Standartox Toxicity Data
 #'
 #' Retrieve and filter toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}) using chemical, experimental, and taxonomic criteria.
@@ -166,7 +241,7 @@ filter_dt = function(dt, var_ls, silent = TRUE){
 #' @param duration_unit character; Optional. Filter by duration unit (e.g. \code{"h"} for hours). All possible duration units can be checked via \code{stx_catalog()$duration_unit}. Set to \code{NULL} to keep all. Default is \code{"h"}.
 #' @param concentration_unit character; Optional. Filter by concentration unit (e.g. \code{"g/l"}). All possible concentration units can be checked via \code{stx_catalog()$concentration_unit}. Default is \code{NULL}.
 #' @param concentration_type character; Optional. Filter by concentration type (e.g. \code{"active ingredient"}). All possible concentration types can be checked via \code{stx_catalog()$concentration_type}. Default is \code{NULL}.
-#' @param tax_columns character; Columns of taxonomic information to append to results. All possible columns can be checked via \code{colnames(stx_taxa())}. Default is \code{c("group", "taxon", "genus", "family")}.
+#' @param tax_columns character; Columns of taxonomic information to append to results. All possible columns can be checked via \code{colnames(stx_taxa())}. Default is \code{c("tax_group", "tax_taxon", "tax_genus", "tax_family")}.
 #' @param tax_genus character; Optional. Filter by genus. All possible genera can be checked via \code{stx_catalog()$genus}. Default is \code{NULL}.
 #' @param tax_family character; Optional. Filter by family. All possible families can be checked via \code{stx_catalog()$family}. Default is \code{NULL}.
 #' @param tax_order character; Optional. Filter by order. All possible orders can be checked via \code{stx_catalog()$order}. Default is \code{NULL}.
@@ -223,25 +298,28 @@ filter_dt = function(dt, var_ls, silent = TRUE){
 #' }
 #'
 #' @export
-#' 
 stx_query = function(
     ## COMPOUND FILTERING ##
   cas_number = NULL,
   ## BASIC TOX DATA FILTERING ##
   endpoint_group = c('XX50', 'NOEX', 'LOEX'),
+  endpoint_qualifier = "=",  # *NEW - character vector; any of c("=",">","<","~","<=",">="). Set to NULL if you want to keep all results!
+  endpoint = NULL,           # *NEW - character vector
   exposure = NULL,           # character vector
   effect = NULL,             # character vector
+  measurement = NULL,        # *NEW - character vector
   duration = c(0, Inf),      # numeric vector 
   duration_unit = "h",       # character vector; set to NULL if you want to keep all results!
   concentration_unit = NULL, # character vector
   concentration_type = NULL, # character vector
+  organism_lifestage = NULL, # *NEW - character vector
   ## TAXA FILTERING ##
-  tax_columns = c('group', 'taxon', 'genus', 'family'), # Taxonomy columns to append to the query results.
+  tax_columns = c('tax_group', 'tax_taxon', 'tax_genus', 'tax_family'), # Taxonomy columns to append to the query results. One of colnames(stx_taxa())
   tax_genus  = NULL, # character vector
   tax_family = NULL, # character vector
   tax_order  = NULL, # character vector
   tax_class  = NULL, # character vector
-  tax_group = NULL, # character vector
+  tax_group  = NULL, # character vector
   ## REFERENCE SECTION ##
   include_reference = FALSE, # Default FALSE
   rm_NR = TRUE, # Default TRUE; if FALSE, keep NR values in the result
@@ -256,8 +334,10 @@ stx_query = function(
   stxDb =  stx_download(data_type = stx_table) #, ...)
   names(stxDb) = sub("[.]fst$","",names(stxDb)) # FIX
   
-  # Convert data frame to data table
+  # Split up list object
+  total_entries = nrow(stxDb$test_fin)
   tox.dt = stxDb$test_fin # final output object. LARGE right after import!
+  suppressWarnings( tox.dt[, casnr := NULL] ) # HOT FIX!
   stxDb  = stxDb[stx_table[-1]] # dump the largest object! <- hope to save some memory with that.
   
   # First quick filter steps:
@@ -267,16 +347,21 @@ stx_query = function(
     tox.dt = tox.dt[endpoint != "NR" & duration_unit != "NR"] # <- this should not be the case but to be save!
   }
   
-  # Quick fix for endpoint values - some contain weird string endings.
-  # tox.dt[, endpoint := sub("[/*]+$","", endpoint)] # <- no longer needed
   if(!is.null(endpoint_group)){
-    tmp_var = endpoint_group # quick fix
+    tmp_var = endpoint_group     # quick fix
     tox.dt = tox.dt[endpoint_group %in% tmp_var]
   }
+  
+  if(!is.null(endpoint_qualifier)){
+    tmp_var = endpoint_qualifier # quick fix
+    tox.dt = tox.dt[qualifier %in% tmp_var]
+  }
+  
   if(!is.null(duration_unit)){
-    tmp_var = duration_unit # quick fix
+    tmp_var = duration_unit      # quick fix
     tox.dt = tox.dt[duration_unit %in% tmp_var]
   }
+  
   if( nrow(tox.dt) == 0 ) {
     warning("No query matches found for the provided endpoint_group or duration_unit. Please check the input values.")
   }
@@ -299,12 +384,15 @@ stx_query = function(
   # Step 2: Filter for taxonomic groups then merge with toxdata
   if(verbose) message("Appending taxonomic information ...")
   
-  # Append 'tax_' prefix to the taxonomic columns (except for tax_key)
   tax_key = "tl_id"
-  tax_col = paste0("tax_", colnames(stxDb$taxa))
-  tax_col[ grep(paste0("^tax_",tax_key,"$"),tax_col) ] <- tax_key # replace tax_key with tl_id
-  colnames(stxDb$taxa) <- tax_col # set new column names
-  tax_columns = paste0("tax_", tax_columns) # append 'tax_' prefix to tax_columns
+  
+  # Check if the provided tax_columns + tax_key are element of the taxa table. If any is not matching:
+  # return a WARNING letting the user know which column did not match! <- was then removed!
+  tmp_check = tax_columns %in% colnames(stxDb$taxa)
+  if( !all(tmp_check) ){
+    warning("The following non-matching column names were identified in 'tax_columns':\n",
+            paste(tax_columns[!tmp_check], collapse = ", "),"\nFor these columns no filtering could be applied!")
+    tax_columns = tax_columns[tmp_check] }
   
   # Select pre-defined columns for output
   tax.out = stxDb$taxa[, c(tax_key, tax_columns), with = FALSE]
@@ -321,13 +409,14 @@ stx_query = function(
     }
   }
   ## Filtering tax_columns ##
-  var_ls = list( # Specify taxonomy columns for which tax filtering can be applied
+  var_ls = list( 
+    # Specify taxonomy columns for which tax filtering can be applied
     tax_class  = tax_class,
     tax_order  = tax_order, 
     tax_family = tax_family,
     tax_genus  = tax_genus
   )
-  tox.dt = filter_dt( tox.dt, var_ls)
+  tox.dt = filter_dt.AND( tox.dt, var_ls)
   if( is.null(tox.dt) ) { return(NULL) } # Check
   suppressWarnings( tox.dt[, (tax_key) := NULL] ) # don't need the tl_id column anymore.
   
@@ -335,12 +424,16 @@ stx_query = function(
   tox.dt = tox.dt[!is.na(result_id)] # rmv any rows with NA in result_id <- this should not be the case but to be save!
   # Filter for the selected columns 
   var_ls = list(
+    # filter attributes can be simply added below:
     concentration_unit  = concentration_unit,
     concentration_type  = concentration_type, 
     effect = effect,
-    exposure  = exposure
+    exposure  = exposure,
+    endpoint = endpoint,                    # NEW <- add as variable to the function!
+    measurement = measurement,              # NEW <- add as variable to the function!
+    organism_lifestage = organism_lifestage # NEW <- add as variable to the function!
   )
-  tox.dt = filter_dt( tox.dt, var_ls )
+  tox.dt = filter_dt.AND( tox.dt, var_ls ) # <- something fishy with this function ... 
   if( is.null(tox.dt) ) { return(NULL) } # Check 
   
   # Filter for duration
@@ -372,10 +465,11 @@ stx_query = function(
     }
     return(x)  # Return the modified column
   })]
-  # Filter out the "result_id" column
-  message("Done!\n")
-  return( tox.dt[, c("result_id") := NULL] )
+  
+  message("Query returned ",nrow(tox.dt)," results out of ",total_entries," total entries.\nDone!\n")
+  return( tox.dt[, c("result_id") := NULL] ) # Filter out the "result_id" column
 } 
+
 
 
 #' Retrieve data catalog
@@ -405,13 +499,14 @@ stx_query = function(
 #' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 #' }
 #' @export
-#' 
 stx_catalog = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox catalog..')
   ls = stx_download(data_type = 'catalog', stx_dir = stx_dir)[[1]]
   
   return(ls)
 }
+
+
 
 #' Retrieve Standartox toxicity values
 #' 
@@ -434,13 +529,14 @@ stx_catalog = function(silent = FALSE, stx_dir = file.path(tempdir(), "standarto
 #' 
 #' }
 #' @export
-#' 
 stx_data = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if(!silent) message('Retrieving Standartox data..')
   out = stx_download(data_type = 'test_fin', stx_dir = stx_dir)[[1]]
   
   return(out)
 }
+
+
 
 #' Retrieve chemical data
 #' 
@@ -470,7 +566,6 @@ stx_data = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")
 #' }
 #' 
 #' @export
-#' 
 stx_chem = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox chemical information..')
   out = stx_download(data_type = 'phch', stx_dir = stx_dir)[[1]]
@@ -506,7 +601,6 @@ stx_chem = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")
 #' }
 #' 
 #' @export
-#' 
 stx_taxa = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox taxa information..')
   out = stx_download(data_type = 'taxa', stx_dir = stx_dir)[[1]]
@@ -514,12 +608,13 @@ stx_taxa = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")
   return(out)
 }
 
+
+
 #' Function to aggregate filtered test results
 #'  
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' 
 #' @noRd
-#'  
 stx_aggregate = function(dat = NULL) {
   # assign variables to avoid R CMD check NOTES
   . = concentration = cname = cas = tax_taxon = gmn = gmnsd = n = NULL
@@ -545,6 +640,8 @@ stx_aggregate = function(dat = NULL) {
     .(cname, cas)
   ]
 }
+
+
 
 #' Retrieve meta data
 #' 
@@ -572,7 +669,6 @@ stx_aggregate = function(dat = NULL) {
 #' }
 #' 
 #' @export
-#' 
 stx_meta = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox meta information..')
   out = stx_download(data_type = 'meta', stx_dir = stx_dir)[[1]]
