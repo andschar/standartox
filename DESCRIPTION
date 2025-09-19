@@ -1,6 +1,6 @@
 Package: standartox
-Version: 1.0.0
-Date: 2025-06-27
+Version: 1.0.1
+Date: 2025-09-19
 Title: Ecotoxicological Information from the Standartox Database
 Authors@R: c(
     person("Andreas", "Scharmüller",
