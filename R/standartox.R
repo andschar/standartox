@@ -37,7 +37,7 @@
 #' list.files(my_stx_dir)
 #' }
 #' 
-#' @export
+#' @noRd
 stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standartox"), silent = TRUE) {
   
   # Please keep this! Makes it easier to quickly pull everything without the need of having to specify specific 
