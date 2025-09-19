@@ -1,24 +1,43 @@
-#' Download Standartox Data Tables from Zenodo.org
+#' Download and Cache Standartox Data Tables
 #' 
-#' Downloads the Standartox data tables from Zenodo.org and reads them into R. Specific data_types can be specified.
-#' 
-#' @return Returns a list of data.tables containing the downloaded data. 
+#' Downloads data tables from the Standartox Zenodo repository, reads them into R, and caches them locally to avoid redundant downloads. The function dynamically resolves the latest file versions from the permanent DOI.
 #'
-#' @param data_type character; Specify the type of data to download. Select from c("meta", "phch", "refs", "test_fin", "taxa", "catalog"). NULL (default) will download and imports all,
-#' @param stx_dir character; Directory to which the downloaded files should be saved. Default is a temporary directory.
-#' @param silent logical; If TRUE, suppresses messages. Default is TRUE.
-#' 
+#' @details
+#' This function performs two key operations:
+#' 1.  It resolves the permanent Standartox DOI (\url{https://doi.org/10.5281/zenodo.3785030}) to find the most recent file URLs on Zenodo, making it robust to future data updates.
+#' 2.  It checks if a file already exists in the specified `stx_dir` directory. If it does, the download is skipped, and the local version is used, saving time and bandwidth.
+#'
+#' @param data_type character; Optional. A vector specifying the data tables to download. Choose from \code{c("meta", "phch", "refs", "test_fin", "taxa", "catalog")}. If \code{NULL} (the default), all available data tables are downloaded.
+#' @param stx_dir character; Path to the directory for storing/caching the downloaded files. Defaults to a "standartox" subdirectory within the session's temporary directory (i.e., \code{file.path(tempdir(), "standartox")}).
+#' @param silent logical; If \code{TRUE} (the default), suppresses progress messages during download and file reading.
+#'
+#' @return A named list of \code{data.table} objects. The names of the list elements correspond to the downloaded filenames (e.g., \code{"test_fin.fst"}).
+#'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
-#' 
+#'
 #' @examples
 #' \donttest{
-#' # might fail if there is no internet connection or Zenodo.org not not available
-#' stxDb = stx_download()
-#' names(stxDb) # files downloaded from zenodo.org
-#' }
-#' @noRd
+#' # This function may fail if there is no internet connection or Zenodo.org is not available
 #' 
+#' # Download all data tables (to a temporary directory)
+#' stxDb_all <- stx_download()
+#' # The names of the list show the files that were loaded
+#' names(stxDb_all)
+#' 
+#' # Download only specific data tables (e.g., chemical and taxonomy info)
+#' stxDb_subset <- stx_download(data_type = c("phch", "taxa"))
+#' names(stxDb_subset)
+#' 
+#' #' # Specify a permanent directory for storing the downloaded data tables
+#' # This will create the directory if it doesn't exist and cache the files there
+#' my_stx_dir <- file.path("~","my_standartox_db")
+#' stxDb_permanent <- stx_download(stx_dir = my_stx_dir, silent = FALSE)
+#' # Check the directory to see the cached files
+#' list.files(my_stx_dir)
+#' }
+#' 
+#' @export
 stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standartox"), silent = TRUE) {
   
   # Please keep this! Makes it easier to quickly pull everything without the need of having to specify specific 
@@ -81,6 +100,7 @@ stx_download = function(data_type = NULL, stx_dir = file.path(tempdir(),"standar
   # Return the list of data frames
   return(stxDb_ls)
 }
+
 
 
 #' Filter data.table based on a list of variables
@@ -229,70 +249,86 @@ filter_dt.AND <- function(dt, var_ls, silent = TRUE) {
 
 
 
-#' Query Standartox Toxicity Data
+#' Query and Filter Standartox Toxicity Data
 #'
-#' Retrieve and filter toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}) using chemical, experimental, and taxonomic criteria.
+#' Retrieves and filters toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}). This function acts as a powerful front-end for subsetting the database based on chemical, experimental, and taxonomic criteria.
 #'
-#' @param cas_number character; Optional. Vector of CAS numbers to filter chemicals (e.g. \code{c("1071-83-6","63-25-2","138261-41-3")}). Default is \code{NULL} (no filtering).
-#' @param endpoint_group character; Optional. Endpoint group(s) to filter results. All possible endpoint groups can be checked via \code{stx_catalog()$endpoint_group}. Default is \code{c("XX50", "NOEX", "LOEX")}.
-#' @param exposure character; Optional. Vector of exposure types (e.g. \code{"static"}). All possible exposure types can be checked via \code{stx_catalog()$exposure}. Default is \code{NULL}.
-#' @param effect character; Optional. Vector of effect types (e.g. \code{"Mortality", "Growth"}). All possible effect types can be checked via \code{stx_catalog()$effect}. Default is \code{NULL}.
-#' @param duration numeric; Optional. Numeric vector of length two specifying minimum and maximum test duration (in hours), e.g. \code{c(0, 48)}. Default is \code{c(0, Inf)}.
-#' @param duration_unit character; Optional. Filter by duration unit (e.g. \code{"h"} for hours). All possible duration units can be checked via \code{stx_catalog()$duration_unit}. Set to \code{NULL} to keep all. Default is \code{"h"}.
-#' @param concentration_unit character; Optional. Filter by concentration unit (e.g. \code{"g/l"}). All possible concentration units can be checked via \code{stx_catalog()$concentration_unit}. Default is \code{NULL}.
-#' @param concentration_type character; Optional. Filter by concentration type (e.g. \code{"active ingredient"}). All possible concentration types can be checked via \code{stx_catalog()$concentration_type}. Default is \code{NULL}.
-#' @param tax_columns character; Columns of taxonomic information to append to results. All possible columns can be checked via \code{colnames(stx_taxa())}. Default is \code{c("tax_group", "tax_taxon", "tax_genus", "tax_family")}.
-#' @param tax_genus character; Optional. Filter by genus. All possible genera can be checked via \code{stx_catalog()$genus}. Default is \code{NULL}.
-#' @param tax_family character; Optional. Filter by family. All possible families can be checked via \code{stx_catalog()$family}. Default is \code{NULL}.
-#' @param tax_order character; Optional. Filter by order. All possible orders can be checked via \code{stx_catalog()$order}. Default is \code{NULL}.
-#' @param tax_class character; Optional. Filter by class. All possible classes can be checked via \code{stx_catalog()$class}. Default is \code{NULL}.
-#' @param tax_group character; Optional. Filter by one or more ecotoxicological groups. Possible values are \code{"invertebrate"}, \code{"plant"}, \code{"fish"}, \code{"fungi"}, \code{"algae"}, \code{"aves"}, \code{"amphibia"}, \code{"mammalia"}, \code{"reptilia"}, \code{"macrophyte"}. All possible ecotox groups can be checked via \code{stx_catalog()$group}. Multiple entries possible. Default is \code{NULL}.
-#' @param include_reference logical; If \code{TRUE}, append reference information. Default is \code{FALSE}.
-#' @param rm_NR logical; If \code{TRUE}, remove rows with "NR" (not reported) values. Default is \code{TRUE}.
-#' @param verbose logical; If \code{TRUE}, print progress messages. Default is \code{FALSE}.
-#' @param ... Additional arguments passed to \code{stx_download}.
+#' @details
+#' The function operates in a sequential process:
+#' 1.  It first downloads the necessary data tables (`test_fin`, `phch`, `taxa`, and optionally `refs`) using \code{\link{stx_download}}.
+#' 2.  It performs initial, fast filtering based on `endpoint_group`, `endpoint_qualifier`, and `duration_unit`.
+#' 3.  It then appends chemical and taxonomic information, filtering by `cas_number` and the `tax_*` parameters.
+#' 4.  Finally, it applies the remaining experimental filters (`effect`, `duration`, `concentration_unit`, etc.).
 #'
-#' @return Returns a \code{data.table} with filtered Standartox toxicity data.
+#' By default, filters are combined with a logical "AND". For example, specifying a `tax_genus` and an `effect` will return only records that match both criteria.
+#'
+#' `stx_catalog()` is a helper function that provides a list of all valid filter values for many of this function's parameters.
+#'
+#' @param cas_number character; Optional vector of CAS numbers to filter by (e.g., \code{c("1071-83-6", "63-25-2")}). If `NULL` (default), results for all chemicals are returned.
+#' @param endpoint_group character; Optional vector of endpoint groups to filter results. See \code{stx_catalog()$endpoint_group} for all possible values. Defaults to \code{c("XX50", "NOEX", "LOEX")}.
+#' @param endpoint_qualifier character; Optional vector of endpoint value qualifiers (e.g., \code{c(">", "<=")}). Common values are "=", ">", "<", "~", "<=", ">=". Defaults to \code{"="}. Set to `NULL` to include all qualifiers.
+#' @param endpoint character; Optional vector of specific endpoints to filter by (e.g., "LC50", "NOEC"). If `NULL` (default), no endpoint filtering is applied.
+#' @param exposure character; Optional vector of exposure types. See \code{stx_catalog()$exposure}. If `NULL` (default), no exposure type filtering is applied.
+#' @param effect character; Optional vector of observed effects. See \code{stx_catalog()$effect}. If `NULL` (default), no effect filtering is applied.
+#' @param measurement character; Optional vector of measurement types. See \code{stx_catalog()$measurement}. If `NULL` (default), no measurement filtering is applied.
+#' @param duration numeric; A numeric vector of length two specifying the duration range (in hours) to filter by, e.g., \code{c(24, 96)}. Defaults to \code{c(0, Inf)}, including all durations.
+#' @param duration_unit character; Filter by the unit of duration. See \code{stx_catalog()$duration_unit}. Defaults to \code{"h"} (hours). Set to `NULL` to keep all units.
+#' @param concentration_unit character; Optional vector of concentration units. See \code{stx_catalog()$concentration_unit}. If `NULL` (default), no filtering is applied.
+#' @param concentration_type character; Optional vector of concentration types. See \code{stx_catalog()$concentration_type}. If `NULL` (default), no filtering is applied.
+#' @param organism_lifestage character; Optional vector of organism lifestages. See \code{stx_catalog()$organism_lifestage}. If `NULL` (default), no lifestage filtering is applied.
+#' @param tax_columns character; A vector of taxonomic column names to append to the results. See \code{colnames(stx_taxa())} for all options. Defaults to \code{c("tax_group", "tax_taxon", "tax_genus", "tax_family")}.
+#' @param tax_genus character; Optional vector of genera to filter by. See \code{stx_catalog()$genus}. If `NULL` (default), no genus filtering is applied.
+#' @param tax_family character; Optional vector of families to filter by. See \code{stx_catalog()$family}. If `NULL` (default), no family filtering is applied.
+#' @param tax_order character; Optional vector of orders to filter by. See \code{stx_catalog()$order}. If `NULL` (default), no order filtering is applied.
+#' @param tax_class character; Optional vector of classes to filter by. See \code{stx_catalog()$class}. If `NULL` (default), no class filtering is applied.
+#' @param tax_group character; Optional vector of ecotoxicological groups to filter by. See \code{stx_catalog()$tax_group} for valid inputs (e.g., "invertebrate", "fish"). If `NULL` (default), no group filtering is applied.
+#' @param include_reference logical; If `TRUE`, reference information (author, year, title) is appended to the results. Defaults to \code{FALSE}.
+#' @param rm_NR logical; If `TRUE` (default), rows with "NR" (not reported) values in the critical `endpoint` and `duration_unit` columns are removed early in the query process. Note that at the end of the query, all remaining "NR" values in any character column are converted to `NA`.
+#' @param verbose logical; If `TRUE`, prints messages detailing the query progress. Defaults to \code{FALSE}.
+#' @param ... Additional arguments to be passed on to \code{\link{stx_download}}, such as `stx_dir` to specify a cache directory.
+#'
+#' @return A \code{data.table} containing the filtered Standartox toxicity data. If the query results in zero matches, the function returns `NULL` and issues a warning.
 #'
 #' @author Hannes Reinwald
 #'
 #' @examples
 #' \donttest{
+#' # This function may fail if there is no internet connection or Zenodo.org is not available
 #' 
-#' Basic stx_query() call: Will return results filtered for default endpoint_group = c("XX50", "NOEX", "LOEX") and duration_unit = "h"
-#' stx_query(verbose = T)
+#' # Basic query using default filters (XX50, NOEX, LOEX endpoints in hours)
+#' # Using verbose=TRUE to see the process
+#' results_default <- stx_query(verbose = TRUE)
 #' 
-#' # If you wish to filter for different endpoint groups, you can specify them in the query.
-#' stx_catalog()$endpoint_group # to view available endpoint groups
-#' stx_query(endpoint_group = c("Bioconc","MATC","MCIG"))
+#' # To see available filter options, use the catalog function
+#' catalog <- stx_catalog()
+#' print(catalog$endpoint_group)
 #' 
-#' # Query for a specific CAS number, endpoint group, and tax group(s)
-#' stx_query(
-#'   cas_number = "1071-83-6",
-#'   endpoint_group = c("NOEX","LOEX"),
-#'   duration = c(0, 120),
-#'   ecotox_group = c("invertebrate", "fish", "algae"),
+#' # Query for a specific CAS number and multiple specific endpoints for key taxonomic groups
+#' q1 <- stx_query(
+#'   cas_number = "1071-83-6", # Glyphosate
+#'   endpoint = c("LC50", "EC50", "LOEC", "NOEC"),
+#'   duration = c(0, 120), # Up to 120 hours
+#'   tax_group = c("invertebrate", "fish", "algae")
 #' )
 #' 
-#' # get ALL LC50 values for 96 - 120 h of exposure for zebra fish (Danio rerio)
-#' stx_query(
-#'   endpoint_group = "XX50",
-#'   duration = c(96, 120),
-#'   effect = "mortality",
-#'   concentration_unit = "g/l",
-#'   concentration_type = "active ingredient",
+#' # Get all >LC50 values for Zebra fish (Danio rerio) embryos or larvae,
+#' # including reference information
+#' q2 <- stx_query(
+#'   endpoint = "LC50",
+#'   endpoint_qualifier = ">",
+#'   duration = c(72, 120),
 #'   tax_genus = "Danio",
-#'   include_reference = TRUE
+#'   organism_lifestage = c("Embryo", "Larva"),
+#'   include_reference = TRUE,
+#'   verbose = TRUE
 #' )
 #' 
-#' # get ALL LC50 values for 24 - 48 h of exposure for the family of Daphniidae
-#' stx_query(
+#' # Get all XX50 acute toxicity values for the family Daphniidae related to mobility
+#' q3 <- stx_query(
 #'   endpoint_group = "XX50",
 #'   duration = c(24, 48),
-#'   effect = "mortality",
-#'   concentration_unit = "g/l",
-#'   concentration_type = "active ingredient",
-#'   tax_family = "Daphniidae"
+#'   measurement = c("immobile", "mobility", "swimming"),
+#'   tax_family = "Daphniidae",
 #'   include_reference = TRUE
 #' )
 #' }
@@ -472,139 +508,177 @@ stx_query = function(
 
 
 
-#' Retrieve data catalog
+
+#' Retrieve Standartox Data Catalog
 #' 
-#' Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
+#' Retrieves a catalog of all possible values for variables that can be used for filtering in \code{stx_query()}. This is useful for discovering valid inputs for parameters like \code{endpoint_group}, \code{effect}, or \code{tax_group}.
 #' 
-#' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param stx_dir character; Directory to which the catalog should be downloaded. Default is a temporary directory.
+#' @param silent logical; If \code{TRUE}, suppresses messages during the download process. Default is \code{FALSE}.
+#' @param stx_dir character; Directory where the catalog file is stored. If the file doesn't exist, it will be downloaded to this location. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{tempdir()}).
 #' 
-#' @return Returns a list of data.frames containing information on data base variables
+#' @return Returns a list where each element is a character vector containing the unique values for a specific data field available for querying.
 #' 
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
 #' 
 #' @examples
 #' \donttest{
-#' # might fail if there is no internet connection or Zenodo.org not not available
-#' # basic function call
-#' l = stx_catalog()
+#' # This function might fail if there is no internet connection or Zenodo.org is not available
 #' 
-#' # to get verbose output from the function
-#' l = stx_catalog(silent = FALSE)
+#' # Basic function call to retrieve the catalog
+#' catalog_data <- stx_catalog()
 #' 
-#' # to specify a directory to which the catalog should be downloaded
-#' l = stx_catalog(silent = FALSE, stx_dir = "~/tmp")
-#' # This will create a directory under ~/tmp and download the catalog.rds file to that directory.
-#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' # View the names of available fields in the catalog
+#' names(catalog_data)
+#' 
+#' # See all possible values for 'endpoint_group'
+#' print(catalog_data$endpoint_group)
+#' 
+#' # Get verbose output from the function
+#' catalog_verbose <- stx_catalog(silent = FALSE)
+#' 
+#' # Specify a permanent directory to download and cache the catalog file.
+#' # This speeds up future calls as the file won't need to be re-downloaded when starting a new session.
+#' my_dir <- file.path("~","my_stx_data")
+#' catalog_cached <- stx_catalog(stx_dir = my_dir, silent = FALSE)
 #' }
+#' 
 #' @export
 stx_catalog = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox catalog..')
   ls = stx_download(data_type = 'catalog', stx_dir = stx_dir)[[1]]
-  
   return(ls)
 }
 
 
 
-#' Retrieve Standartox toxicity values
-#' 
-#' Retrieve a data.table containing the Standartox toxicity data
-#' 
-#' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param stx_dir character; Directory to which the catalog should be downloaded. Default is a temporary directory.
-#' 
-#' @return Returns a data.table.
-#' 
+#' Retrieve the Core Standartox Toxicity Data Table
+#'
+#' Provides direct access to the main `test_fin` data table from the Standartox database, which contains the raw toxicity results.
+#'
+#' @details
+#' This function is a simple wrapper for \code{stx_download(data_type = 'test_fin')}. It is designed for users who want the primary data table of toxicity test results without the additional chemical or detailed taxonomic information that \code{\link{stx_query}} automatically appends.
+#'
+#' Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
+#'
+#' @param silent logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.
+#' @param stx_dir character; Directory where the data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).
+#'
+#' @return A \code{data.table} containing the core toxicity test results, with columns for endpoints, duration, concentration, effect, etc.
+#'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
-#' 
+#'
 #' @examples
 #' \donttest{
-#' # might fail if there is no internet connection or Zenodo.org not not available
-#' # basic function call
-#' 
-#' dt = stx_data()
-#' 
+#' # This function may fail if there is no internet connection or Zenodo.org is not available
+#'
+#' # Basic function call to retrieve the main data table
+#' tox_data <- stx_data()
+#'
+#' # Inspect the first few rows and column names to understand the structure
+#' head(tox_data)
+#' colnames(tox_data)
+#'
+#' # Example of using a permanent directory to cache the data
+#' # The message "Retrieving Standartox data.." will only appear on the first download.
+#' my_dir <- file.path("~", "my_stx_data")
+#' cached_data <- stx_data(stx_dir = my_dir, silent = FALSE)
 #' }
 #' @export
 stx_data = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if(!silent) message('Retrieving Standartox data..')
   out = stx_download(data_type = 'test_fin', stx_dir = stx_dir)[[1]]
-  
   return(out)
 }
 
 
 
-#' Retrieve chemical data
-#' 
-#' Retrieve data on all chemicals in Standartox.
-#' 
-#' @return Returns a data.table containing informaiton on chemicals in Standartox.
-#' 
-#' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param stx_dir character; Directory to which the chemical information should be downloaded. Default is a temporary directory.
-#' 
+#' Retrieve the Standartox Chemical Properties Table
+#'
+#' Provides direct access to the `phch` data table, which contains chemical identifiers and physicochemical properties for all compounds in the Standartox database.
+#'
+#' @details
+#' This function is a simple wrapper for \code{stx_download(data_type = 'phch')}. It is designed for users who want to explore the chemical inventory of the database, for instance, to find CAS numbers for use with \code{\link{stx_query}}.
+#'
+#' Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
+#'
+#' @param silent logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.
+#' @param stx_dir character; Directory where the chemical data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).
+#'
+#' @return A \code{data.table} containing chemical information, including columns such as CAS number, chemical name, and other identifiers.
+#'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
-#' 
+#'
 #' @examples
 #' \donttest{
-#' # might fail if there is no internet connection or Zenodo.org not not available
-#' # basic function call
-#' df = stx_chem()
-#' 
-#' # to get verbose output from the function
-#' df = stx_chem(silent = FALSE)
-#' 
-#' # to specify a directory to which the chemical information should be downloaded
-#' df = stx_chem(silent = FALSE, stx_dir = "~/tmp")
-#' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
-#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' # This function may fail if there is no internet connection or Zenodo.org is not available
+#'
+#' # Basic function call to retrieve the chemical data table
+#' chem_data <- stx_chem()
+#'
+#' # Inspect the first few rows and column names to see what's available
+#' head(chem_data)
+#' colnames(chem_data)
+#'
+#' # Example of using a permanent directory to cache the data file
+#' # The "Retrieving..." message will only appear on the first download.
+#' my_dir <- file.path("~", "my_stx_data")
+#' cached_chem_data <- stx_chem(stx_dir = my_dir, silent = FALSE)
 #' }
 #' 
 #' @export
 stx_chem = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox chemical information..')
   out = stx_download(data_type = 'phch', stx_dir = stx_dir)[[1]]
-  
   return(out)
 }
 
-#' Retrieve taxa data
-#' 
-#' Retrieve data on all taxa in Standartox.
-#' 
-#' @return Returns a data.table containing informaiton on taxa in Standartox.
-#' 
-#' @param silent logical; If TRUE, suppresses messages. Default is FALSE.
-#' @param stx_dir character; Directory to which the taxa information should be downloaded. Default is a temporary directory.
-#' 
+
+
+#' Retrieve the Standartox Taxonomy Table
+#'
+#' Provides direct access to the `taxa` data table, which contains the complete taxonomic classification for every species in the Standartox database.
+#'
+#' @details
+#' This function is a simple wrapper for \code{stx_download(data_type = 'taxa')}. It is designed for users who want to explore the full taxonomic scope of the database or find valid inputs for the `tax_genus`, `tax_family`, and `tax_group` parameters in \code{\link{stx_query}}.
+#'
+#' Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
+#'
+#' @param silent logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.
+#' @param stx_dir character; Directory where the taxonomy data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).
+#'
+#' @return A \code{data.table} containing taxonomic classifications, with columns such as `tax_genus`, `tax_family`, `tax_order`, and `tax_group`.
+#'
 #' @author Andreas Scharmueller \email{andschar@@protonmail.com}
 #' @author Hannes Reinwald
-#' 
+#'
 #' @examples
 #' \donttest{
-#' # might fail if there is no internet connection or Zenodo.org not not available
-#' # basic function call
-#' df = stx_taxa()
-#' 
-#' # to get verbose output from the function
-#' df = stx_taxa(silent = FALSE)
-#' 
-#' # to specify a directory to which the taxa information should be downloaded
-#' df = stx_taxa(silent = FALSE, stx_dir = "~/tmp")
-#' # This will create a directory under ~/tmp and download the respective standartox file to that directory.
-#' # The files are then permanently stored in that directory and can be directly read when restarting your R session.
+#' # This function may fail if there is no internet connection or Zenodo.org is not available
+#'
+#' # Basic function call to retrieve the taxonomy data table
+#' taxa_data <- stx_taxa()
+#'
+#' # Inspect the first few rows and see all available columns
+#' head(taxa_data)
+#' colnames(taxa_data)
+#'
+#' # Find all unique ecotoxicological groups in the database
+#' if (nrow(taxa_data) > 0) {
+#'   print(unique(taxa_data$tax_group))
+#' }
+#'
+#' # Example of using a permanent directory to cache the data file
+#' my_dir <- file.path("~", "my_stx_data")
+#' cached_taxa_data <- stx_taxa(stx_dir = my_dir, silent = FALSE)
 #' }
 #' 
 #' @export
 stx_taxa = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox taxa information..')
   out = stx_download(data_type = 'taxa', stx_dir = stx_dir)[[1]]
-  
   return(out)
 }
 
@@ -672,6 +746,5 @@ stx_aggregate = function(dat = NULL) {
 stx_meta = function(silent = FALSE, stx_dir = file.path(tempdir(), "standartox")) {
   if (!silent) message('Retrieving Standartox meta information..')
   out = stx_download(data_type = 'meta', stx_dir = stx_dir)[[1]]
-  
   return(out)
 }
