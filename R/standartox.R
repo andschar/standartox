@@ -373,7 +373,7 @@ stx_query = function(
   # Split up list object
   total_entries = nrow(stxDb$test_fin)
   tox.dt = stxDb$test_fin # final output object. LARGE right after import!
-  suppressWarnings( tox.dt[, casnr := NULL] ) # HOT FIX!
+  suppressWarnings( tox.dt[, cl_id := NULL] ) # HOT FIX!
   stxDb  = stxDb[stx_table[-1]] # dump the largest object! <- hope to save some memory with that.
   
   # First quick filter steps:
@@ -410,9 +410,11 @@ stx_query = function(
     if( nrow(stxDb$phch) == 0 ) {
       warning("No query matches found for the provided CAS numbers. Please check the input values.")
     }
-    merge(stxDb$phch, tox.dt, all.x = TRUE, by = "cl_id") -> tox.dt
+    #merge(stxDb$phch, tox.dt, all.x = TRUE, by = "cl_id") -> tox.dt
+    merge(stxDb$phch, tox.dt, all.x = TRUE, by = "casnr") -> tox.dt  
   } else {
-    merge(stxDb$phch, tox.dt, all.y = TRUE, by = "cl_id") -> tox.dt
+    #merge(stxDb$phch, tox.dt, all.y = TRUE, by = "cl_id") -> tox.dt
+    merge(stxDb$phch, tox.dt, all.y = TRUE, by = "casnr") -> tox.dt
   }
   suppressWarnings( tox.dt[, c("chem_class","casnr", "cl_id") := NULL] ) # don't need the cl_id column anymore.
   
