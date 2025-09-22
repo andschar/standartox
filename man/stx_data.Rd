@@ -4,25 +4,25 @@
 \alias{stx_data}
 \title{Retrieve Standartox toxicity values}
 \usage{
-stx_data(silent = FALSE, dir_out = file.path(tempdir(), "standartox"))
+stx_data(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
 \item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
 
-\item{dir_out}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
 }
 \value{
 Returns a data.table.
 }
 \description{
-Retrieve a data.table contianing the Standartox toxicity data
+Retrieve a data.table containing the Standartox toxicity data
 }
 \examples{
 \donttest{
 # might fail if there is no internet connection or Zenodo.org not not available
 # basic function call
 
-l = stx_data()
+dt = stx_data()
 
 }
 }

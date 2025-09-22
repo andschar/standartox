@@ -22,16 +22,19 @@ environmental toxicity of chemicals.
 
 ``` r
 # install.packages('standartox') # Currently only available on GitHub
-remotes::install_github('andschar/standartox') # development version
+if (!requireNamespace("standartox", quietly = TRUE)) {
+  remotes::install_github('andschar/standartox') # development version
+}
 ```
 
 ## Functions
 
 Standartox mainly consists of the functions `stx_catalog()` and
-`stx_datay()`. The former allows you to retrieve a summary catalog of
-the data. The latter fetches toxicity values from the database. There
-are also `stx_chem()`, `stx_taxa()` and `stx_meta()` funcitons which
-fetch chemical, taxonomic and meta data respectively.
+`stx_query()`. The former allows you to retrieve a summary catalog of
+the data. The latter querries and aggregates the data from the database.
+There are also `stx_data()`, `stx_chem()`, `stx_taxa()` and `stx_meta()`
+funcitons which fetch the whole toxicity, chemical, taxonomic and meta
+data tables respectively.
 
 ### `stx_catalog()`
 
@@ -40,47 +43,67 @@ in `stx_query()`.
 
 ``` r
 require(standartox)
+require(data.table)
 catal = stx_catalog()
 names(catal)
 ```
 
-    ##  [1] "date_compiled"           "standartox_version"     
-    ##  [3] "cas"                     "chem_class"             
-    ##  [5] "cname"                   "ref_author"             
-    ##  [7] "ref_number"              "ref_title"              
-    ##  [9] "ref_year"                "class"                  
-    ## [11] "continent"               "family"                 
-    ## [13] "genus"                   "group"                  
-    ## [15] "habitat"                 "order"                  
-    ## [17] "rank"                    "taxon"                  
-    ## [19] "casnr"                   "cl_id"                  
-    ## [21] "concentration"           "concentration_orig"     
-    ## [23] "concentration_type"      "concentration_unit"     
-    ## [25] "concentration_unit_orig" "duration"               
-    ## [27] "duration_orig"           "duration_unit"          
-    ## [29] "duration_unit_orig"      "effect"                 
-    ## [31] "endpoint"                "endpoint_group"         
-    ## [33] "exposure"                "qualifier"              
-    ## [35] "ref_number"              "result_id"              
+    ##  [1] "date_compiled"           "standartox_version"      "cas"                     "chem_class"             
+    ##  [5] "cname"                   "ref_author"              "ref_number"              "ref_title"              
+    ##  [9] "ref_year"                "class"                   "continent"               "family"                 
+    ## [13] "genus"                   "group"                   "habitat"                 "order"                  
+    ## [17] "rank"                    "taxon"                   "casnr"                   "cl_id"                  
+    ## [21] "concentration"           "concentration_orig"      "concentration_type"      "concentration_unit"     
+    ## [25] "concentration_unit_orig" "duration"                "duration_orig"           "duration_unit"          
+    ## [29] "duration_unit_orig"      "effect"                  "endpoint"                "endpoint_group"         
+    ## [33] "exposure"                "qualifier"               "ref_number"              "result_id"              
     ## [37] "tl_id"
 
 ``` r
 catal$endpoint # access the parameter top five endpoints
 ```
 
+Showing the top 10 endpoint values from `stx_catalog()`
+
 |      n | variable |
-| -----: | :------- |
+|-------:|:---------|
 | 202306 | NOEL     |
 | 191672 | NR       |
 | 162103 | LOEL     |
 | 152748 | NOEC     |
 | 135906 | LC50     |
+| 113089 | LOEC     |
+|  53417 | EC50     |
+|  22027 | BCF      |
+|  17337 | NR-LETH  |
+|  16179 | LD50     |
 
-### `stx_data()`
+### `stx_query()`
 
-The function allows you to retrieve all the Standartox data.
+The function allows you to query and filter the standartox data base.
 
-    ## Retrieving Standartox data..
+The most basic function call will return a data table filtered with
+default settings: `endpoint_group = c("XX50", "NOEX", "LOEX")` and
+`duration_unit = "h"`.
+
+By setting `verbose = TRUE` the user can follow all the query steps in
+more detail.
+
+    ## Querying Standartox data base ...
+
+    ## Reading in Standartox Data ...
+
+    ## fstcore package v0.10.0
+
+    ## (OpenMP detected, using 8 threads)
+
+    ## Removing rows with 'NR' (not reported) for endpoint & duration_unit ...
+
+    ## Appending chemical information ...
+
+    ## Appending taxonomic information ...
+
+    ## Done!
 
 ## Example: *Oncorhynchus*
 
@@ -93,66 +116,64 @@ endpoint. As an aggregation method we choose the geometric mean. The
 code below makes use of the data.table package.
 
 ``` r
-require(data.table)
-require(standartox)
-# Retrieve the data
-dat = stx_data()
+# Run query
+oncor = stx_query(
+  tax_genus = 'Oncorhynchus',
+  endpoint_group = 'XX50',
+  concentration_unit = 'g/l',
+  effect = 'mortality',
+  duration = c(48, 120),
+  concentration_type = 'active ingredient',
+  verbose = TRUE
+)
 ```
 
-    ## Retrieving Standartox data..
+    ## Querying Standartox data base ...
 
-``` r
-tax = stx_taxa()
-```
+    ## Reading in Standartox Data ...
 
-    ## Retrieving Standartox taxa information..
+    ## Removing rows with 'NR' (not reported) for endpoint & duration_unit ...
 
-``` r
-che = stx_chem()
-```
+    ## Appending chemical information ...
 
-    ## Retrieving Standartox chemical information..
+    ## Appending taxonomic information ...
 
-``` r
-# Merge
-dat2 = merge(dat, tax, by = 'tl_id', all.x = TRUE)
-dat2 = merge(dat2, che, by = 'cl_id', all.x = TRUE)
-dat3 = dat2[
-  endpoint == 'LC50' &
-  duration %between% c(48, 120) &
-  concentration_type == 'active ingredient' &
-  grepl('Oncorhynchus', taxon) # fish genus
-]
-```
+    ## Done!
 
 We subset the retrieved data to the 20 most tested chemicals and plot
 the result.
 
 ``` r
-cas20 = dat3[ , .N, cas ][ order(-N) ][1:20]
-dat4 = dat3[ cas %in% cas20$cas ]
-dat4_gmn = dat4[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, cname, taxon)]
+cas20 = oncor[ , .N, cas ][ order(-N) ][1:20]
+oncor20 = oncor[ cas %in% cas20$cas ]
+# add new column which combines cname & cas
+oncor20[ , cname := paste0(cname, ' [CAS: ', cas, ']') ]
+gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, cname, tax_genus)]
 ```
 
 ``` r
 require(ggplot2)
-ggplot(dat4, aes(y = cname)) +
+ggplot(oncor20, aes(y = cname)) +
   geom_point(aes(x = concentration, col = 'All values'),
              pch = 1, alpha = 0.3) +
-  geom_point(data = dat4_gmn,
+  geom_point(data = gmn_dt,
              aes(y = reorder(cname, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
              size = 3) +
   scale_x_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000),
                 labels = c(0.01, 0.1, 1, 10, 100, 1000, 10000)) +
   scale_color_viridis_d(name = '') +
-  labs(title = 'Oncorhynchus EC50 values',
+  labs(title = 'LC50 values for Genus: Oncorhynchus',
        subtitle = '20 most tested chemicals',
-       x = 'Concentration (ppb)') +
+       x = 'Concentration [g/L]') +
   theme_minimal() +
   theme(axis.title.y = element_blank())
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+# Antimycin A (CAS 1397-94-0) listed as NA in standartox! Need to check this ... 
+```
 
 ## Article
 
@@ -168,8 +189,8 @@ here](https://github.com/andschar/standartox/blob/master/CONTRIBUTING.md).
 
 ### Meta
 
-  - Please report any [issues, bugs or feature
-    requests](https://github.com/andschar/standartox/issues)
-  - License: MIT
-  - Get citation information for the standartox package in R doing
-    `citation(package = 'standartox')`
+- Please report any [issues, bugs or feature
+  requests](https://github.com/andschar/standartox/issues)
+- License: MIT
+- Get citation information for the standartox package in R doing
+  `citation(package = 'standartox')`

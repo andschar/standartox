@@ -4,12 +4,12 @@
 \alias{stx_catalog}
 \title{Retrieve data catalog}
 \usage{
-stx_catalog(silent = FALSE, dir_out = file.path(tempdir(), "standartox"))
+stx_catalog(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
 \item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
 
-\item{dir_out}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
 }
 \value{
 Returns a list of data.frames containing information on data base variables
@@ -27,7 +27,7 @@ l = stx_catalog()
 l = stx_catalog(silent = FALSE)
 
 # to specify a directory to which the catalog should be downloaded
-l = stx_catalog(silent = FALSE, dir_out = "~/tmp")
+l = stx_catalog(silent = FALSE, stx_dir = "~/tmp")
 # This will create a directory under ~/tmp and download the catalog.rds file to that directory.
 # The files are then permanently stored in that directory and can be directly read when restarting your R session.
 }
