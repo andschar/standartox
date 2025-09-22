@@ -7,3 +7,4 @@
 *.ini
 tests/*
 R/my_custom_fun.R
+README.html
