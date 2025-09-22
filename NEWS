@@ -1,3 +1,18 @@
+
+standartox 0.0.3
+=============================
+
+- Added the function `stx_qplot()` which allows for a quick overview of the 
+data.
+
+- Issue X
+
+
+standartox 0.0.2
+=============================
+
+- Fixes for CRAN
+
 standartox 0.0.1
 =============================
 
