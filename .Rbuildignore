@@ -4,6 +4,8 @@
 ^docs$
 ^pkgdown$
 
+^R/qplot\.R$
+
 ^README.Rmd
 ^README_files
 

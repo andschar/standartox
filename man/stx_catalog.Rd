@@ -2,35 +2,43 @@
 % Please edit documentation in R/standartox.R
 \name{stx_catalog}
 \alias{stx_catalog}
-\title{Retrieve data catalog}
+\title{Retrieve Standartox Data Catalog}
 \usage{
 stx_catalog(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
-\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+\item{silent}{logical; If \code{TRUE}, suppresses messages during the download process. Default is \code{FALSE}.}
 
-\item{stx_dir}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory where the catalog file is stored. If the file doesn't exist, it will be downloaded to this location. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{tempdir()}).}
 }
 \value{
-Returns a list of data.frames containing information on data base variables
+Returns a list where each element is a character vector containing the unique values for a specific data field available for querying.
 }
 \description{
-Retrieve a data catalog for all variables (and their values) that can be retrieved with stx_query()
+Retrieves a catalog of all possible values for variables that can be used for filtering in \code{stx_query()}. This is useful for discovering valid inputs for parameters like \code{endpoint_group}, \code{effect}, or \code{tax_group}.
 }
 \examples{
 \donttest{
-# might fail if there is no internet connection or Zenodo.org not not available
-# basic function call
-l = stx_catalog()
+# This function might fail if there is no internet connection or Zenodo.org is not available
 
-# to get verbose output from the function
-l = stx_catalog(silent = FALSE)
+# Basic function call to retrieve the catalog
+catalog_data <- stx_catalog()
 
-# to specify a directory to which the catalog should be downloaded
-l = stx_catalog(silent = FALSE, stx_dir = "~/tmp")
-# This will create a directory under ~/tmp and download the catalog.rds file to that directory.
-# The files are then permanently stored in that directory and can be directly read when restarting your R session.
+# View the names of available fields in the catalog
+names(catalog_data)
+
+# See all possible values for 'endpoint_group'
+print(catalog_data$endpoint_group)
+
+# Get verbose output from the function
+catalog_verbose <- stx_catalog(silent = FALSE)
+
+# Specify a permanent directory to download and cache the catalog file.
+# This speeds up future calls as the file won't need to be re-downloaded when starting a new session.
+my_dir <- file.path("~","my_stx_data")
+catalog_cached <- stx_catalog(stx_dir = my_dir, silent = FALSE)
 }
+
 }
 \author{
 Andreas Scharmueller \email{andschar@protonmail.com}
