@@ -18,13 +18,9 @@ environmental toxicity of chemicals.
 
 ## Installation
 
-***NOTE:*** Currently v0.0.2 is only available here on GitHub.
-
 ``` r
-# install.packages('standartox') # Currently only available on GitHub
-if (!requireNamespace("standartox", quietly = TRUE)) {
-  remotes::install_github('andschar/standartox') # development version
-}
+# install.packages('standartox') # CRAN Server version
+remotes::install_github('andschar/standartox') # Github version
 ```
 
 ## Functions
@@ -48,16 +44,16 @@ catal = stx_catalog()
 names(catal)
 ```
 
-    ##  [1] "date_compiled"           "standartox_version"      "cas"                     "chem_class"             
-    ##  [5] "cname"                   "ref_author"              "ref_number"              "ref_title"              
-    ##  [9] "ref_year"                "class"                   "continent"               "family"                 
-    ## [13] "genus"                   "group"                   "habitat"                 "order"                  
-    ## [17] "rank"                    "taxon"                   "casnr"                   "cl_id"                  
-    ## [21] "concentration"           "concentration_orig"      "concentration_type"      "concentration_unit"     
-    ## [25] "concentration_unit_orig" "duration"                "duration_orig"           "duration_unit"          
-    ## [29] "duration_unit_orig"      "effect"                  "endpoint"                "endpoint_group"         
-    ## [33] "exposure"                "qualifier"               "ref_number"              "result_id"              
-    ## [37] "tl_id"
+    ##  [1] "cas"                     "casnr"                   "chem_class"              "chem_name"              
+    ##  [5] "ref_author"              "ref_number"              "ref_title"               "ref_year"               
+    ##  [9] "tax_class"               "tax_continent"           "tax_family"              "tax_genus"              
+    ## [13] "tax_group"               "tax_habitat"             "tax_order"               "tax_rank"               
+    ## [17] "tax_taxon"               "casnr"                   "cl_id"                   "concentration"          
+    ## [21] "concentration_orig"      "concentration_type"      "concentration_unit"      "concentration_unit_orig"
+    ## [25] "duration"                "duration_orig"           "duration_unit"           "duration_unit_orig"     
+    ## [29] "effect"                  "endpoint"                "endpoint_group"          "exposure"               
+    ## [33] "measurement"             "organism_lifestage"      "qualifier"               "ref_number"             
+    ## [37] "result_id"               "tl_id"
 
 ``` r
 catal$endpoint # access the parameter top five endpoints
@@ -67,16 +63,16 @@ Showing the top 10 endpoint values from `stx_catalog()`
 
 |      n | variable |
 |-------:|:---------|
-| 202306 | NOEL     |
-| 191672 | NR       |
-| 162103 | LOEL     |
-| 152748 | NOEC     |
-| 135906 | LC50     |
-| 113089 | LOEC     |
-|  53417 | EC50     |
-|  22027 | BCF      |
-|  17337 | NR-LETH  |
-|  16179 | LD50     |
+| 205080 | NOEL     |
+| 196597 | NR       |
+| 165693 | LOEL     |
+| 165146 | NOEC     |
+| 143740 | LC50     |
+| 123889 | LOEC     |
+|  56362 | EC50     |
+|  22496 | BCF      |
+|  17739 | NR-LETH  |
+|  16213 | LD50     |
 
 ### `stx_query()`
 
@@ -93,16 +89,13 @@ more detail.
 
     ## Reading in Standartox Data ...
 
-    ## fstcore package v0.10.0
-
-    ## (OpenMP detected, using 8 threads)
-
     ## Removing rows with 'NR' (not reported) for endpoint & duration_unit ...
 
     ## Appending chemical information ...
 
     ## Appending taxonomic information ...
 
+    ## Query returned 801451 results out of 1212683 total entries.
     ## Done!
 
 ## Example: *Oncorhynchus*
@@ -138,6 +131,7 @@ oncor = stx_query(
 
     ## Appending taxonomic information ...
 
+    ## Query returned 3178 results out of 1212683 total entries.
     ## Done!
 
 We subset the retrieved data to the 20 most tested chemicals and plot
@@ -146,18 +140,18 @@ the result.
 ``` r
 cas20 = oncor[ , .N, cas ][ order(-N) ][1:20]
 oncor20 = oncor[ cas %in% cas20$cas ]
-# add new column which combines cname & cas
-oncor20[ , cname := paste0(cname, ' [CAS: ', cas, ']') ]
-gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, cname, tax_genus)]
+# add new column which combines common_name & cas
+oncor20[ , new_chem_name := paste0(common_name, ' [CAS: ', cas, ']') ]
+gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, new_chem_name, tax_genus)]
 ```
 
 ``` r
 require(ggplot2)
-ggplot(oncor20, aes(y = cname)) +
+ggplot(oncor20, aes(y = new_chem_name)) +
   geom_point(aes(x = concentration, col = 'All values'),
              pch = 1, alpha = 0.3) +
   geom_point(data = gmn_dt,
-             aes(y = reorder(cname, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
+             aes(y = reorder(new_chem_name, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
              size = 3) +
   scale_x_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000),
                 labels = c(0.01, 0.1, 1, 10, 100, 1000, 10000)) +
@@ -170,10 +164,6 @@ ggplot(oncor20, aes(y = cname)) +
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
-
-``` r
-# Antimycin A (CAS 1397-94-0) listed as NA in standartox! Need to check this ... 
-```
 
 ## Article
 

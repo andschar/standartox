@@ -12,13 +12,9 @@ Standartox is a database and tool facilitating the retrieval of ecotoxicological
 
 ## Installation
 
-**_NOTE:_** Currently v0.0.2 is only available here on GitHub.
-
 ```{r eval=FALSE}
-# install.packages('standartox') # Currently only available on GitHub
-if (!requireNamespace("standartox", quietly = TRUE)) {
-  remotes::install_github('andschar/standartox') # development version
-}
+# install.packages('standartox') # CRAN Server version
+remotes::install_github('andschar/standartox') # Github version
 ```
 
 ## Functions
@@ -81,33 +77,18 @@ We subset the retrieved data to the 20 most tested chemicals and plot the result
 ```{r warning=FALSE, message=FALSE}
 cas20 = oncor[ , .N, cas ][ order(-N) ][1:20]
 oncor20 = oncor[ cas %in% cas20$cas ]
-# add new column which combines chem_name & cas
-oncor20[ , chem_name := paste0(chem_name, ' [CAS: ', cas, ']') ]
-gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, chem_name, tax_genus)]
+# add new column which combines common_name & cas
+oncor20[ , new_chem_name := paste0(common_name, ' [CAS: ', cas, ']') ]
+gmn_dt = oncor20[ , .(gmn = exp(mean(log(concentration), na.rm = TRUE))), .(cas, new_chem_name, tax_genus)]
 ```
 
 ```{r warning=FALSE, message=FALSE, fig.width=9, fig.height=6, dpi=300}
 require(ggplot2)
-# ggplot(oncor20, aes(y = cas)) +
-#   geom_point(aes(x = concentration, col = 'All values'),
-#              pch = 1, alpha = 0.3) +
-#   geom_point(data = gmn_dt,
-#              aes(y = reorder(cas, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
-#              size = 3) +
-#   scale_x_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000),
-#                 labels = c(0.01, 0.1, 1, 10, 100, 1000, 10000)) +
-#   scale_color_viridis_d(name = '') +
-#   labs(title = 'LC50 values for Genus: Oncorhynchus',
-#        subtitle = '20 most tested chemicals',
-#        x = 'Concentration [g/L]') +
-#   theme_minimal() +
-#   theme(axis.title.y = element_blank())
-
-ggplot(oncor20, aes(y = chem_name)) +
+ggplot(oncor20, aes(y = new_chem_name)) +
   geom_point(aes(x = concentration, col = 'All values'),
              pch = 1, alpha = 0.3) +
   geom_point(data = gmn_dt,
-             aes(y = reorder(chem_name, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
+             aes(y = reorder(new_chem_name, -gmn), x = gmn, col = 'Standartox value\n(Geometric mean)'),
              size = 3) +
   scale_x_log10(breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000),
                 labels = c(0.01, 0.1, 1, 10, 100, 1000, 10000)) +
