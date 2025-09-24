@@ -2,18 +2,22 @@
 % Please edit documentation in R/standartox.R
 \name{stx_query}
 \alias{stx_query}
-\title{Query Standartox Toxicity Data}
+\title{Query and Filter Standartox Toxicity Data}
 \usage{
 stx_query(
   cas_number = NULL,
   endpoint_group = c("XX50", "NOEX", "LOEX"),
+  endpoint_qualifier = "=",
+  endpoint = NULL,
   exposure = NULL,
   effect = NULL,
+  measurement = NULL,
   duration = c(0, Inf),
   duration_unit = "h",
   concentration_unit = NULL,
   concentration_type = NULL,
-  tax_columns = c("group", "taxon", "genus", "family"),
+  organism_lifestage = NULL,
+  tax_columns = c("tax_group", "tax_taxon", "tax_genus", "tax_family"),
   tax_genus = NULL,
   tax_family = NULL,
   tax_order = NULL,
@@ -26,85 +30,105 @@ stx_query(
 )
 }
 \arguments{
-\item{cas_number}{character; Optional. Vector of CAS numbers to filter chemicals (e.g. \code{c("1071-83-6","63-25-2","138261-41-3")}). Default is \code{NULL} (no filtering).}
+\item{cas_number}{character; Optional vector of CAS numbers to filter by (e.g., \code{c("1071-83-6", "63-25-2")}). If `NULL` (default), results for all chemicals are returned.}
 
-\item{endpoint_group}{character; Optional. Endpoint group(s) to filter results. All possible endpoint groups can be checked via \code{stx_catalog()$endpoint_group}. Default is \code{c("XX50", "NOEX", "LOEX")}.}
+\item{endpoint_group}{character; Optional vector of endpoint groups to filter results. See \code{stx_catalog()$endpoint_group} for all possible values. Defaults to \code{c("XX50", "NOEX", "LOEX")}.}
 
-\item{exposure}{character; Optional. Vector of exposure types (e.g. \code{"aquatic"}). All possible exposure types can be checked via \code{stx_catalog()$exposure}. Default is \code{NULL}.}
+\item{endpoint_qualifier}{character; Optional vector of endpoint value qualifiers (e.g., \code{c(">", "<=")}). Common values are "=", ">", "<", "~", "<=", ">=". Defaults to \code{"="}. Set to `NULL` to include all qualifiers.}
 
-\item{effect}{character; Optional. Vector of effect types (e.g. \code{"Mortality", "Growth"}). All possible effect types can be checked via \code{stx_catalog()$effect}. Default is \code{NULL}.}
+\item{endpoint}{character; Optional vector of specific endpoints to filter by (e.g., "LC50", "NOEC"). If `NULL` (default), no endpoint filtering is applied.}
 
-\item{duration}{numeric; Optional. Numeric vector of length two specifying minimum and maximum test duration (in hours), e.g. \code{c(0, 48)}. Default is \code{c(0, Inf)}.}
+\item{exposure}{character; Optional vector of exposure types. See \code{stx_catalog()$exposure}. If `NULL` (default), no exposure type filtering is applied.}
 
-\item{duration_unit}{character; Optional. Filter by duration unit (e.g. \code{"h"} for hours). All possible duration units can be checked via \code{stx_catalog()$duration_unit}. Set to \code{NULL} to keep all. Default is \code{"h"}.}
+\item{effect}{character; Optional vector of observed effects. See \code{stx_catalog()$effect}. If `NULL` (default), no effect filtering is applied.}
 
-\item{concentration_unit}{character; Optional. Filter by concentration unit (e.g. \code{"g/l"}). All possible concentration units can be checked via \code{stx_catalog()$concentration_unit}. Default is \code{NULL}.}
+\item{measurement}{character; Optional vector of measurement types. See \code{stx_catalog()$measurement}. If `NULL` (default), no measurement filtering is applied.}
 
-\item{concentration_type}{character; Optional. Filter by concentration type (e.g. \code{"active ingredient"}). All possible concentration types can be checked via \code{stx_catalog()$concentration_type}. Default is \code{NULL}.}
+\item{duration}{numeric; A numeric vector of length two specifying the duration range (in hours) to filter by, e.g., \code{c(24, 96)}. Defaults to \code{c(0, Inf)}, including all durations.}
 
-\item{tax_columns}{character; Columns of taxonomic information to append to results. All possible columns can be checked via \code{colnames(stx_taxa())}. Default is \code{c("group", "taxon", "genus", "family")}.}
+\item{duration_unit}{character; Filter by the unit of duration. See \code{stx_catalog()$duration_unit}. Defaults to \code{"h"} (hours). Set to `NULL` to keep all units.}
 
-\item{tax_genus}{character; Optional. Filter by genus. All possible genera can be checked via \code{stx_catalog()$genus}. Default is \code{NULL}.}
+\item{concentration_unit}{character; Optional vector of concentration units. See \code{stx_catalog()$concentration_unit}. If `NULL` (default), no filtering is applied.}
 
-\item{tax_family}{character; Optional. Filter by family. All possible families can be checked via \code{stx_catalog()$family}. Default is \code{NULL}.}
+\item{concentration_type}{character; Optional vector of concentration types. See \code{stx_catalog()$concentration_type}. If `NULL` (default), no filtering is applied.}
 
-\item{tax_order}{character; Optional. Filter by order. All possible orders can be checked via \code{stx_catalog()$order}. Default is \code{NULL}.}
+\item{organism_lifestage}{character; Optional vector of organism lifestages. See \code{stx_catalog()$organism_lifestage}. If `NULL` (default), no lifestage filtering is applied.}
 
-\item{tax_class}{character; Optional. Filter by class. All possible classes can be checked via \code{stx_catalog()$class}. Default is \code{NULL}.}
+\item{tax_columns}{character; A vector of taxonomic column names to append to the results. See \code{colnames(stx_taxa())} for all options. Defaults to \code{c("tax_group", "tax_taxon", "tax_genus", "tax_family")}.}
 
-\item{tax_group}{character; Optional. Filter by one or more ecotoxicological groups. Possible values are \code{"invertebrate"}, \code{"plant"}, \code{"fish"}, \code{"fungi"}, \code{"algae"}, \code{"aves"}, \code{"amphibia"}, \code{"mammalia"}, \code{"reptilia"}, \code{"macrophyte"}. All possible ecotox groups can be checked via \code{stx_catalog()$group}. Multiple entries possible. Default is \code{NULL}.}
+\item{tax_genus}{character; Optional vector of genera to filter by. See \code{stx_catalog()$genus}. If `NULL` (default), no genus filtering is applied.}
 
-\item{include_reference}{logical; If \code{TRUE}, append reference information. Default is \code{FALSE}.}
+\item{tax_family}{character; Optional vector of families to filter by. See \code{stx_catalog()$family}. If `NULL` (default), no family filtering is applied.}
 
-\item{rm_NR}{logical; If \code{TRUE}, remove rows with "NR" (not reported) values. Default is \code{TRUE}.}
+\item{tax_order}{character; Optional vector of orders to filter by. See \code{stx_catalog()$order}. If `NULL` (default), no order filtering is applied.}
 
-\item{verbose}{logical; If \code{TRUE}, print progress messages. Default is \code{FALSE}.}
+\item{tax_class}{character; Optional vector of classes to filter by. See \code{stx_catalog()$class}. If `NULL` (default), no class filtering is applied.}
 
-\item{...}{Additional arguments passed to \code{stx_download}.}
+\item{tax_group}{character; Optional vector of ecotoxicological groups to filter by. See \code{stx_catalog()$tax_group} for valid inputs (e.g., "invertebrate", "fish"). If `NULL` (default), no group filtering is applied.}
+
+\item{include_reference}{logical; If `TRUE`, reference information (author, year, title) is appended to the results. Defaults to \code{FALSE}.}
+
+\item{rm_NR}{logical; If `TRUE` (default), rows with "NR" (not reported) values in the critical `endpoint` and `duration_unit` columns are removed early in the query process. Note that at the end of the query, all remaining "NR" values in any character column are converted to `NA`.}
+
+\item{verbose}{logical; If `TRUE`, prints messages detailing the query progress. Defaults to \code{FALSE}.}
+
+\item{...}{Additional arguments to be passed on to \code{\link{stx_download}}, such as `stx_dir` to specify a cache directory.}
 }
 \value{
-Returns a \code{data.table} with filtered Standartox toxicity data.
+A \code{data.table} containing the filtered Standartox toxicity data. If the query results in zero matches, the function returns `NULL` and issues a warning.
 }
 \description{
-Retrieve and filter toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}) using chemical, experimental, and taxonomic criteria.
+Retrieves and filters toxicity data from the Standartox database (\url{https://doi.org/10.5281/zenodo.3785030}). This function acts as a powerful front-end for subsetting the database based on chemical, experimental, and taxonomic criteria.
+}
+\details{
+The function operates in a sequential process:
+1.  It first downloads the necessary data tables (`test_fin`, `phch`, `taxa`, and optionally `refs`) using \code{\link{stx_download}}.
+2.  It performs initial, fast filtering based on `endpoint_group`, `endpoint_qualifier`, and `duration_unit`.
+3.  It then appends chemical and taxonomic information, filtering by `cas_number` and the `tax_*` parameters.
+4.  Finally, it applies the remaining experimental filters (`effect`, `duration`, `concentration_unit`, etc.).
+
+By default, filters are combined with a logical "AND". For example, specifying a `tax_genus` and an `effect` will return only records that match both criteria.
+
+`stx_catalog()` is a helper function that provides a list of all valid filter values for many of this function's parameters.
 }
 \examples{
 \donttest{
+# This function may fail if there is no internet connection or Zenodo.org is not available
 
-Basic stx_query() call: Will return results filtered for default endpoint_group = c("XX50", "NOEX", "LOEX") and duration_unit = "h"
-stx_query(verbose = T)
+# Basic query using default filters (XX50, NOEX, LOEX endpoints in hours)
+# Using verbose=TRUE to see the process
+results_default <- stx_query(verbose = TRUE)
 
-# If you wish to filter for different endpoint groups, you can specify them in the query.
-stx_catalog()$endpoint_group # to view available endpoint groups
-stx_query(endpoint_group = c("Bioconc","MATC","MCIG"))
+# To see available filter options, use the catalog function
+catalog <- stx_catalog()
+print(catalog$endpoint_group)
 
-# Query for a specific CAS number, endpoint group, and tax group(s)
-stx_query(
-  cas_number = "1071-83-6",
-  endpoint_group = c("NOEX","LOEX"),
-  duration = c(0, 120),
-  ecotox_group = c("invertebrate", "fish", "algae"),
+# Query for a specific CAS number and multiple specific endpoints for key taxonomic groups
+q1 <- stx_query(
+  cas_number = "1071-83-6", # Glyphosate
+  endpoint = c("LC50", "EC50", "LOEC", "NOEC"),
+  duration = c(0, 120), # Up to 120 hours
+  tax_group = c("invertebrate", "fish", "algae")
 )
 
-# get ALL LC50 values for 96 - 120 h of exposure for zebra fish (Danio rerio)
-stx_query(
-  endpoint_group = "XX50",
-  duration = c(96, 120),
-  effect = "mortality",
-  concentration_unit = "g/l",
-  concentration_type = "active ingredient",
+# Get all >LC50 values for Zebra fish (Danio rerio) embryos or larvae,
+# including reference information
+q2 <- stx_query(
+  endpoint = "LC50",
+  endpoint_qualifier = ">",
+  duration = c(72, 120),
   tax_genus = "Danio",
-  include_reference = TRUE
+  organism_lifestage = c("Embryo", "Larva"),
+  include_reference = TRUE,
+  verbose = TRUE
 )
 
-# get ALL LC50 values for 24 - 48 h of exposure for the family of Daphniidae
-stx_query(
+# Get all XX50 acute toxicity values for the family Daphniidae related to mobility
+q3 <- stx_query(
   endpoint_group = "XX50",
   duration = c(24, 48),
-  effect = "mortality",
-  concentration_unit = "g/l",
-  concentration_type = "active ingredient",
-  tax_family = "Daphniidae"
+  measurement = c("immobile", "mobility", "swimming"),
+  tax_family = "Daphniidae",
   include_reference = TRUE
 )
 }

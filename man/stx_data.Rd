@@ -2,28 +2,41 @@
 % Please edit documentation in R/standartox.R
 \name{stx_data}
 \alias{stx_data}
-\title{Retrieve Standartox toxicity values}
+\title{Retrieve the Core Standartox Toxicity Data Table}
 \usage{
 stx_data(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
-\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+\item{silent}{logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.}
 
-\item{stx_dir}{character; Directory to which the catalog should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory where the data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).}
 }
 \value{
-Returns a data.table.
+A \code{data.table} containing the core toxicity test results, with columns for endpoints, duration, concentration, effect, etc.
 }
 \description{
-Retrieve a data.table containing the Standartox toxicity data
+Provides direct access to the main `test_fin` data table from the Standartox database, which contains the raw toxicity results.
+}
+\details{
+This function is a simple wrapper for \code{stx_download(data_type = 'test_fin')}. It is designed for users who want the primary data table of toxicity test results without the additional chemical or detailed taxonomic information that \code{\link{stx_query}} automatically appends.
+
+Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
 }
 \examples{
 \donttest{
-# might fail if there is no internet connection or Zenodo.org not not available
-# basic function call
+# This function may fail if there is no internet connection or Zenodo.org is not available
 
-dt = stx_data()
+# Basic function call to retrieve the main data table
+tox_data <- stx_data()
 
+# Inspect the first few rows and column names to understand the structure
+head(tox_data)
+colnames(tox_data)
+
+# Example of using a permanent directory to cache the data
+# The message "Retrieving Standartox data.." will only appear on the first download.
+my_dir <- file.path("~", "my_stx_data")
+cached_data <- stx_data(stx_dir = my_dir, silent = FALSE)
 }
 }
 \author{

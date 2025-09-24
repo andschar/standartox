@@ -2,34 +2,45 @@
 % Please edit documentation in R/standartox.R
 \name{stx_taxa}
 \alias{stx_taxa}
-\title{Retrieve taxa data}
+\title{Retrieve the Standartox Taxonomy Table}
 \usage{
 stx_taxa(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
-\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+\item{silent}{logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.}
 
-\item{stx_dir}{character; Directory to which the taxa information should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory where the taxonomy data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).}
 }
 \value{
-Returns a data.table containing informaiton on taxa in Standartox.
+A \code{data.table} containing taxonomic classifications, with columns such as `tax_genus`, `tax_family`, `tax_order`, and `tax_group`.
 }
 \description{
-Retrieve data on all taxa in Standartox.
+Provides direct access to the `taxa` data table, which contains the complete taxonomic classification for every species in the Standartox database.
+}
+\details{
+This function is a simple wrapper for \code{stx_download(data_type = 'taxa')}. It is designed for users who want to explore the full taxonomic scope of the database or find valid inputs for the `tax_genus`, `tax_family`, and `tax_group` parameters in \code{\link{stx_query}}.
+
+Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
 }
 \examples{
 \donttest{
-# might fail if there is no internet connection or Zenodo.org not not available
-# basic function call
-df = stx_taxa()
+# This function may fail if there is no internet connection or Zenodo.org is not available
 
-# to get verbose output from the function
-df = stx_taxa(silent = FALSE)
+# Basic function call to retrieve the taxonomy data table
+taxa_data <- stx_taxa()
 
-# to specify a directory to which the taxa information should be downloaded
-df = stx_taxa(silent = FALSE, stx_dir = "~/tmp")
-# This will create a directory under ~/tmp and download the respective standartox file to that directory.
-# The files are then permanently stored in that directory and can be directly read when restarting your R session.
+# Inspect the first few rows and see all available columns
+head(taxa_data)
+colnames(taxa_data)
+
+# Find all unique ecotoxicological groups in the database
+if (nrow(taxa_data) > 0) {
+  print(unique(taxa_data$tax_group))
+}
+
+# Example of using a permanent directory to cache the data file
+my_dir <- file.path("~", "my_stx_data")
+cached_taxa_data <- stx_taxa(stx_dir = my_dir, silent = FALSE)
 }
 
 }

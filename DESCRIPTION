@@ -1,5 +1,5 @@
 Package: standartox
-Version: 1.0.1
+Version: 1.0.0
 Date: 2025-09-19
 Title: Ecotoxicological Information from the Standartox Database
 Authors@R: c(
@@ -24,7 +24,7 @@ Imports:
     curl (>= 3.4),
     jsonlite (>= 1.6.1),
     fst (>= 0.9.4),
-    data.table (>= 1.13.0)
+    data.table (>= 1.17.8)
 License: MIT + file LICENSE
 URL: https://github.com/andschar/standartox
 BugReports: https://github.com/andschar/standartox/issues

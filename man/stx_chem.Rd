@@ -2,34 +2,41 @@
 % Please edit documentation in R/standartox.R
 \name{stx_chem}
 \alias{stx_chem}
-\title{Retrieve chemical data}
+\title{Retrieve the Standartox Chemical Properties Table}
 \usage{
 stx_chem(silent = FALSE, stx_dir = file.path(tempdir(), "standartox"))
 }
 \arguments{
-\item{silent}{logical; If TRUE, suppresses messages. Default is FALSE.}
+\item{silent}{logical; If `TRUE`, suppresses progress messages during download. Defaults to `FALSE`.}
 
-\item{stx_dir}{character; Directory to which the chemical information should be downloaded. Default is a temporary directory.}
+\item{stx_dir}{character; Directory where the chemical data file is stored or should be downloaded. Defaults to a "standartox" subdirectory within the session's temporary directory (\code{file.path(tempdir(), "standartox")}).}
 }
 \value{
-Returns a data.table containing informaiton on chemicals in Standartox.
+A \code{data.table} containing chemical information, including columns such as CAS number, chemical name, and other identifiers.
 }
 \description{
-Retrieve data on all chemicals in Standartox.
+Provides direct access to the `phch` data table, which contains chemical identifiers and physicochemical properties for all compounds in the Standartox database.
+}
+\details{
+This function is a simple wrapper for \code{stx_download(data_type = 'phch')}. It is designed for users who want to explore the chemical inventory of the database, for instance, to find CAS numbers for use with \code{\link{stx_query}}.
+
+Like other download functions in this package, it caches the data file locally to avoid re-downloading on subsequent calls.
 }
 \examples{
 \donttest{
-# might fail if there is no internet connection or Zenodo.org not not available
-# basic function call
-df = stx_chem()
+# This function may fail if there is no internet connection or Zenodo.org is not available
 
-# to get verbose output from the function
-df = stx_chem(silent = FALSE)
+# Basic function call to retrieve the chemical data table
+chem_data <- stx_chem()
 
-# to specify a directory to which the chemical information should be downloaded
-df = stx_chem(silent = FALSE, stx_dir = "~/tmp")
-# This will create a directory under ~/tmp and download the respective standartox file to that directory.
-# The files are then permanently stored in that directory and can be directly read when restarting your R session.
+# Inspect the first few rows and column names to see what's available
+head(chem_data)
+colnames(chem_data)
+
+# Example of using a permanent directory to cache the data file
+# The "Retrieving..." message will only appear on the first download.
+my_dir <- file.path("~", "my_stx_data")
+cached_chem_data <- stx_chem(stx_dir = my_dir, silent = FALSE)
 }
 
 }
