@@ -334,6 +334,7 @@ filter_dt.AND <- function(dt, var_ls, silent = TRUE) {
 #' }
 #'
 #' @export
+#' @import data.table
 stx_query = function(
     ## COMPOUND FILTERING ##
   cas_number = NULL,
@@ -373,7 +374,7 @@ stx_query = function(
   # Split up list object
   total_entries = nrow(stxDb$test_fin)
   tox.dt = stxDb$test_fin # final output object. LARGE right after import!
-  suppressWarnings( tox.dt[, cl_id := NULL] ) # HOT FIX!
+  suppressWarnings( tox.dt[, cl_id := NULL] ) # 
   stxDb  = stxDb[stx_table[-1]] # dump the largest object! <- hope to save some memory with that.
   
   # First quick filter steps:
